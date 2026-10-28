@@ -11,8 +11,9 @@ public  abstract class Empleado extends Persona {
         this.usuario = usuario;
         this.contrasenia = contrasenia;
     }
+    public boolean autenticar(String usuario, String contrasena) {
+        return this.usuario.equals(usuario) && this.contrasenia.equals(contrasenia);
+    }
     public String getUsuario() {return usuario;}
-    public void setUsuario(String usuario) {this.usuario = usuario;}
     public String getContrasenia() {return contrasenia;}
-    public void setContrasenia(String contrasenia) {this.contrasenia = contrasenia;}
 }
