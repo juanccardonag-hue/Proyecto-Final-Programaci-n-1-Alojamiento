@@ -20,7 +20,7 @@ public class Reserva implements Serializable {
     private Huesped titular;
     private Apartamento apartamento;
     private Folio folio;
-    private Empleado empleado;                 // El recepcionista o empleado que atendió (opcional en PORTAL)
+    private Empleado empleado;
     private List<Ocupante> ocupantes;
     private List<DetalleNocheReserva> detallesReserva;
 
@@ -116,7 +116,6 @@ public class Reserva implements Serializable {
 
 
     // Cambiamos el estado de la reserva
-    // Retorna true si el cambio es permitido según la tabla del proyecto, false si es inválido
     public boolean cambiarEstado(EstadoReserva nuevoEstado) {
 
         if (this.estado == EstadoReserva.PENDIENTE) {
