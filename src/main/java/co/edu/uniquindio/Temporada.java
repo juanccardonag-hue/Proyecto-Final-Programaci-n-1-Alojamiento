@@ -12,6 +12,13 @@ public class Temporada {
         this.fechaInicio = fechaInicio;
         this.porcentajeRecargo = porcentajeRecargo;
     }
+    //vemos si una fecha cae dentro del rango de una temporada
+    public boolean aplicaEnFecha(LocalDate fecha) {
+        if (fechaInicio == null || fechaFin == null) {
+            return false;
+        }
+        return (!fecha.isBefore(fechaInicio) && !fecha.isAfter(fechaFin));
+    }
 
     public LocalDate getFechaInicio() {return fechaInicio;}
     public void setFechaInicio(LocalDate fechaInicio) {this.fechaInicio = fechaInicio;}
