@@ -42,9 +42,9 @@ public class Apartamento implements Serializable {
     }
 
     // Registra una novedad
-    public void registrarNovedad(String descripcion, String reportadoPor) {
+    public void registrarNovedad(String descripcion, String reportado) {
         if (descripcion != null) {
-            String detalleCompleto = "Reportó (" + reportadoPor + "): " + descripcion;
+            String detalleCompleto = "Reportó (" + reportado + "): " + descripcion;
             Novedad novedad = new Novedad(LocalDateTime.now(), detalleCompleto);
             this.listNovedad.add(novedad);
         }

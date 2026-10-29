@@ -8,7 +8,6 @@ public class Recepcionista extends Empleado {
     public Recepcionista(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasena) {
         super(cedula, nombre, fechaNacimiento, telefono, correo, usuario, contrasena);
     }
-
     //Registro de reservas por Canal DIRECTO
     public Reserva registrarReservaDirecta(String idFolio, Huesped titular, Apartamento apto, LocalDate entrada, LocalDate salida, List<Ocupante> ocupantes, List<Temporada> temporadas) {
 
@@ -153,5 +152,52 @@ public class Recepcionista extends Empleado {
         if (apartamento != null) {
             apartamento.registrarNovedad(descripcion, getNombre());
         }
+    }
+    //Canal EXTERNO con validación de conflicto de canal
+    public Reserva registrarReservaExterna(String idFolio, Huesped titular, Apartamento apto, LocalDate entrada, LocalDate salida, List<Ocupante> ocupantes, List<Temporada> temporadas, String codigoExterno, List<Reserva> reservasExistentes) {
+
+        if (apto == null || titular == null || codigoExterno == null || reservasExistentes == null) {
+            return null;
+        }
+        if (ocupantes.size() > apto.getCapaMaxPersona()) {
+            return null;
+        }
+        if (apto.getEstadoOperativo() == EstadoOperativo.FUERA_SERVICIO) {
+            return null;
+        }
+
+        //Un mismo código externo no puede crear dos reservas
+        for (int i = 0; i < reservasExistentes.size(); i++) {
+            Reserva reser = reservasExistentes.get(i);
+            if (reser.getCodigoExterno() != null && reser.getCodigoExterno().equals(codigoExterno)) {
+                System.out.println("RECHAZADA: El código externo " + codigoExterno + " ya fue registrado.");
+                return null;
+            }
+        }
+
+        //Conflicto de canal (Anti doble venta para reservas externas)
+        for (int i = 0; i < reservasExistentes.size(); i++) {
+            Reserva reser = reservasExistentes.get(i);
+
+            // Si es para el mismo apartamento y está activa
+            if (reser.getApartamento().getCodigo().equals(apto.getCodigo()) && reser.estaActiva()) {
+
+                if (reser.cruceCon(entrada, salida)) {
+                    System.out.println("CONFLICTO DE CANAL: La reserva externa (" + codigoExterno +
+                            ") choca en fechas con la reserva existente " + reser.getCodigoFolio());
+                    return null; // Se rechaza y NUNCA reemplaza la reserva existente
+                }
+            }
+        }
+        //Si pasa todas las validaciones, se crea la reserva normalmente
+        Reserva reserva = new Reserva(idFolio, entrada, salida, Canal.EXTERNA, titular, apto, null, codigoExterno);
+
+        for (int i = 0; i < ocupantes.size(); i++) {
+            reserva.agregarOcupante(ocupantes.get(i));
+        }
+        reserva.liquidarEstancia(temporadas);
+        titular.agregarReservaHistorial(reserva);
+
+        return reserva;
     }
 }

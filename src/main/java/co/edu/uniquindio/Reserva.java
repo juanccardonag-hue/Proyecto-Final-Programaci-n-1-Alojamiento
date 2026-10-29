@@ -43,7 +43,6 @@ public class Reserva implements Serializable {
         } else {
             this.comisionPlataforma = 0.0;
         }
-        // Se crea el Folio asociado a esta reserva
         this.folio = new Folio(codigoFolio);
         this.ocupantes = new ArrayList<>();
         this.detallesReserva = new ArrayList<>();
@@ -103,7 +102,7 @@ public class Reserva implements Serializable {
             DetalleNocheReserva detalle = new DetalleNocheReserva(fechaAuxiliar, pagantes, apartamento.getTarifaPersonaNoche(), temp);
 
             detallesReserva.add(detalle);
-            totalEstancia = totalEstancia + detalle.getSubtotal();
+            totalEstancia += detalle.getSubtotal();
 
             // Avanzamos al siguiente día
             fechaAuxiliar = fechaAuxiliar.plusDays(1);
@@ -172,6 +171,46 @@ public class Reserva implements Serializable {
             return true;
         }
         return false;
+    }
+    // Calculamos los días de antelación
+    public long calcularDevolucionCancelacion(LocalDate fechaCancelacion) {
+        if (fechaCancelacion == null || fechaCancelacion.isAfter(this.fechaEntrada)) {
+            return 0;
+        }
+
+        long diasAntelacion = 0;
+        LocalDate fechaAuxiliar = fechaCancelacion;
+        while (fechaAuxiliar.isBefore(this.fechaEntrada)) {
+            diasAntelacion++;
+            fechaAuxiliar = fechaAuxiliar.plusDays(1);
+        }
+
+        long totalPagado = this.folio.calcularTotalPagos();
+
+        // Más de 7 días: se devuelve el 100% de lo pagado
+        if (diasAntelacion > 7) {
+            return totalPagado;
+        }
+
+        // Entre 2 y 7 días: se retiene el 50% del valor de la estancia
+        if (diasAntelacion >= 2) {
+            long retencion = this.valorTotal / 2;
+            long devolucion = totalPagado - retencion;
+
+            if (devolucion > 0) {
+                return devolucion;
+            } else {
+                return 0;
+            }
+        }
+
+        // Menos de 48 horas: retención del 100% del valor de la estancia
+        long devolucion = totalPagado - this.valorTotal;
+        if (devolucion > 0) {
+            return devolucion;
+        } else {
+            return 0;
+        }
     }
 
     public String getCodigoFolio() { return codigoFolio; }
