@@ -2,7 +2,7 @@ package co.edu.uniquindio;
 
 import java.time.LocalDate;
 
-public class DetalleNocheReserva {
+public class DetalleNocheReserva implements IcalcularTarifa {
     private LocalDate fechaNoche;
     private int cantidadPagantes;
     private long tarifaNochePersona;
@@ -14,14 +14,14 @@ public class DetalleNocheReserva {
         this.cantidadPagantes = cantidadPagantes;
         this.tarifaNochePersona = tarifaNochePersona;
         this.temporada = temporada;
-        this.subtotal = calcularSubtotal();
+        this.subtotal = calcularValorNoche();
     }
 
-    // Calcula el subtotal de una noche en particular
-    private long calcularSubtotal() {
+    @Override
+    public long calcularValorNoche() {
         long tarifaIndividual = tarifaNochePersona;
 
-        // Si hay temporada configurada, calculamos el recargo y se lo sumamos
+        // Si hay temporada configurada, calculamos el recargo
         if (temporada != null) {
             long recargo = (long) (tarifaNochePersona * temporada.getPorcentajeRecargo());
             tarifaIndividual = tarifaNochePersona + recargo;
@@ -30,12 +30,16 @@ public class DetalleNocheReserva {
         // Multiplica el valor por persona por los pagantes
         return cantidadPagantes * tarifaIndividual;
     }
-    public LocalDate getFechaNoche() {return fechaNoche;}
-    public void setFechaNoche(LocalDate fechaNoche) {this.fechaNoche = fechaNoche;}
-    public int getCantidadPagantes() {return cantidadPagantes;}
-    public void setCantidadPagantes(int cantidadPagantes) {this.cantidadPagantes = cantidadPagantes;}
-    public long getTarifaNochePersona() {return tarifaNochePersona;}
-    public void setTarifaNochePersona(int tarifaNochePersona) {this.tarifaNochePersona = tarifaNochePersona;}
-    public long getSubtotal() {return subtotal;}
-    public void setSubtotal(long subtotal) {this.subtotal = subtotal;}
+
+    public LocalDate getFechaNoche() { return fechaNoche; }
+    public void setFechaNoche(LocalDate fechaNoche) { this.fechaNoche = fechaNoche; }
+
+    public int getCantidadPagantes() { return cantidadPagantes; }
+    public void setCantidadPagantes(int cantidadPagantes) { this.cantidadPagantes = cantidadPagantes; }
+
+    public long getTarifaNochePersona() { return tarifaNochePersona; }
+    public void setTarifaNochePersona(long tarifaNochePersona) { this.tarifaNochePersona = tarifaNochePersona; }
+
+    public long getSubtotal() { return subtotal; }
+    public void setSubtotal(long subtotal) { this.subtotal = subtotal; }
 }

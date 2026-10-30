@@ -29,7 +29,7 @@ public class Folio {
     public long calcularTotalCargos() {
         long total = 0;
         for (int i = 0; i < listaCargo.size(); i++) {
-            total = total + listaCargo.get(i).monto();
+            total += listaCargo.get(i).monto();
         }
         return total;
     }
@@ -37,7 +37,7 @@ public class Folio {
     public long calcularTotalPagos() {
         long total = 0;
         for (int i = 0; i < listaPago.size(); i++) {
-            total = total + listaPago.get(i).monto(); // Usa .monto() sin el 'get'
+            total = total + listaPago.get(i).monto();
         }
         return total;
     }

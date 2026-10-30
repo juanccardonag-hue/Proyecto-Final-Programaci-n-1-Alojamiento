@@ -1,5 +1,6 @@
 package co.edu.uniquindio;
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class Recepcionista extends Empleado {
 
         // Si viene del PORTAL, exige haber pagado mínimo el 30% de anticipo
         if (reserva.getCanal() == Canal.PORTAL) {
-            long anticipoRequerido = Math.round(reserva.getValorTotal() * 0.30);
+            long anticipoRequerido = (long)(reserva.getValorTotal() * 0.30);
             long totalPagado = reserva.getFolio().calcularTotalPagos();
 
             if (totalPagado < anticipoRequerido) {
@@ -170,7 +171,7 @@ public class Recepcionista extends Empleado {
         for (int i = 0; i < reservasExistentes.size(); i++) {
             Reserva reser = reservasExistentes.get(i);
             if (reser.getCodigoExterno() != null && reser.getCodigoExterno().equals(codigoExterno)) {
-                System.out.println("RECHAZADA: El código externo " + codigoExterno + " ya fue registrado.");
+                JOptionPane.showMessageDialog(null,"RECHAZADA: El código externo " + codigoExterno + " ya fue registrado.");
                 return null;
             }
         }
@@ -183,7 +184,7 @@ public class Recepcionista extends Empleado {
             if (reser.getApartamento().getCodigo().equals(apto.getCodigo()) && reser.estaActiva()) {
 
                 if (reser.cruceCon(entrada, salida)) {
-                    System.out.println("CONFLICTO DE CANAL: La reserva externa (" + codigoExterno +
+                    JOptionPane.showMessageDialog(null,"CONFLICTO DE CANAL: La reserva externa (" + codigoExterno +
                             ") choca en fechas con la reserva existente " + reser.getCodigoFolio());
                     return null; // Se rechaza y NUNCA reemplaza la reserva existente
                 }
