@@ -2,11 +2,9 @@ package co.edu.uniquindio;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Administrador extends Empleado implements Serializable {
-
     private String usuario;
     private String contrasena;
 
