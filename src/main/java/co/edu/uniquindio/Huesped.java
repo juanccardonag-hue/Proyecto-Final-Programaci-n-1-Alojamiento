@@ -57,7 +57,7 @@ public class Huesped extends Persona implements Serializable {
 
     // cotizar Estancia con desglose noche por noche y temporada
     public String cotizarEstancia(Apartamento apto, LocalDate inicio, LocalDate fin) {
-        String reporte = "=== COTIZACIÓN DE ESTANCIA ===\nApartamento: " + apto.getCodigo() + "\n";
+        String reporte = " ⁺‧₊˚ ཐི⋆Cotizacion de estancia⋆ཋྀ ˚₊‧⁺" + "\n" + "Apartamento:" + apto.getCodigo() + "\n";
         double total = 0.0;
         LocalDate fechaActual = inicio;
         int noche = 1;
@@ -66,44 +66,44 @@ public class Huesped extends Persona implements Serializable {
             double precioNoche;
             String temporada;
 
-            // Meses 6, 7, 12 y 1 se consideran Temporada Alta
+            // Meses jun(6), jul(7), dic(12) y ene(1) se consideran Temporada Alta
             int mes = fechaActual.getMonthValue();
             if (mes == 6 || mes == 7 || mes == 12 || mes == 1) {
                 precioNoche = apto.getPrecioAlta();
-                temporada = "ALTA";
+                temporada = "Alta ";
             } else {
                 precioNoche = apto.getPrecioBaja();
-                temporada = "BAJA";
+                temporada = "Baja ";
             }
 
-            reporte += "Noche " + noche + " (" + fechaActual + " - " + temporada + "): $" + precioNoche + "\n";
+            reporte += "Noche: " + noche + " (Del: " + fechaActual + " - " + temporada + "): $" + precioNoche + "\n";
             total += precioNoche;
             fechaActual = fechaActual.plusDays(1);
             noche++;
         }
 
-        reporte += "-----------------------------------\nVALOR TOTAL: $" + total;
+        reporte += "────────────────୨ৎ────────────────" + "\n" + "Valor total: $" + total;
         return reporte;
     }
 
     // crear Reserva por el Portal
     public Reserva crearReservaPortal(String codigoReserva, Apartamento apto, LocalDate inicio, LocalDate fin, List<Ocupante> ocupantes) {
         // Calcular total de la estancia
-        double total = 0.0;
-        LocalDate f = inicio;
-        while (f.isBefore(fin)) {
-            int mes = f.getMonthValue();
+        long total = 0;
+        LocalDate fecha = inicio;
+
+        while (fecha.isBefore(fin)) { //comparar objetos de tiempo y comprobar si una fecha u hora es estrictamente anterior a otra
+            int mes = fecha.getMonthValue();
             if (mes == 6 || mes == 7 || mes == 12 || mes == 1) {
                 total += apto.getPrecioAlta();
             } else {
                 total += apto.getPrecioBaja();
             }
-            f = f.plusDays(1);
+            fecha = fecha.plusDays(1); //Se suma un dia a la variable que llame fecha
         }
 
         // Crear la reserva con el Portal
-        Reserva nueva = new Reserva(codigoReserva, this, apto, inicio, fin, "Portal", total);
-
+        Reserva nueva = new Reserva(codigoReserva, inicio, fin, Canal.PORTAL, this, apto, null, null);
         // Registrar los ocupantes con su fecha de nacimiento
         for (Ocupante o : ocupantes) {
             nueva.agregarOcupante(o);
@@ -114,7 +114,7 @@ public class Huesped extends Persona implements Serializable {
         return nueva;
     }
 
-    // 4. PAGO DE ANTICIPO Y ABONOS AL FOLIO
+    // Pago de anticipo y abaonos
     public boolean realizarAbono(String codigoReserva, double monto) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
@@ -125,13 +125,13 @@ public class Huesped extends Persona implements Serializable {
         return false;
     }
 
-    // 5. CONSULTA DE MIS RESERVAS, ESTADO Y SALDO DEL FOLIO
+    // Consulta de mis reservas, su estado y el saldo del folio
     public String consultarEstadoReservasYFolio() {
         if (misReservas.isEmpty()) {
-            return "El huésped no tiene reservas registradas.";
+            return "El huésped no tiene reservas registradas ";
         }
 
-        String resultado = "=== MIS RESERVAS ===\n";
+        String resultado = " ‿︵‿︵₊୨ Mis reservas ୧₊‿︵‿︵\n";
         for (Reserva r : misReservas) {
             resultado += "Código: " + r.getCodigoReserva() + "\n" +
                     "Apartamento: " + r.getApartamento().getCodigo() + "\n" +
@@ -141,12 +141,12 @@ public class Huesped extends Persona implements Serializable {
                     "Valor Total: $" + r.getValorTotal() + "\n" +
                     "Abonado: $" + r.getTotalAbonado() + "\n" +
                     "Saldo Folio: $" + r.getSaldoFolio() + "\n" +
-                    "-----------------------------------\n";
+                    " ﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌ \n";
         }
         return resultado;
     }
 
-    // 6. CALCULAR DEVOLUCIÓN DE CANCELACIÓN
+    // Calcular devolucionde cancelacion
     public double calcularDevolucion(String codigoReserva) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
@@ -162,12 +162,12 @@ public class Huesped extends Persona implements Serializable {
         return 0.0;
     }
 
-    // 7. CANCELAR RESERVA PENDIENTE O CONFIRMADA
+    // Cancelar oendiente o confirmada
     public boolean cancelarReserva(String codigoReserva) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
-                if (r.getEstado().equals("PENDIENTE") || r.getEstado().equals("CONFIRMADA")) {
-                    r.setEstado("CANCELADA");
+                if (r.getEstado() == EstadoReserva.PENDIENTE || r.getEstado() == EstadoReserva.CONFIRMADA) {
+                    r.setEstado(EstadoReserva.CANCELADA);
                     return true;
                 }
             }
