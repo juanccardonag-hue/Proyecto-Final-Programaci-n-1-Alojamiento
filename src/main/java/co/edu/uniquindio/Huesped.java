@@ -115,11 +115,10 @@ public class Huesped extends Persona implements Serializable {
     }
 
     // Pago de anticipo y abaonos
-    public boolean realizarAbono(String codigoReserva, double monto) {
+    public boolean realizarAbono(String codigoReserva, long monto, MedioPago medioPago) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
-                r.registrarAbono(monto);
-                return true;
+                return r.registrarAbono(monto, medioPago);
             }
         }
         return false;
