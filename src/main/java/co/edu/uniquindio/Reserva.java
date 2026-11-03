@@ -47,6 +47,11 @@ public class Reserva implements Serializable {
         this.ocupantes = new ArrayList<>();
         this.detallesReserva = new ArrayList<>();
     }
+    // Cnostructor para reservas creadas por el huesped desde el portal
+    public Reserva(String codigoFolio, LocalDate fechaEntrada, LocalDate fechaSalida, Canal canal, Huesped titular, Apartamento apartamento, long valorTotal) {
+        this(codigoFolio, fechaEntrada, fechaSalida, canal, titular, apartamento, null, null);
+        this.valorTotal = valorTotal;
+    }
     // FUNCIONALIDADES DE LÓGICA DE NEGOCIO
 
     // Calcula el número de noches de la estancia
@@ -136,7 +141,7 @@ public class Reserva implements Serializable {
             }
         }
 
-        // Si intenta cualquier otro cambio no permitido, se rechaza
+        // Si se intenta cualquier otro cambio no permitido, se rechaza
         return false;
     }
 
@@ -211,6 +216,46 @@ public class Reserva implements Serializable {
         } else {
             return 0;
         }
+    }
+
+
+
+    public String getCodigoReserva() { return this.codigoFolio; }
+
+    public LocalDate getFechaInicio() { return this.fechaEntrada; }
+
+    public LocalDate getFechaFin() { return this.fechaSalida; }
+
+    //Consulta el total pagado desde el objeto Folio
+    public double getTotalAbonado() {
+        if (this.folio != null) {
+            return this.folio.calcularTotalPagos();
+        }
+        return 0.0;
+    }
+
+    //Consulta el saldo pendiente restando los pagos del valor total
+    public double getSaldoFolio() {
+        return this.valorTotal - getTotalAbonado();
+    }
+
+    //Permite registrar un abono directo en el Folio y confirma la reserva si alcanza el 30%
+    public boolean registrarAbono(double monto) {
+        if (monto > 0 && this.folio != null) {
+            this.folio.agregarPago("Abono | Anticipo a cuenta: ", monto);
+
+            // Si la reserva esta pendiente y con este pago suma al menos el 30% del total, cambia a CONFIRMADA
+            if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (this.valorTotal * 0.30)) {
+                cambiarEstado(EstadoReserva.CONFIRMADA);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    //es para forzar el cambio de estado si es necesario
+    public void setEstado(EstadoReserva nuevoEstado) {
+        this.estado = nuevoEstado;
     }
 
     public String getCodigoFolio() { return codigoFolio; }

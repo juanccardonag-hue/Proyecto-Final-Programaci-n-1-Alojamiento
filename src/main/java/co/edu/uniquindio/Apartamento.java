@@ -17,6 +17,8 @@ public class Apartamento implements Serializable {
     private String motivoFueraServicio;
     private List<Bloqueo> listBloqueo;
     private List<Novedad> listNovedad;
+    private double precioBaja;
+    private double precioAlta;
 
     public Apartamento(String codigo, String nombre, int numeroDormitorio, int capaMaxPersona, String caracteristica, long tarifaPersonaNoche) {
         this.codigo = codigo;
@@ -29,6 +31,14 @@ public class Apartamento implements Serializable {
         this.motivoFueraServicio = null;
         this.listBloqueo = new ArrayList<>();
         this.listNovedad = new ArrayList<>();
+        this.precioBaja = tarifaPersonaNoche;
+        this.precioAlta = tarifaPersonaNoche * 1.5;
+    }
+
+    public Apartamento(String codigo, String nombre, int numeroDormitorio, int capaMaxPersona, String caracteristica, long tarifaPersonaNoche, double precioBaja, double precioAlta) {
+        this(codigo, nombre, numeroDormitorio, capaMaxPersona, caracteristica, tarifaPersonaNoche);
+        this.precioBaja = precioBaja;
+        this.precioAlta = precioAlta;
     }
 
     //Cambiamos el estado del apartamento
@@ -49,6 +59,13 @@ public class Apartamento implements Serializable {
             this.listNovedad.add(novedad);
         }
     }
+    public int getCapacidadMaxima() { return this.capaMaxPersona; }
+
+    public double getPrecioBaja() { return precioBaja; }
+    public void setPrecioBaja(double precioBaja) { this.precioBaja = precioBaja; }
+
+    public double getPrecioAlta() { return precioAlta; }
+    public void setPrecioAlta(double precioAlta) { this.precioAlta = precioAlta; }
 
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) { this.codigo = codigo; }
