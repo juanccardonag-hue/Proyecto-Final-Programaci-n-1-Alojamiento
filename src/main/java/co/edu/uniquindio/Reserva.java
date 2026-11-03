@@ -218,8 +218,6 @@ public class Reserva implements Serializable {
         }
     }
 
-
-
     public String getCodigoReserva() { return this.codigoFolio; }
 
     public LocalDate getFechaInicio() { return this.fechaEntrada; }
@@ -240,11 +238,11 @@ public class Reserva implements Serializable {
     }
 
     //Permite registrar un abono directo en el Folio y confirma la reserva si alcanza el 30%
-    public boolean registrarAbono(double monto) {
+    public boolean registrarAbono(long monto, MedioPago medioPago) {
         if (monto > 0 && this.folio != null) {
-            this.folio.agregarPago("Abono | Anticipo a cuenta: ", monto);
+            this.folio.registrarPago(monto, medioPago);
 
-            // Si la reserva esta pendiente y con este pago suma al menos el 30% del total, cambia a CONFIRMADA
+            // Si la reserva está PENDIENTE y con este pago suma al menos el 30% del total, cambia a CONFIRMADA
             if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (this.valorTotal * 0.30)) {
                 cambiarEstado(EstadoReserva.CONFIRMADA);
             }
