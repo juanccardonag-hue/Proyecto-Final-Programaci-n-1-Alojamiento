@@ -1,11 +1,10 @@
 package co.edu.uniquindio;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Huesped extends Persona implements Serializable {
+public class Huesped extends Persona {
 
     private List<Reserva> misReservas;
 

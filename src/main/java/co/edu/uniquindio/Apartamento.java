@@ -1,11 +1,10 @@
 package co.edu.uniquindio;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Apartamento implements Serializable {
+public class Apartamento {
 
     private String codigo;
     private String nombre;

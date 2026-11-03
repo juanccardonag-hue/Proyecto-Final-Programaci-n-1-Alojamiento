@@ -1,12 +1,11 @@
 package co.edu.uniquindio;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Reserva implements Serializable {
+public class Reserva {
 
     private String codigoFolio;
     private LocalDate fechaEntrada;

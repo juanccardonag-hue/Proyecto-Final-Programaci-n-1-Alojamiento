@@ -1,24 +1,23 @@
 package co.edu.uniquindio;
-
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Administrador extends Empleado implements Serializable {
+public class Administrador extends Persona {
     private String usuario;
-    private String contrasena;
+    private String contrasenia;
 
-    public Administrador(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasena) {
+    public Administrador(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
         super(cedula, nombre, fechaNacimiento, telefono, correo);
         this.usuario = usuario;
-        this.contrasena = contrasena;
+        this.contrasenia = contrasenia;
     }
 
     // seguridad y autenticacion
 
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
         if (usuarioIngresado != null && contrasenaIngresada != null) {
-            return this.usuario.equals(usuarioIngresado) && this.contrasena.equals(contrasenaIngresada);
+            return this.usuario.equals(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
         }
         return false;
     }
@@ -123,10 +122,83 @@ public class Administrador extends Empleado implements Serializable {
         return false;
     }
 
+        // resportes:
+    // Reporte 1: Días ocupados por apartamento en un rango de fechas
+    public long calcularNochesOcupadasApartamento(Apartamento apto, List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
+        long nochesOcupadas = 0;
+        for (Reserva r : listaReservas) {
+            if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && r.estaActiva()) {
+                if (r.cruceCon(fechaInicio, fechaFin)) {
+                    LocalDate actual = r.getFechaEntrada();
+                    while (actual.isBefore(r.getFechaSalida())) {
+                        if (!actual.isBefore(fechaInicio) && actual.isBefore(fechaFin)) {
+                            nochesOcupadas++;
+                        }
+                        actual = actual.plusDays(1);
+                    }
+                }
+            }
+        }
+        return nochesOcupadas;
+    }
+
+    // Reporte 2: Ingresos totales por periodo acumulados desde los pagos en folio
+    public long calcularIngresosPeriodo(List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
+        long ingresosTotales = 0;
+        for (Reserva r : listaReservas) {
+            if (!r.getEstado().equals(EstadoReserva.CANCELADA)) {
+                if (!r.getFechaEntrada().isBefore(fechaInicio) && !r.getFechaSalida().isAfter(fechaFin)) {
+                    ingresosTotales += (long) r.getTotalAbonado();
+                }
+            }
+        }
+        return ingresosTotales;
+    }
+
+    // Reporte 3: Conteo de reservas filtradas por canal (incluyendo canceladas y no-show)
+    public int contarReservasPorCanal(List<Reserva> listaReservas, Canal canalBuscado) {
+        int contador = 0;
+        for (Reserva r : listaReservas) {
+            if (r.getCanal() == canalBuscado) {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    // Reporte 4: Obtener lista de reservas activas con saldo pendiente en folio
+    public List<Reserva> obtenerReservasConSaldoPendiente(List<Reserva> listaReservas) {
+        List<Reserva> conSaldo = new ArrayList<>();
+        for (Reserva r : listaReservas) {
+            if (r.estaActiva() && r.getSaldoFolio() > 0) {
+                conSaldo.add(r);
+            }
+        }
+        return conSaldo;
+    }
+
+    // Reporte 5: Identificar el apartamento que registra la mayor cantidad de novedades
+    public Apartamento obtenerApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
+        if (listaApartamentos == null || listaApartamentos.isEmpty()) {
+            return null;
+        }
+        Apartamento aptoMasNovedades = listaApartamentos.get(0);
+        int maxNovedades = aptoMasNovedades.getListNovedad().size();
+
+        for (int i = 1; i < listaApartamentos.size(); i++) {
+            Apartamento actual = listaApartamentos.get(i);
+            int cantNovedadesActual = actual.getListNovedad().size();
+            if (cantNovedadesActual > maxNovedades) {
+                maxNovedades = cantNovedadesActual;
+                aptoMasNovedades = actual;
+            }
+        }
+        return aptoMasNovedades;
+    }
 
     // getters y setters
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }
-    public String getContrasena() { return contrasena; }
-    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+    public String getContrasena() { return contrasenia; }
+    public void setContrasena(String contrasena) { this.contrasenia = contrasena; }
 }
