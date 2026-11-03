@@ -7,9 +7,9 @@ public class Temporada {
     private LocalDate fechaFin;
     private double porcentajeRecargo;
 
-    public Temporada(LocalDate fechaFin, LocalDate fechaInicio, double porcentajeRecargo) {
-        this.fechaFin = fechaFin;
+    public Temporada(LocalDate fechaInicio, LocalDate fechaFin, double porcentajeRecargo) {
         this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.porcentajeRecargo = porcentajeRecargo;
     }
     //vemos si una fecha cae dentro del rango de una temporada
