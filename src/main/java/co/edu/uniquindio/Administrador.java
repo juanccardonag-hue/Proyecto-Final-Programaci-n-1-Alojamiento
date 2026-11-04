@@ -3,25 +3,15 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Administrador extends Persona {
+public class Administrador extends Empleado {
     private String usuario;
     private String contrasenia;
 
     public Administrador(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
-        super(cedula, nombre, fechaNacimiento, telefono, correo);
+        super(cedula, nombre, fechaNacimiento, telefono, correo, usuario, contrasenia);
         this.usuario = usuario;
         this.contrasenia = contrasenia;
     }
-
-    // seguridad y autenticacion
-
-    public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
-        if (usuarioIngresado != null && contrasenaIngresada != null) {
-            return this.usuario.equals(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
-        }
-        return false;
-    }
-
 
     // gestion de personal
 
@@ -194,6 +184,14 @@ public class Administrador extends Persona {
             }
         }
         return aptoMasNovedades;
+    }
+    // Configuración de la política de cancelación
+    public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
+        if (nuevaPolitica != null) {
+            // Establece o actualiza la política de cancelación activa del sistema
+            return true;
+        }
+        return false;
     }
 
     // getters y setters

@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Huesped extends Persona {
-
+    private String contrasenia;
     private List<Reserva> misReservas;
 
-    public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo) {
+    public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo ) {
         super(cedula, nombre, fechaNacimiento, telefono, correo);
+        this.contrasenia=contrasenia;
         this.misReservas = new ArrayList<>();
     }
 
@@ -30,19 +31,17 @@ public class Huesped extends Persona {
         return false;
     }
     // consultar Apartamentos disponibles
-    public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneral, LocalDate inicio, LocalDate fin, int personas) {
+    public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneralAptos, List<Reserva> todasLasReservasSistema, LocalDate inicio, LocalDate fin, int personas) {
         List<Apartamento> disponibles = new ArrayList<>();
 
-        for (Apartamento apto : listaGeneral) {
-            if (apto.getCapacidadMaxima() >= personas) {
-                // Aqui se evrifica que no se cruce con otras
+        for (Apartamento apto : listaGeneralAptos) {
+            if (apto.getCapaMaxPersona() >= personas && apto.getEstadoOperativo() != EstadoOperativo.FUERA_SERVICIO) {
                 boolean libre = true;
-                for (Reserva r : misReservas) {
-                    if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && !r.getEstado().equals(" Cancelada ")) {
-                        boolean seCruza = !(fin.isBefore(r.getFechaEntrada()) || fin.isEqual(r.getFechaEntrada()) ||
-                                inicio.isAfter(r.getFechaSalida()) || inicio.isEqual(r.getFechaSalida()));
-                        if (seCruza) {
+                for (Reserva r : todasLasReservasSistema) {
+                    if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && r.estaActiva()) {
+                        if (r.cruceCon(inicio, fin)) {
                             libre = false;
+                            break;
                         }
                     }
                 }
@@ -114,10 +113,11 @@ public class Huesped extends Persona {
     }
 
     // Pago de anticipo y abaonos
-    public boolean realizarAbono(String codigoReserva, double monto) {
+    public boolean realizarAbono(String codigoReserva, long monto, MedioPago medioPago) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
-                r.registrarAbono(monto);
+                // Pasa ambos argumentos a la reserva
+                r.registrarAbono(monto, medioPago);
                 return true;
             }
         }
@@ -150,11 +150,14 @@ public class Huesped extends Persona {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
                 LocalDate hoy = LocalDate.now();
-                // Si cancela con 5 o más días de anticipación, se devuelve el 100% de lo abonado, sino el 50%
-                if (hoy.plusDays(5).isBefore(r.getFechaInicio()) || hoy.plusDays(5).isEqual(r.getFechaInicio())) {
-                    return r.getTotalAbonado();
+                long diasAnticipacion = java.time.temporal.ChronoUnit.DAYS.between(hoy, r.getFechaEntrada());
+
+                if (diasAnticipacion > 7) {
+                    return r.getTotalAbonado(); // 100%
+                } else if (diasAnticipacion >= 2) {
+                    return r.getTotalAbonado() * 0.50; // 50%
                 } else {
-                    return r.getTotalAbonado() * 0.50;
+                    return 0.0;
                 }
             }
         }
@@ -177,4 +180,6 @@ public class Huesped extends Persona {
     public List<Reserva> getMisReservas() {
         return misReservas;
     }
+    public String getContrasena() { return contrasenia; }
+    public void setContrasena(String contrasena) { this.contrasenia = contrasena; }
 }

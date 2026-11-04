@@ -54,7 +54,7 @@ public class Apartamento {
     public void registrarNovedad(String descripcion, String reportado) {
         if (descripcion != null) {
             String detalleCompleto = "Reportó (" + reportado + "): " + descripcion;
-            Novedad novedad = new Novedad(LocalDateTime.now(), detalleCompleto);
+            Novedad novedad = new Novedad(detalleCompleto, LocalDateTime.now());
             this.listNovedad.add(novedad);
         }
     }

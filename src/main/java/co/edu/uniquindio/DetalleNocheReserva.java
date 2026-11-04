@@ -2,7 +2,7 @@ package co.edu.uniquindio;
 
 import java.time.LocalDate;
 
-public class DetalleNocheReserva implements IcalcularTarifa {
+public class DetalleNocheReserva implements ICalcularTarifa {
     private LocalDate fechaNoche;
     private int cantidadPagantes;
     private long tarifaNochePersona;
