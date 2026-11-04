@@ -146,7 +146,7 @@ public class Administrador extends Empleado {
     }
 
     // Reporte 3: Conteo de reservas filtradas por canal (incluyendo canceladas y no-show)
-    public int contarReservasPorCanal(List<Reserva> listaReservas, Canal canalBuscado) {
+    public int contarReservasCanal(List<Reserva> listaReservas, Canal canalBuscado) {
         int contador = 0;
         for (Reserva r : listaReservas) {
             if (r.getCanal() == canalBuscado) {
@@ -157,7 +157,7 @@ public class Administrador extends Empleado {
     }
 
     // Reporte 4: Obtener lista de reservas activas con saldo pendiente en folio
-    public List<Reserva> obtenerReservasConSaldoPendiente(List<Reserva> listaReservas) {
+    public List<Reserva> obtenerReservasSaldoPendiente(List<Reserva> listaReservas) {
         List<Reserva> conSaldo = new ArrayList<>();
         for (Reserva r : listaReservas) {
             if (r.estaActiva() && r.getSaldoFolio() > 0) {
@@ -168,7 +168,7 @@ public class Administrador extends Empleado {
     }
 
     // Reporte 5: Identificar el apartamento que registra la mayor cantidad de novedades
-    public Apartamento obtenerApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
+    public Apartamento obtenerApartamentoNovedades(List<Apartamento> listaApartamentos) {
         if (listaApartamentos == null || listaApartamentos.isEmpty()) {
             return null;
         }

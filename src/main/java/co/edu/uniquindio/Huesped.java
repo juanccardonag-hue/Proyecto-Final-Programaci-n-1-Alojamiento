@@ -31,13 +31,13 @@ public class Huesped extends Persona {
         return false;
     }
     // consultar Apartamentos disponibles
-    public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneralAptos, List<Reserva> todasLasReservasSistema, LocalDate inicio, LocalDate fin, int personas) {
+    public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneralAptos, List<Reserva> todasReservasSistema, LocalDate inicio, LocalDate fin, int personas) {
         List<Apartamento> disponibles = new ArrayList<>();
 
         for (Apartamento apto : listaGeneralAptos) {
             if (apto.getCapaMaxPersona() >= personas && apto.getEstadoOperativo() != EstadoOperativo.FUERA_SERVICIO) {
                 boolean libre = true;
-                for (Reserva r : todasLasReservasSistema) {
+                for (Reserva r : todasReservasSistema) {
                     if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && r.estaActiva()) {
                         if (r.cruceCon(inicio, fin)) {
                             libre = false;
@@ -53,15 +53,16 @@ public class Huesped extends Persona {
         return disponibles;
     }
 
-    // cotizar Estancia con desglose noche por noche y temporada
+    // Cotizar Estancia
     public String cotizarEstancia(Apartamento apto, LocalDate inicio, LocalDate fin) {
-        String reporte = " ⁺‧₊˚ ཐི⋆Cotizacion de estancia⋆ཋྀ ˚₊‧⁺" + "\n" + "Apartamento:" + apto.getCodigo() + "\n";
-        double total = 0.0;
+        String reporte = " ⁺‧₊˚ ཐི⋆Cotizacion de estancia⋆ཋྀ ˚₊‧⁺\n" +
+                "Apartamento:" + apto.getCodigo() + "\n";
+        long total = 0;
         LocalDate fechaActual = inicio;
         int noche = 1;
 
         while (fechaActual.isBefore(fin)) {
-            double precioNoche;
+            long precioNoche;
             String temporada;
 
             // Meses jun(6), jul(7), dic(12) y ene(1) se consideran Temporada Alta
@@ -80,7 +81,7 @@ public class Huesped extends Persona {
             noche++;
         }
 
-        reporte += "────────────────୨ৎ────────────────" + "\n" + "Valor total: $" + total;
+        reporte += "────────────────୨ৎ────────────────\n" + "Valor total: $" + total;
         return reporte;
     }
 
@@ -125,7 +126,7 @@ public class Huesped extends Persona {
     }
 
     // Consulta de mis reservas, su estado y el saldo del folio
-    public String consultarEstadoReservasYFolio() {
+    public String consultarEstadoReservasFolio() {
         if (misReservas.isEmpty()) {
             return "El huésped no tiene reservas registradas ";
         }
@@ -135,7 +136,7 @@ public class Huesped extends Persona {
             resultado += "Código: " + r.getCodigoReserva() + "\n" +
                     "Apartamento: " + r.getApartamento().getCodigo() + "\n" +
                     "Canal: " + r.getCanal() + "\n" +
-                    "Fechas: " + r.getFechaInicio() + " a " + r.getFechaFin() + "\n" +
+                    "Fechas: " + r.getFechaEntrada() + " a " + r.getFechaSalida() + "\n" +
                     "Estado: " + r.getEstado() + "\n" +
                     "Valor Total: $" + r.getValorTotal() + "\n" +
                     "Abonado: $" + r.getTotalAbonado() + "\n" +

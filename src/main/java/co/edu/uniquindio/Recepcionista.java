@@ -34,26 +34,6 @@ public class Recepcionista extends Empleado {
         return reserva;
     }
 
-    // Recepción de reservas del Canal EXTERNO
-    public Reserva registrarReservaExterna(String idFolio, Huesped titular, Apartamento apto, LocalDate entrada, LocalDate salida, List<Ocupante> ocupantes, List<Temporada> temporadas, String codigoExterno) {
-
-        if (apto == null || titular == null || codigoExterno == null) {
-            return null;
-        }
-
-        if (codigoExterno.isEmpty() || ocupantes.size() > apto.getCapaMaxPersona()) {
-            return null;
-        }
-
-        Reserva reserva = new Reserva(idFolio, entrada, salida, Canal.EXTERNA, titular, apto, this, codigoExterno);
-        for (int i = 0; i < ocupantes.size(); i++) {
-            reserva.agregarOcupante(ocupantes.get(i));
-        }
-        reserva.liquidarEstancia(temporadas);
-
-        titular.agregarReservaHistorial(reserva);
-        return reserva;
-    }
 
     //Confirmación de reservas Pendientes
     public boolean confirmarReserva(Reserva reserva) {
@@ -124,7 +104,7 @@ public class Recepcionista extends Empleado {
     }
 
     //Registro de pagos parciales
-    public boolean registrarPagoEnFolio(Reserva reserva, long monto, MedioPago medioPago) {
+    public boolean registrarPagoFolio(Reserva reserva, long monto, MedioPago medioPago) {
         if (reserva == null || reserva.getFolio() == null || monto <= 0) {
             return false;
         }
