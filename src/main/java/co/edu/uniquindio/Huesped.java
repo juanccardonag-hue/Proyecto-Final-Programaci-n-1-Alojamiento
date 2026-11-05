@@ -10,7 +10,7 @@ public class Huesped extends Persona {
 
     public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo ) {
         super(cedula, nombre, fechaNacimiento, telefono, correo);
-        this.contrasenia=contrasenia;
+        this.contrasenia = contrasenia;
         this.misReservas = new ArrayList<>();
     }
 

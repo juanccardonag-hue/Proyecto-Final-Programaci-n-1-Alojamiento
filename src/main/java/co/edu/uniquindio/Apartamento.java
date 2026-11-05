@@ -75,4 +75,12 @@ public class Apartamento {
     public String getMotivoFueraServicio() { return motivoFueraServicio; }
     public List<Bloqueo> getListBloqueo() { return listBloqueo; }
     public List<Novedad> getListNovedad() { return listNovedad; }
+    public void setNumeroDormitorio(int numeroDormitorio) {this.numeroDormitorio = numeroDormitorio;}
+    public void setCapaMaxPersona(int capaMaxPersona) {this.capaMaxPersona = capaMaxPersona;}
+    public void setCaracteristica(String caracteristica) {this.caracteristica = caracteristica;}
+    public void setMotivoFueraServicio(String motivoFueraServicio) {this.motivoFueraServicio = motivoFueraServicio;}
+    public void setListBloqueo(List<Bloqueo> listBloqueo) {this.listBloqueo = listBloqueo;}
+    public void setListNovedad(List<Novedad> listNovedad) {this.listNovedad = listNovedad;}
+    public void setPrecioBaja(long precioBaja) {this.precioBaja = precioBaja;}
+    public void setPrecioAlta(long precioAlta) {this.precioAlta = precioAlta;}
 }
