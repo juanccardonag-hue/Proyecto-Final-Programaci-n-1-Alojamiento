@@ -2,7 +2,7 @@ package co.edu.uniquindio;
 
 import java.time.LocalDate;
 
-public  abstract class Empleado extends Persona {
+public class Empleado extends Persona {
     private String usuario;
     private String contrasenia;
 

@@ -114,10 +114,11 @@ public class Huesped extends Persona {
     }
 
     // Pago de anticipo y abaonos
-    public boolean realizarAbono(String codigoReserva, double monto) {
+    public boolean realizarAbono(String codigoReserva, long monto, MedioPago medioPago) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
-                r.registrarAbono(monto);
+                // Pasa ambos argumentos a la reserva
+                r.registrarAbono(monto, medioPago);
                 return true;
             }
         }

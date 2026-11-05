@@ -1,6 +1,8 @@
 package co.edu.uniquindio;
-import java.util.ArrayList;
+
+import javax.swing.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Administrador extends Persona {
@@ -13,25 +15,92 @@ public class Administrador extends Persona {
         this.contrasenia = contrasenia;
     }
 
-    // seguridad y autenticacion
-
+    // Seguridad y autenticación
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
-        if (usuarioIngresado != null && contrasenaIngresada != null) {
-            return this.usuario.equals(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
+        return this.usuario.equalsIgnoreCase(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
+    }
+
+    public boolean loginAdmin() {
+        String usuarioInput = JOptionPane.showInputDialog("Ingresa tu usuario:");
+        if (usuarioInput == null || usuarioInput.trim().isEmpty()) return false;
+
+        String claveInput = JOptionPane.showInputDialog("Ingresa tu contraseña:");
+        if (claveInput == null || claveInput.trim().isEmpty()) return false;
+
+        if (autenticar(usuarioInput.trim(), claveInput.trim())) {
+            JOptionPane.showMessageDialog(null, "¡Bienvenido/a Administrador/a " + getNombre() + "! ˶˃ᵕ˂˶");
+            return true;
         }
+
+        JOptionPane.showMessageDialog(null, "⚠ Usuario o contraseña de  incorrectos", "Error de Autenticación ⚠❗", JOptionPane.ERROR_MESSAGE);
         return false;
     }
 
+    // Gestión de personal y control de acceso
+    public void gestionarControlAcceso(List<Recepcionista> listaRecepcionistas, List<Empleado> listaEmpleados) {
+        String[] opciones = {"Registrar nuevo recepcionista", "Cambiar mi usuario/contraseña", "Registrar nuevo empleado", "Volver"};
+        int seleccion = JOptionPane.showOptionDialog(null,
+                "¿Qué acción deseas realizar?",
+                "Control de Acceso y Credenciales",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
 
-    // gestion de personal
+        if (seleccion == 0) { // Registrar Recepcionista
+            String cedula = JOptionPane.showInputDialog("Cédula del recepcionista:");
+            String nombre = JOptionPane.showInputDialog("Nombre completo:");
+            String usuario = JOptionPane.showInputDialog("Usuario:");
+            String contrasena = JOptionPane.showInputDialog("Contraseña:");
+
+            if (cedula != null && usuario != null && contrasena != null) {
+                listaRecepcionistas.add(new Recepcionista(cedula.trim(), nombre.trim(), LocalDate.now(), "", "", usuario.trim(), contrasena.trim()));
+                JOptionPane.showMessageDialog(null, "¡Recepcionista registrado exitosamente!");
+            }
+
+        } else if (seleccion == 1) { // Modificar credenciales del Admin
+            String nuevoUsuario = JOptionPane.showInputDialog("Nuevo usuario (Tu usuario actualn es: " + this.usuario + ")");
+            String nuevaClave = JOptionPane.showInputDialog("Nueva contraseña:");
+
+            if (nuevoUsuario != null && !nuevoUsuario.trim().isEmpty()) {
+                this.usuario = nuevoUsuario.trim();
+            }
+            if (nuevaClave != null && !nuevaClave.trim().isEmpty()) {
+                this.contrasenia = nuevaClave.trim();
+            }
+            JOptionPane.showMessageDialog(null, "¡Credenciales actualizadas correctamente!");
+
+        } else if (seleccion == 2) { // Registrar Empleado
+            String cedula = JOptionPane.showInputDialog("Cédula del empleado:");
+            String nombre = JOptionPane.showInputDialog("Nombre completo:");
+            String telefono = JOptionPane.showInputDialog("Teléfono:");
+            String correo = JOptionPane.showInputDialog("Correo electrónico:");
+            String usuario = JOptionPane.showInputDialog("Usuario:");
+            String contrasena = JOptionPane.showInputDialog("Contraseña:");
+
+            if (cedula != null && nombre != null && usuario != null && contrasena != null) {
+                Empleado nuevoEmpleado = new Empleado(
+                        cedula.trim(),
+                        nombre.trim(),
+                        LocalDate.now(),
+                        telefono != null ? telefono.trim() : "",
+                        correo != null ? correo.trim() : "",
+                        usuario.trim(),
+                        contrasena.trim()
+                );
+
+                boolean registrado = contratarEmpleado(listaEmpleados, nuevoEmpleado);
+                if (registrado) {
+                    JOptionPane.showMessageDialog(null, "¡Empleado registrado exitosamente!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
 
     public boolean contratarEmpleado(List<Empleado> listaEmpleados, Empleado nuevoEmpleado) {
-        if (nuevoEmpleado == null) {
-            return false;
-        }
+        if (nuevoEmpleado == null) return false;
         for (Empleado e : listaEmpleados) {
             if (e.getCedula().equals(nuevoEmpleado.getCedula())) {
-                return false; // Evita dobles por la cedula
+                return false;
             }
         }
         listaEmpleados.add(nuevoEmpleado);
@@ -58,15 +127,14 @@ public class Administrador extends Persona {
         return false;
     }
 
-    // gestion aptos
-
+    // Gestión de apartamentos
     public boolean crearApartamento(List<Apartamento> listaApartamentos, Apartamento nuevoApto) {
         if (nuevoApto == null) {
             return false;
         }
         for (Apartamento a : listaApartamentos) {
             if (a.getCodigo().equals(nuevoApto.getCodigo())) {
-                return false; // Ya existe ese código
+                return false;
             }
         }
         listaApartamentos.add(nuevoApto);
@@ -85,7 +153,6 @@ public class Administrador extends Persona {
         return false;
     }
 
-    // eliminacio logica, esta cambia el estado operativo a FUERA_SERVICIO con un motivo
     public boolean eliminarApto(Apartamento apto, String motivo) {
         if (apto != null) {
             apto.cambiarEstado(EstadoOperativo.FUERA_SERVICIO, motivo);
@@ -93,8 +160,6 @@ public class Administrador extends Persona {
         }
         return false;
     }
-
-    // cuadrar tarifas y temporadfas
 
     public void definirTarifasApartamento(Apartamento apto, long precioBaja, long precioAlta) {
         if (apto != null) {
@@ -111,8 +176,6 @@ public class Administrador extends Persona {
         return false;
     }
 
-    // registar bloques en aoptos
-
     public boolean registrarBloqueo(Apartamento apto, LocalDate fechaInicio, LocalDate fechaFin, String motivo) {
         if (apto != null && fechaInicio != null && fechaFin != null && !fechaFin.isBefore(fechaInicio)) {
             Bloqueo nuevoBloqueo = new Bloqueo(fechaInicio, fechaFin, motivo);
@@ -122,8 +185,7 @@ public class Administrador extends Persona {
         return false;
     }
 
-        // resportes:
-    // Reporte 1: Días ocupados por apartamento en un rango de fechas
+    // Reportes
     public long calcularNochesOcupadasApartamento(Apartamento apto, List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
         long nochesOcupadas = 0;
         for (Reserva r : listaReservas) {
@@ -142,7 +204,6 @@ public class Administrador extends Persona {
         return nochesOcupadas;
     }
 
-    // Reporte 2: Ingresos totales por periodo acumulados desde los pagos en folio
     public long calcularIngresosPeriodo(List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
         long ingresosTotales = 0;
         for (Reserva r : listaReservas) {
@@ -155,7 +216,6 @@ public class Administrador extends Persona {
         return ingresosTotales;
     }
 
-    // Reporte 3: Conteo de reservas filtradas por canal (incluyendo canceladas y no-show)
     public int contarReservasPorCanal(List<Reserva> listaReservas, Canal canalBuscado) {
         int contador = 0;
         for (Reserva r : listaReservas) {
@@ -166,7 +226,6 @@ public class Administrador extends Persona {
         return contador;
     }
 
-    // Reporte 4: Obtener lista de reservas activas con saldo pendiente en folio
     public List<Reserva> obtenerReservasConSaldoPendiente(List<Reserva> listaReservas) {
         List<Reserva> conSaldo = new ArrayList<>();
         for (Reserva r : listaReservas) {
@@ -177,7 +236,6 @@ public class Administrador extends Persona {
         return conSaldo;
     }
 
-    // Reporte 5: Identificar el apartamento que registra la mayor cantidad de novedades
     public Apartamento obtenerApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
         if (listaApartamentos == null || listaApartamentos.isEmpty()) {
             return null;
@@ -196,7 +254,7 @@ public class Administrador extends Persona {
         return aptoMasNovedades;
     }
 
-    // getters y setters
+    // Getters y Setters
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }
     public String getContrasena() { return contrasenia; }
