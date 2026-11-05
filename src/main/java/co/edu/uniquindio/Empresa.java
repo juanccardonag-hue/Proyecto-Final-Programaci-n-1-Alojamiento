@@ -10,6 +10,9 @@ public class Empresa {
     private String nombreAlojamiento;
     private List<Huesped> listaHuespedes;
     private List<Recepcionista> listaRecepcionistas;
+    private List<Temporada> listaTemporadas;
+    private List<Reserva> listaReservas;
+    private List<Apartamento> listaApartamentos;
     private List<Empleado> listaEmpleados;
     private Administrador administrador;
 
@@ -19,6 +22,9 @@ public class Empresa {
         this.listaHuespedes = new ArrayList<>();
         this.listaRecepcionistas = new ArrayList<>();
         this.listaEmpleados = new ArrayList<>();
+        this.listaApartamentos = new ArrayList<>();
+        this.listaTemporadas = new ArrayList<>();
+        this.listaReservas = new ArrayList<>();
 
         // Administrador de prueba
         this.administrador = new Administrador("41911188", "Jhon Mendez", LocalDate.of(1967, 11, 13), "3219393229", "mendezj@hotel.com", "adminPrincipal", "jhon-123");
@@ -120,27 +126,37 @@ public class Empresa {
                         opcionAdmin = Integer.parseInt(inputAdmin);
                         switch (opcionAdmin) {
                             case 1:
-                                administrador.gestionarControlAcceso(listaRecepcionistas, listaEmpleados);
+                                administrador.gestionarEmpleados(listaEmpleados);
                                 break;
                             case 2:
+                                administrador.gestionarApartamentos(listaApartamentos);
                                 break;
                             case 3:
+                                administrador.gestionarTemporadaTarifas(listaApartamentos,listaTemporadas);
                                 break;
                             case 4:
+                                administrador.configurarPoliticaCancelacionMenu();
                                 break;
                             case 5:
+                                administrador.gestionarBloqueos(listaApartamentos);
                                 break;
                             case 6:
+                                administrador.gestionarControlAcceso(listaRecepcionistas, listaEmpleados);
                                 break;
                             case 7:
+                                administrador.reporteOcupacionApartamento(listaApartamentos, listaReservas);
                                 break;
                             case 8:
+                                administrador.reporteIngresosPeriodo(listaReservas);
                                 break;
                             case 9:
+                                administrador.reporteReservasPorCanal(listaReservas);
                                 break;
                             case 10:
+                                administrador.reporteSaldosPendientes(listaReservas);
                                 break;
                             case 11:
+                                administrador.reporteApartamentoConMasNovedades(listaApartamentos);
                                 break;
                             case 0:
                                 break;
