@@ -54,42 +54,25 @@ public class Apartamento {
     public void registrarNovedad(String descripcion, String reportado) {
         if (descripcion != null) {
             String detalleCompleto = "Reportó (" + reportado + "): " + descripcion;
-            Novedad novedad = new Novedad(LocalDateTime.now(), detalleCompleto);
+            Novedad novedad = new Novedad(detalleCompleto, LocalDateTime.now());
             this.listNovedad.add(novedad);
         }
     }
     public int getCapacidadMaxima() { return this.capaMaxPersona; }
-
     public long getPrecioBaja() { return precioBaja; }
-    public void setPrecioBaja(long precioBaja) { this.precioBaja = precioBaja; }
-
     public long getPrecioAlta() { return precioAlta; }
-    public void setPrecioAlta(long precioAlta) { this.precioAlta = precioAlta; }
-
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) { this.codigo = codigo; }
-
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-
     public int getNumeroDormitorio() { return numeroDormitorio; }
-    public void setNumeroDormitorio(int numeroDormitorio) { this.numeroDormitorio = numeroDormitorio; }
-
     public int getCapaMaxPersona() { return capaMaxPersona; }
-    public void setCapaMaxPersona(int capaMaxPersona) { this.capaMaxPersona = capaMaxPersona; }
-
     public String getCaracteristica() { return caracteristica; }
-    public void setCaracteristica(String caracteristica) { this.caracteristica = caracteristica; }
-
     public long getTarifaPersonaNoche() { return tarifaPersonaNoche; }
     public void setTarifaPersonaNoche(long tarifaPersonaNoche) { this.tarifaPersonaNoche = tarifaPersonaNoche; }
-
     public EstadoOperativo getEstadoOperativo() { return estadoOperativo; }
     public void setEstadoOperativo(EstadoOperativo estadoOperativo) { this.estadoOperativo = estadoOperativo; }
-
     public String getMotivoFueraServicio() { return motivoFueraServicio; }
-    public void setMotivoFueraServicio(String motivoFueraServicio) { this.motivoFueraServicio = motivoFueraServicio; }
-
     public List<Bloqueo> getListBloqueo() { return listBloqueo; }
     public List<Novedad> getListNovedad() { return listNovedad; }
 }

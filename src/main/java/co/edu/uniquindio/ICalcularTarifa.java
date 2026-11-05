@@ -1,5 +1,5 @@
 package co.edu.uniquindio;
 
-public interface IcalcularTarifa {
+public interface ICalcularTarifa {
     long calcularValorNoche();
 }

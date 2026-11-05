@@ -216,6 +216,18 @@ public class Reserva {
             return 0;
         }
     }
+    public boolean registrarAbono(long monto, MedioPago medioPago) {
+        if (monto > 0 && this.folio != null) {
+            this.folio.registrarPago(monto, medioPago);
+
+            // Si la reserva está PENDIENTE y con este pago suma al menos el 30% del total, cambia a CONFIRMADA
+            if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (this.valorTotal * 0.30)) {
+                cambiarEstado(EstadoReserva.CONFIRMADA);
+            }
+            return true;
+        }
+        return false;
+    }
 
     public String getCodigoReserva() { return this.codigoFolio; }
 
@@ -237,18 +249,7 @@ public class Reserva {
     }
 
     //Permite registrar un abono directo en el Folio y confirma la reserva si alcanza el 30%
-    public boolean registrarAbono(long monto, MedioPago medioPago) {
-        if (monto > 0 && this.folio != null) {
-            this.folio.registrarPago(monto, medioPago);
 
-            // Si la reserva está PENDIENTE y con este pago suma al menos el 30% del total, cambia a CONFIRMADA
-            if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (this.valorTotal * 0.30)) {
-                cambiarEstado(EstadoReserva.CONFIRMADA);
-            }
-            return true;
-        }
-        return false;
-    }
 
     //es para forzar el cambio de estado si es necesario
     public void setEstado(EstadoReserva nuevoEstado) {
@@ -256,39 +257,20 @@ public class Reserva {
     }
 
     public String getCodigoFolio() { return codigoFolio; }
-    public void setCodigoFolio(String codigoFolio) { this.codigoFolio = codigoFolio; }
-
     public LocalDate getFechaEntrada() { return fechaEntrada; }
-    public void setFechaEntrada(LocalDate fechaEntrada) { this.fechaEntrada = fechaEntrada; }
-
     public LocalDate getFechaSalida() { return fechaSalida; }
-    public void setFechaSalida(LocalDate fechaSalida) { this.fechaSalida = fechaSalida; }
-
     public Canal getCanal() { return canal; }
-    public void setCanal(Canal canal) { this.canal = canal; }
-
     public EstadoReserva getEstado() { return estado; }
 
     public String getCodigoExterno() { return codigoExterno; }
     public void setCodigoExterno(String codigoExterno) { this.codigoExterno = codigoExterno; }
-
-    public double getComisionPlataforma() { return comisionPlataforma; }
-
     public long getValorTotal() { return valorTotal; }
-
     public LocalDateTime getFechaHoraCreacion() { return fechaHoraCreacion; }
-
     public Huesped getTitular() { return titular; }
-    public void setTitular(Huesped titular) { this.titular = titular; }
-
     public Apartamento getApartamento() { return apartamento; }
     public void setApartamento(Apartamento apartamento) { this.apartamento = apartamento; }
 
     public Folio getFolio() { return folio; }
-
-    public Empleado getEmpleado() { return empleado; }
-    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
-
     public List<Ocupante> getOcupantes() { return ocupantes; }
     public List<DetalleNocheReserva> getDetallesReserva() { return detallesReserva; }
 

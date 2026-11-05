@@ -68,7 +68,7 @@ class HuespedTest {
         LocalDate fin = LocalDate.of(2026, 12, 15);
         int personas = 3; // Solo aptoSuite tiene capacidad suficiente (4 personas)
 
-        List<Apartamento> disponibles = huesped.consultarApartamentosDisponibles(listaGeneralApartamentos, inicio, fin, personas);
+        List<Apartamento> disponibles = huesped.consultarApartamentosDisponibles(listaGeneralApartamentos, new ArrayList<>(), inicio, fin, personas);
 
         assertEquals(1, disponibles.size());
         assertEquals("APT-202", disponibles.get(0).getCodigo());

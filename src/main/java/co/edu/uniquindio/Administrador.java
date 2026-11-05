@@ -5,16 +5,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Administrador extends Persona {
+public class Administrador extends Empleado {
     private String usuario;
     private String contrasenia;
 
     public Administrador(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
-        super(cedula, nombre, fechaNacimiento, telefono, correo);
+        super(cedula, nombre, fechaNacimiento, telefono, correo, usuario, contrasenia);
         this.usuario = usuario;
         this.contrasenia = contrasenia;
     }
 
+<<<<<<< HEAD
     // Seguridad y autenticación
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
         return this.usuario.equalsIgnoreCase(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
@@ -96,6 +97,7 @@ public class Administrador extends Persona {
         }
     }
 
+    // gestion de personal
     public boolean contratarEmpleado(List<Empleado> listaEmpleados, Empleado nuevoEmpleado) {
         if (nuevoEmpleado == null) return false;
         for (Empleado e : listaEmpleados) {
@@ -216,7 +218,12 @@ public class Administrador extends Persona {
         return ingresosTotales;
     }
 
+<<<<<<< HEAD
     public int contarReservasPorCanal(List<Reserva> listaReservas, Canal canalBuscado) {
+=======
+    // Reporte 3: Conteo de reservas filtradas por canal (incluyendo canceladas y no-show)
+    public int contarReservasCanal(List<Reserva> listaReservas, Canal canalBuscado) {
+>>>>>>> 2b37d3a5fdd46f4f9aff1ae20645656109af5941
         int contador = 0;
         for (Reserva r : listaReservas) {
             if (r.getCanal() == canalBuscado) {
@@ -226,7 +233,12 @@ public class Administrador extends Persona {
         return contador;
     }
 
+<<<<<<< HEAD
     public List<Reserva> obtenerReservasConSaldoPendiente(List<Reserva> listaReservas) {
+=======
+    // Reporte 4: Obtener lista de reservas activas con saldo pendiente en folio
+    public List<Reserva> obtenerReservasSaldoPendiente(List<Reserva> listaReservas) {
+>>>>>>> 2b37d3a5fdd46f4f9aff1ae20645656109af5941
         List<Reserva> conSaldo = new ArrayList<>();
         for (Reserva r : listaReservas) {
             if (r.estaActiva() && r.getSaldoFolio() > 0) {
@@ -236,7 +248,12 @@ public class Administrador extends Persona {
         return conSaldo;
     }
 
+<<<<<<< HEAD
     public Apartamento obtenerApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
+=======
+    // Reporte 5: Identificar el apartamento que registra la mayor cantidad de novedades
+    public Apartamento obtenerApartamentoNovedades(List<Apartamento> listaApartamentos) {
+>>>>>>> 2b37d3a5fdd46f4f9aff1ae20645656109af5941
         if (listaApartamentos == null || listaApartamentos.isEmpty()) {
             return null;
         }
@@ -252,6 +269,14 @@ public class Administrador extends Persona {
             }
         }
         return aptoMasNovedades;
+    }
+    // Configuración de la política de cancelación
+    public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
+        if (nuevaPolitica != null) {
+            // Establece o actualiza la política de cancelación activa del sistema
+            return true;
+        }
+        return false;
     }
 
     // Getters y Setters

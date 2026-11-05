@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Huesped extends Persona {
-
+    private String contrasenia;
     private List<Reserva> misReservas;
 
-    public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo) {
+    public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo ) {
         super(cedula, nombre, fechaNacimiento, telefono, correo);
+        this.contrasenia=contrasenia;
         this.misReservas = new ArrayList<>();
     }
 
@@ -30,19 +31,17 @@ public class Huesped extends Persona {
         return false;
     }
     // consultar Apartamentos disponibles
-    public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneral, LocalDate inicio, LocalDate fin, int personas) {
+    public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneralAptos, List<Reserva> todasReservasSistema, LocalDate inicio, LocalDate fin, int personas) {
         List<Apartamento> disponibles = new ArrayList<>();
 
-        for (Apartamento apto : listaGeneral) {
-            if (apto.getCapacidadMaxima() >= personas) {
-                // Aqui se evrifica que no se cruce con otras
+        for (Apartamento apto : listaGeneralAptos) {
+            if (apto.getCapaMaxPersona() >= personas && apto.getEstadoOperativo() != EstadoOperativo.FUERA_SERVICIO) {
                 boolean libre = true;
-                for (Reserva r : misReservas) {
-                    if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && !r.getEstado().equals(" Cancelada ")) {
-                        boolean seCruza = !(fin.isBefore(r.getFechaEntrada()) || fin.isEqual(r.getFechaEntrada()) ||
-                                inicio.isAfter(r.getFechaSalida()) || inicio.isEqual(r.getFechaSalida()));
-                        if (seCruza) {
+                for (Reserva r : todasReservasSistema) {
+                    if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && r.estaActiva()) {
+                        if (r.cruceCon(inicio, fin)) {
                             libre = false;
+                            break;
                         }
                     }
                 }
@@ -54,15 +53,16 @@ public class Huesped extends Persona {
         return disponibles;
     }
 
-    // cotizar Estancia con desglose noche por noche y temporada
+    // Cotizar Estancia
     public String cotizarEstancia(Apartamento apto, LocalDate inicio, LocalDate fin) {
-        String reporte = " ⁺‧₊˚ ཐི⋆Cotizacion de estancia⋆ཋྀ ˚₊‧⁺" + "\n" + "Apartamento:" + apto.getCodigo() + "\n";
-        double total = 0.0;
+        String reporte = " ⁺‧₊˚ ཐི⋆Cotizacion de estancia⋆ཋྀ ˚₊‧⁺\n" +
+                "Apartamento:" + apto.getCodigo() + "\n";
+        long total = 0;
         LocalDate fechaActual = inicio;
         int noche = 1;
 
         while (fechaActual.isBefore(fin)) {
-            double precioNoche;
+            long precioNoche;
             String temporada;
 
             // Meses jun(6), jul(7), dic(12) y ene(1) se consideran Temporada Alta
@@ -81,7 +81,7 @@ public class Huesped extends Persona {
             noche++;
         }
 
-        reporte += "────────────────୨ৎ────────────────" + "\n" + "Valor total: $" + total;
+        reporte += "────────────────୨ৎ────────────────\n" + "Valor total: $" + total;
         return reporte;
     }
 
@@ -126,7 +126,7 @@ public class Huesped extends Persona {
     }
 
     // Consulta de mis reservas, su estado y el saldo del folio
-    public String consultarEstadoReservasYFolio() {
+    public String consultarEstadoReservasFolio() {
         if (misReservas.isEmpty()) {
             return "El huésped no tiene reservas registradas ";
         }
@@ -136,7 +136,7 @@ public class Huesped extends Persona {
             resultado += "Código: " + r.getCodigoReserva() + "\n" +
                     "Apartamento: " + r.getApartamento().getCodigo() + "\n" +
                     "Canal: " + r.getCanal() + "\n" +
-                    "Fechas: " + r.getFechaInicio() + " a " + r.getFechaFin() + "\n" +
+                    "Fechas: " + r.getFechaEntrada() + " a " + r.getFechaSalida() + "\n" +
                     "Estado: " + r.getEstado() + "\n" +
                     "Valor Total: $" + r.getValorTotal() + "\n" +
                     "Abonado: $" + r.getTotalAbonado() + "\n" +
@@ -151,11 +151,14 @@ public class Huesped extends Persona {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
                 LocalDate hoy = LocalDate.now();
-                // Si cancela con 5 o más días de anticipación, se devuelve el 100% de lo abonado, sino el 50%
-                if (hoy.plusDays(5).isBefore(r.getFechaInicio()) || hoy.plusDays(5).isEqual(r.getFechaInicio())) {
-                    return r.getTotalAbonado();
+                long diasAnticipacion = java.time.temporal.ChronoUnit.DAYS.between(hoy, r.getFechaEntrada());
+
+                if (diasAnticipacion > 7) {
+                    return r.getTotalAbonado(); // 100%
+                } else if (diasAnticipacion >= 2) {
+                    return r.getTotalAbonado() * 0.50; // 50%
                 } else {
-                    return r.getTotalAbonado() * 0.50;
+                    return 0.0;
                 }
             }
         }
@@ -178,4 +181,6 @@ public class Huesped extends Persona {
     public List<Reserva> getMisReservas() {
         return misReservas;
     }
+    public String getContrasena() { return contrasenia; }
+    public void setContrasena(String contrasena) { this.contrasenia = contrasena; }
 }
