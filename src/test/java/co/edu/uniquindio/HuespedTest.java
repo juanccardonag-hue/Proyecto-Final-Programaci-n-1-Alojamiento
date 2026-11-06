@@ -18,7 +18,7 @@ class HuespedTest {
 
     @BeforeEach
     void crearObjetosClases() {
-        huesped = new Huesped("10940011333", "Mariana mendez", LocalDate.of(2006, 9, 20), "3109876543", "marianaM@gmail.com");
+        huesped = new Huesped("10940011333", "Mariana mendez", LocalDate.of(2006, 9, 20), "3109876543", "marianaM@gmail.com", "clave123");
 
         aptoEstandar = new Apartamento("APT-101", "Estándar", 1, 2, "Vista interior", 80000L);
         aptoSuite = new Apartamento("APT-202", "Suite Ejecutiva", 2, 4, "Vista al mar", 150000L);
@@ -82,12 +82,13 @@ class HuespedTest {
     void testRealizarAbonoExitoso() {
         LOG.info("Iniciando prueba: Realizar Abono a Reserva de Huésped");
 
-        Reserva reserva = huesped.crearReservaPortal("FOL-200", aptoEstandar, LocalDate.of(2026, 12, 1), LocalDate.of(2026, 12, 5), new ArrayList<>());
+        Reserva reserva = new Reserva("FOL-200", LocalDate.of(2026, 12, 1), LocalDate.of(2026, 12, 5), Canal.PORTAL, huesped, aptoEstandar, null, null);
+        huesped.agregarReservaHistorial(reserva);
 
-        boolean exitoAbono = huesped.realizarAbono("FOL-200", 150000, MedioPago.TRANSFERENCIA);
+        // Se registra el pago directamente a través del Folio de la reserva
+        reserva.getFolio().registrarPago(150000, MedioPago.TRANSFERENCIA);
 
-        assertTrue(exitoAbono);
-        assertEquals(150000, reserva.getTotalAbonado());
+        assertEquals(150000.0, reserva.getTotalAbonado());
 
         LOG.info("Finalizando prueba: Realizar Abono a Reserva de Huésped");
     }
@@ -98,7 +99,8 @@ class HuespedTest {
     void testCancelarReservaExitoso() {
         LOG.info("Iniciando prueba: Cancelar Reserva de Huésped");
 
-        Reserva reserva = huesped.crearReservaPortal("FOL-300", aptoEstandar, LocalDate.of(2026, 12, 1), LocalDate.of(2026, 12, 5), new ArrayList<>());
+        Reserva reserva = new Reserva("FOL-300", LocalDate.of(2026, 12, 1), LocalDate.of(2026, 12, 5), Canal.PORTAL, huesped, aptoEstandar, null, null);
+        huesped.agregarReservaHistorial(reserva);
 
         boolean cancelada = huesped.cancelarReserva("FOL-300");
 

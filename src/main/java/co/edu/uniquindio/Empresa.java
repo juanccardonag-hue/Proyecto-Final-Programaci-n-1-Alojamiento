@@ -60,49 +60,49 @@ public class Empresa {
                     }
                     int opcionHuesped;
                     do {
-                        String menuHuesped = "⏔⏔⏔ ꒰ Menú huesped ꒱ ⏔⏔⏔ \n\n" +
+                        String menuHuesped = "⏔⏔⏔ ꒰ Menú huésped ꒱ ⏔⏔⏔ \n\n" +
                                 "Atendiendo a: " + huespedAutenticado.getNombre() + "\n\n" +
-                                "Selecciona una opcion del siguiente menú: \n" +
-                                "1. Registrar datos personales\n" +
-                                "2. Gestionar datos personales\n" +
-                                "3. Cotizar estancia\n" +
-                                "4. Reservar por el portal (se pedirá registro de los ocupantes de su fecha de nacimiento, entre otros datos..)\n" +
-                                "5. Pago anticipado y/o abono al folio (cuenta)\n" +
-                                "6. Consultar reservas, estado y saldo de cada folio \n" +
-                                "7. Cancelar una reserva pendiente o confirmada\n" +
-                                "0. Volver \n";
+                                "Selecciona una opción del siguiente menú: \n" +
+                                "1. Gestionar mis datos personales (Actualizar Perfil)\n" +
+                                "2. Cotizar estancia con acompañantes\n" +
+                                "3. Reservar por el portal\n" +
+                                "4. Pago anticipado / abono al folio\n" +
+                                "5. Consultar mis reservas, estado y folio\n" +
+                                "6. Cancelar una reserva\n" +
+                                "0. Volver al menú principal\n";
                         String inputHuesped = JOptionPane.showInputDialog(menuHuesped);
                         if (inputHuesped == null) {
                             break;
                         }
-                        opcionHuesped = Integer.parseInt(inputHuesped);
+                        try {
+                            opcionHuesped = Integer.parseInt(inputHuesped.trim());
+                        } catch (NumberFormatException e) {
+                            opcionHuesped = -1;
+                        }
 
                         switch (opcionHuesped) {
                             case 1:
-                                Huesped.registrarHuespedMenu(listaHuespedes);
-                                break;
-                            case 2:
                                 huespedAutenticado.actualizarPerfilMenu();
                                 break;
+                            case 2:
+                                huespedAutenticado.cotizarEstanciaMenu(listaApartamentos, listaTemporadas);
+                                break;
                             case 3:
-                                huespedAutenticado.cotizarEstanciaMenu(listaApartamentos);
+                                huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas, listaTemporadas);
                                 break;
                             case 4:
-                                huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas);
-                                break;
-                            case 5:
                                 huespedAutenticado.realizarAbonoMenu();
                                 break;
-                            case 6:
+                            case 5:
                                 huespedAutenticado.consultarEstadoReservasFolioMenu();
                                 break;
-                            case 7:
+                            case 6:
                                 huespedAutenticado.cancelarReservaMenu();
                                 break;
                             case 0:
                                 break;
                             default:
-                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opción valida ⚠ ");
+                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opción válida ⚠");
                                 break;
                         }
                     } while (opcionHuesped != 0);

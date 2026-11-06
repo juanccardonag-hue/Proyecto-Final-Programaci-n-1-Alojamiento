@@ -34,7 +34,7 @@ class AdministradorTest {
         listaApartamentos.add(apto1);
         listaApartamentos.add(apto2);
 
-        titular = new Huesped("1094000222", "Mariana Méndez", LocalDate.of(2000, 10, 20), "3109876543", "mariana@gmail.com");
+        titular = new Huesped("1094000222", "Mariana Méndez", LocalDate.of(2000, 10, 20), "3109876543", "mariana@gmail.com","clave123");
     }
 
     /* Contratar empleado evitando duplicados por cédula */
