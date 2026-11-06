@@ -62,9 +62,9 @@ public class Empresa {
             opcionRecepcionista = Integer.parseInt(inputRecepcionista);
             switch (opcionRecepcionista) {
                 case 1:
-<<<<<<< HEAD
+
                     recepcionistaAutenticado.registrarReservaDirecta(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
-=======
+
                     Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
 
                     if (huespedAutenticado == null) {
@@ -118,7 +118,6 @@ public class Empresa {
                                 break;
                         }
                     } while (opcionHuesped != 0);
->>>>>>> d0885ff938e9342d5580e420ccc120718bab2791
                     break;
                 case 2:
                     recepcionistaAutenticado.registrarReservaExterna(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
@@ -254,10 +253,10 @@ public class Empresa {
                     huespedAutenticado.actualizarPerfilMenu();
                     break;
                 case 3:
-                    huespedAutenticado.cotizarEstanciaMenu(listaApartamentos);
+                    huespedAutenticado.cotizarEstanciaMenu(listaApartamentos, listaTemporadas);
                     break;
                 case 4:
-                    huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas);
+                    huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas, listaTemporadas);
                     break;
                 case 5:
                     huespedAutenticado.realizarAbonoMenu();

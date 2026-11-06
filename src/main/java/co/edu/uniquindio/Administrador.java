@@ -16,18 +16,24 @@ public class Administrador extends Empleado {
         this.contrasenia = contrasenia;
     }
 
-    // --- Seguridad y Autenticación ---
+    //  Seguridad y Autenticación
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
-        if (usuarioIngresado == null || contrasenaIngresada == null) {
-            return false;
+        return this.usuario.equalsIgnoreCase(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
+    }
+
+    public boolean loginAdmin() {
+        String usuarioInput = JOptionPane.showInputDialog("Ingresa tu usuario:");
+        if (usuarioInput == null || usuarioInput.trim().isEmpty()) return false;
+
+        String claveInput = JOptionPane.showInputDialog("Ingresa tu contraseña:");
+        if (claveInput == null || claveInput.trim().isEmpty()) return false;
+
+        if (autenticar(usuarioInput.trim(), claveInput.trim())) {
+            JOptionPane.showMessageDialog(null, "¡Bienvenido/a Administrador/a " + getNombre() + "! ˶˃ᵕ˂˶");
+            return true;
         }
-<<<<<<< HEAD
-        return this.usuario.equalsIgnoreCase(usuarioIngresado.trim())
-                && this.contrasenia.equals(contrasenaIngresada.trim());
-=======
         JOptionPane.showMessageDialog(null, "⚠ Usuario o contraseña de administración incorrectos", "Error de Autenticación ⚠❗", JOptionPane.ERROR_MESSAGE);
         return false;
->>>>>>> d0885ff938e9342d5580e420ccc120718bab2791
     }
 
     // --- Control de Acceso y Credenciales ---
@@ -87,7 +93,7 @@ public class Administrador extends Empleado {
         }
     }
 
-    // --- Gestión de Apartamentos ---
+    // Gestión de Apartamentos
     public void gestionarApartamentos(List<Apartamento> listaApartamentos) {
         String[] opciones = {"Crear apartamento", "Modificar apartamento", "Poner fuera de servicio", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null,
@@ -197,7 +203,7 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    // --- Gestión de Personal ---
+    // Gestión de Personal
     public void gestionarEmpleados(List<Empleado> listaEmpleados) {
         String[] opciones = {"Contratar empleado", "Editar empleado", "Desvincular empleado", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null,
@@ -284,7 +290,7 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    // --- Gestión de Tarifas y Temporadas ---
+    // Gestión de Tarifas y Temporadas
     public void gestionarTemporadaTarifas(List<Apartamento> listaApartamentos, List<Temporada> listaTemporadas) {
         String[] opciones = {"Definir temporada", "Configurar tarifa base apto", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null,
@@ -364,7 +370,7 @@ public class Administrador extends Empleado {
         return true;
     }
 
-    // --- Política de Cancelación ---
+    //Política de Cancelación
     public void configurarPoliticaCancelacionMenu() {
         String diasTotalStr = JOptionPane.showInputDialog(null,
                 "Días de anticipación requeridos para la devolución total del dinero (100%):",
@@ -404,7 +410,7 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    // --- Bloqueo de Apartamentos ---
+    // Bloqueo de Apartamentos
     public boolean registrarBloqueo(Apartamento apto, LocalDate fechaInicio, LocalDate fechaFin, String motivo) {
         if (apto != null && fechaInicio != null && fechaFin != null && !fechaFin.isBefore(fechaInicio)) {
             Bloqueo nuevoBloqueo = new Bloqueo(fechaInicio, fechaFin, motivo);
@@ -451,7 +457,7 @@ public class Administrador extends Empleado {
         }
     }
 
-    // --- Reportes Avanzados ---
+    //  Reportes Avanzados
     public long calcularNochesOcupadasApartamento(Apartamento apto, List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
         long nochesOcupadas = 0;
         for (Reserva r : listaReservas) {
@@ -619,7 +625,7 @@ public class Administrador extends Empleado {
         }
         return null;
     }
-    // --- Getters y Setters ---
+    // Getters y Setters
     public PoliticaCancelacion getPoliticaCancelacion() { return politicaCancelacion; }
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }
