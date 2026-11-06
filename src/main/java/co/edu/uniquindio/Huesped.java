@@ -1,5 +1,6 @@
 package co.edu.uniquindio;
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +9,80 @@ public class Huesped extends Persona {
     private String contrasenia;
     private List<Reserva> misReservas;
 
-    public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo ) {
+    // Constructor corrigiendo el parámetro de contraseña
+    public Huesped(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String contrasenia) {
         super(cedula, nombre, fechaNacimiento, telefono, correo);
         this.contrasenia = contrasenia;
         this.misReservas = new ArrayList<>();
     }
 
-    // Actualiza los datos de perfil del huésped
+    // se registar el huesped y se envia a la lista
+    public static void registrarHuespedMenu(List<Huesped> listaHuespedes) {
+        String cedula = JOptionPane.showInputDialog("Ingresa tu número de cédula:");
+        if (cedula == null || cedula.trim().isEmpty()) return;
+
+        for (Huesped h : listaHuespedes) {
+            if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedula.trim())) {
+                JOptionPane.showMessageDialog(null, "⚠ Ya existe un huésped registrado con esa cédula.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        String nombre = JOptionPane.showInputDialog("Ingresa tu nombre completo:");
+        String fNacStr = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):");
+        String telefono = JOptionPane.showInputDialog("Ingresa tu teléfono:");
+        String correo = JOptionPane.showInputDialog("Ingresa tu correo electrónico:");
+        String clave = JOptionPane.showInputDialog("Crea una contraseña:");
+
+        if (nombre == null || fNacStr == null || clave == null || fNacStr.trim().isEmpty()) return;
+
+        LocalDate fNac = LocalDate.parse(fNacStr.trim());
+        Huesped nuevoHuesped = new Huesped(cedula.trim(), nombre.trim(), fNac, telefono != null ? telefono.trim() : "", correo != null ? correo.trim() : "", clave.trim());
+        listaHuespedes.add(nuevoHuesped);
+        JOptionPane.showMessageDialog(null, "¡Registro completado exitosamente! Ya puedes iniciar sesión.");
+    }
+
+    public static Huesped loginHuesped(List<Huesped> listaHuespedes) {
+        String[] opcionesAcceso = {"Iniciar Sesión", "Registrarse", "Volver"};
+        int seleccionAcceso = JOptionPane.showOptionDialog(
+                null,
+                "¡Bienvenido/a al portal de Huéspedes!\n¿Qué deseas hacer?",
+                "Acceso Huésped",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcionesAcceso,
+                opcionesAcceso[0]
+        );
+
+        if (seleccionAcceso == 1) { // Registrarse
+            registrarHuespedMenu(listaHuespedes);
+            return null;
+        } else if (seleccionAcceso != 0) {
+            return null;
+        }
+
+        // iniciar sesion
+        String cedulaInput = JOptionPane.showInputDialog("Ingresa tu número de cédula:");
+        if (cedulaInput == null || cedulaInput.trim().isEmpty()) return null;
+
+        String claveInput = JOptionPane.showInputDialog("Ingresa tu contraseña:");
+        if (claveInput == null || claveInput.trim().isEmpty()) return null;
+
+        if (listaHuespedes != null) {
+            for (Huesped h : listaHuespedes) {
+                if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedulaInput.trim()) &&
+                        h.getContrasena() != null && h.getContrasena().equals(claveInput.trim())) {
+                    JOptionPane.showMessageDialog(null, "¡Bienvenido/a " + h.getNombre() + "! ˶˃ᵕ˂˶");
+                    return h;
+                }
+            }
+        }
+
+        JOptionPane.showMessageDialog(null, "⚠ Cédula o contraseña incorrectas.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+        return null;
+    }
+
     public void actualizarPerfil(String nuevoNombre, LocalDate nuevaFecha, String nuevoTelefono, String nuevoCorreo) {
         setNombre(nuevoNombre);
         setFechaNacimiento(nuevaFecha);
@@ -22,7 +90,6 @@ public class Huesped extends Persona {
         setCorreo(nuevoCorreo);
     }
 
-    // Agrega una reserva al historial evitando duplicados
     public boolean agregarReservaHistorial(Reserva reserva) {
         if (reserva != null && !misReservas.contains(reserva)) {
             this.misReservas.add(reserva);
@@ -30,7 +97,7 @@ public class Huesped extends Persona {
         }
         return false;
     }
-    // consultar Apartamentos disponibles
+
     public List<Apartamento> consultarApartamentosDisponibles(List<Apartamento> listaGeneralAptos, List<Reserva> todasReservasSistema, LocalDate inicio, LocalDate fin, int personas) {
         List<Apartamento> disponibles = new ArrayList<>();
 
@@ -53,7 +120,6 @@ public class Huesped extends Persona {
         return disponibles;
     }
 
-    // Cotizar Estancia
     public String cotizarEstancia(Apartamento apto, LocalDate inicio, LocalDate fin) {
         String reporte = " ⁺‧₊˚ ཐི⋆Cotizacion de estancia⋆ཋྀ ˚₊‧⁺\n" +
                 "Apartamento:" + apto.getCodigo() + "\n";
@@ -65,7 +131,6 @@ public class Huesped extends Persona {
             long precioNoche;
             String temporada;
 
-            // Meses jun(6), jul(7), dic(12) y ene(1) se consideran Temporada Alta
             int mes = fechaActual.getMonthValue();
             if (mes == 6 || mes == 7 || mes == 12 || mes == 1) {
                 precioNoche = apto.getPrecioAlta();
@@ -85,39 +150,32 @@ public class Huesped extends Persona {
         return reporte;
     }
 
-    // crear Reserva por el Portal
     public Reserva crearReservaPortal(String codigoReserva, Apartamento apto, LocalDate inicio, LocalDate fin, List<Ocupante> ocupantes) {
-        // Calcular total de la estancia
         long total = 0;
         LocalDate fecha = inicio;
 
-        while (fecha.isBefore(fin)) { //comparar objetos de tiempo y comprobar si una fecha u hora es estrictamente anterior a otra
+        while (fecha.isBefore(fin)) {
             int mes = fecha.getMonthValue();
             if (mes == 6 || mes == 7 || mes == 12 || mes == 1) {
                 total += apto.getPrecioAlta();
             } else {
                 total += apto.getPrecioBaja();
             }
-            fecha = fecha.plusDays(1); //Se suma un dia a la variable que llame fecha
+            fecha = fecha.plusDays(1);
         }
 
-        // Crear la reserva con el Portal
         Reserva nueva = new Reserva(codigoReserva, inicio, fin, Canal.PORTAL, this, apto, null, null);
-        // Registrar los ocupantes con su fecha de nacimiento
         for (Ocupante o : ocupantes) {
             nueva.agregarOcupante(o);
         }
 
-        // Agregar al historial de reservas del huésped
         agregarReservaHistorial(nueva);
         return nueva;
     }
 
-    // Pago de anticipo y abaonos
     public boolean realizarAbono(String codigoReserva, long monto, MedioPago medioPago) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
-                // Pasa ambos argumentos a la reserva
                 r.registrarAbono(monto, medioPago);
                 return true;
             }
@@ -125,7 +183,6 @@ public class Huesped extends Persona {
         return false;
     }
 
-    // Consulta de mis reservas, su estado y el saldo del folio
     public String consultarEstadoReservasFolio() {
         if (misReservas.isEmpty()) {
             return "El huésped no tiene reservas registradas ";
@@ -146,7 +203,6 @@ public class Huesped extends Persona {
         return resultado;
     }
 
-    // Calcular devolucionde cancelacion
     public double calcularDevolucion(String codigoReserva) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
@@ -154,9 +210,9 @@ public class Huesped extends Persona {
                 long diasAnticipacion = java.time.temporal.ChronoUnit.DAYS.between(hoy, r.getFechaEntrada());
 
                 if (diasAnticipacion > 7) {
-                    return r.getTotalAbonado(); // 100%
+                    return r.getTotalAbonado();
                 } else if (diasAnticipacion >= 2) {
-                    return r.getTotalAbonado() * 0.50; // 50%
+                    return r.getTotalAbonado() * 0.50;
                 } else {
                     return 0.0;
                 }
@@ -165,7 +221,6 @@ public class Huesped extends Persona {
         return 0.0;
     }
 
-    // Cancelar oendiente o confirmada
     public boolean cancelarReserva(String codigoReserva) {
         for (Reserva r : misReservas) {
             if (r.getCodigoReserva().equals(codigoReserva)) {
@@ -178,6 +233,134 @@ public class Huesped extends Persona {
         return false;
     }
 
+    // Pide datos para actualizar perfil
+    public void actualizarPerfilMenu() {
+        String nuevoNombre = JOptionPane.showInputDialog("Nuevo nombre completo:", getNombre());
+        String nuevaFechaStr = JOptionPane.showInputDialog("Nueva fecha de nacimiento (AAAA-MM-DD):", getFechaNacimiento());
+        String nuevoTel = JOptionPane.showInputDialog("Nuevo teléfono:", getTelefono());
+        String nuevoCorreo = JOptionPane.showInputDialog("Nuevo correo electrónico:", getCorreo());
+
+        if (nuevoNombre == null || nuevaFechaStr == null || nuevaFechaStr.trim().isEmpty()) return;
+
+        LocalDate nuevaFecha = LocalDate.parse(nuevaFechaStr.trim());
+        actualizarPerfil(nuevoNombre.trim(), nuevaFecha, nuevoTel != null ? nuevoTel.trim() : "", nuevoCorreo != null ? nuevoCorreo.trim() : "");
+        JOptionPane.showMessageDialog(null, "¡Perfil actualizado exitosamente!");
+    }
+
+    // Opción 3: Cotizar estancia seleccionando un apartamento y fechas
+    public void cotizarEstanciaMenu(List<Apartamento> listaApartamentos) {
+        String codApto = JOptionPane.showInputDialog("Código del apartamento a cotizar:");
+        if (codApto == null || codApto.trim().isEmpty()) return;
+
+        Apartamento apto = buscarApartamento(listaApartamentos, codApto.trim());
+        if (apto == null) {
+            JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con ese código.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String fInicioStr = JOptionPane.showInputDialog("Fecha de inicio (AAAA-MM-DD):");
+        String fFinStr = JOptionPane.showInputDialog("Fecha de fin (AAAA-MM-DD):");
+        if (fInicioStr == null || fFinStr == null || fInicioStr.trim().isEmpty() || fFinStr.trim().isEmpty()) return;
+
+        LocalDate inicio = LocalDate.parse(fInicioStr.trim());
+        LocalDate fin = LocalDate.parse(fFinStr.trim());
+
+        String reporte = cotizarEstancia(apto, inicio, fin);
+        JOptionPane.showMessageDialog(null, reporte);
+    }
+
+    // Consultar apartamentos disponibles y reservar mediante el portal
+    public void crearReservaPortalMenu(List<Apartamento> listaApartamentos, List<Reserva> todasReservas) {
+        String personasStr = JOptionPane.showInputDialog("Número de personas:");
+        String fInicioStr = JOptionPane.showInputDialog("Fecha de inicio (AAAA-MM-DD):");
+        String fFinStr = JOptionPane.showInputDialog("Fecha de fin (AAAA-MM-DD):");
+        if (personasStr == null || fInicioStr == null || fFinStr == null || personasStr.trim().isEmpty() || fInicioStr.trim().isEmpty() || fFinStr.trim().isEmpty()) return;
+
+        int personas = Integer.parseInt(personasStr.trim());
+        LocalDate inicio = LocalDate.parse(fInicioStr.trim());
+        LocalDate fin = LocalDate.parse(fFinStr.trim());
+
+        List<Apartamento> disponibles = consultarApartamentosDisponibles(listaApartamentos, todasReservas, inicio, fin, personas);
+        if (disponibles.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "⚠ No hay apartamentos disponibles para esas fechas y número de personas.", "Sin disponibilidad ⚠", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String listaDisponibles = "Apartamentos disponibles:\n";
+        for (Apartamento a : disponibles) {
+            listaDisponibles += "- " + a.getCodigo() + " (Capacidad max: " + a.getCapaMaxPersona() + " personas)\n";
+        }
+        JOptionPane.showMessageDialog(null, listaDisponibles);
+
+        String codApto = JOptionPane.showInputDialog("Ingresa el código del apartamento que deseas reservar:");
+        if (codApto == null || codApto.trim().isEmpty()) return;
+
+        Apartamento aptoSeleccionado = buscarApartamento(disponibles, codApto.trim());
+        if (aptoSeleccionado == null) {
+            JOptionPane.showMessageDialog(null, "⚠ Apartamento no válido o no disponible.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        List<Ocupante> ocupantes = new ArrayList<>();
+        String codReserva = "Reservas portal" + (todasReservas.size() + 1);
+
+        Reserva nuevaReserva = crearReservaPortal(codReserva, aptoSeleccionado, inicio, fin, ocupantes);
+        todasReservas.add(nuevaReserva);
+        JOptionPane.showMessageDialog(null, "¡Reserva creada con éxito desde el portal! \n Código de Reserva: " + codReserva);
+    }
+
+    //Realizar abono o pago anticipado a una reserva
+    public void realizarAbonoMenu() {
+        String codReserva = JOptionPane.showInputDialog("Ingresa el código de tu reserva:");
+        if (codReserva == null || codReserva.trim().isEmpty()) return;
+
+        String montoAbono = JOptionPane.showInputDialog("Monto a abonar ($):");
+        MedioPago[] medios = MedioPago.values();
+        MedioPago medio = (MedioPago) JOptionPane.showInputDialog(null, "Selecciona medio de pago:", "Medios de Pago",
+                JOptionPane.QUESTION_MESSAGE, null, medios, medios[0]);
+
+        if (montoAbono == null || medio == null || montoAbono.trim().isEmpty()) return;
+
+        long monto = Long.parseLong(montoAbono.trim());
+        if (realizarAbono(codReserva.trim(), monto, medio)) {
+            JOptionPane.showMessageDialog(null, "¡Abono registrado exitosamente!");
+        } else {
+            JOptionPane.showMessageDialog(null, "⚠ No se encontró ninguna reserva propia con ese código.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Consultar estado de reservas y folio
+    public void consultarEstadoReservasFolioMenu() {
+        String reporte = consultarEstadoReservasFolio();
+        JOptionPane.showMessageDialog(null, reporte);
+    }
+
+    // cancelar reserva con cálculo de devolución
+    public void cancelarReservaMenu() {
+        String codReserva = JOptionPane.showInputDialog("Ingresa el código de la reserva a cancelar:");
+        if (codReserva == null || codReserva.trim().isEmpty()) return;
+
+        double devolucion = calcularDevolucion(codReserva.trim());
+        if (cancelarReserva(codReserva.trim())) {
+            JOptionPane.showMessageDialog(null, "Reserva cancelada exitosamente.\n Monto de devolución calculado: $" + devolucion);
+        } else {
+            JOptionPane.showMessageDialog(null, "⚠ No se pudo cancelar la reserva por favor verifica que el código sea correcto y que el estado sea pendiente o confirmada).", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // metodos  de búsqueda
+    private Apartamento buscarApartamento(List<Apartamento> listaApartamentos, String codigo) {
+        if (listaApartamentos != null) {
+            for (Apartamento a : listaApartamentos) {
+                if (a.getCodigo() != null && a.getCodigo().equalsIgnoreCase(codigo)) {
+                    return a;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Getters y Setters
     public List<Reserva> getMisReservas() {
         return misReservas;
     }

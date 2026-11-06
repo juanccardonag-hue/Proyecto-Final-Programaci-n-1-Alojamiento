@@ -53,11 +53,17 @@ public class Empresa {
 
             switch (opcion) {
                 case 1:
+                    Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
+
+                    if (huespedAutenticado == null) {
+                        break;
+                    }
                     int opcionHuesped;
                     do {
                         String menuHuesped = "⏔⏔⏔ ꒰ Menú huesped ꒱ ⏔⏔⏔ \n\n" +
+                                "Atendiendo a: " + huespedAutenticado.getNombre() + "\n\n" +
                                 "Selecciona una opcion del siguiente menú: \n" +
-                                "1. Registar datos personales\n" +
+                                "1. Registrar datos personales\n" +
                                 "2. Gestionar datos personales\n" +
                                 "3. Cotizar estancia\n" +
                                 "4. Reservar por el portal (se pedirá registro de los ocupantes de su fecha de nacimiento, entre otros datos..)\n" +
@@ -70,20 +76,28 @@ public class Empresa {
                             break;
                         }
                         opcionHuesped = Integer.parseInt(inputHuesped);
+
                         switch (opcionHuesped) {
                             case 1:
+                                Huesped.registrarHuespedMenu(listaHuespedes);
                                 break;
                             case 2:
+                                huespedAutenticado.actualizarPerfilMenu();
                                 break;
                             case 3:
+                                huespedAutenticado.cotizarEstanciaMenu(listaApartamentos);
                                 break;
                             case 4:
+                                huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas);
                                 break;
                             case 5:
+                                huespedAutenticado.realizarAbonoMenu();
                                 break;
                             case 6:
+                                huespedAutenticado.consultarEstadoReservasFolioMenu();
                                 break;
                             case 7:
+                                huespedAutenticado.cancelarReservaMenu();
                                 break;
                             case 0:
                                 break;
@@ -166,7 +180,6 @@ public class Empresa {
 
                 case 3:
                     Recepcionista recepcionistaAutenticado = Recepcionista.loginRecepcionista(listaRecepcionistas);
-
                         if (recepcionistaAutenticado == null) {
                         break;
                     }
@@ -184,7 +197,6 @@ public class Empresa {
                                 "8. Registar novedades en apto \n" +
                                 "9. Declarar un no-show \n" +
                                 "0. Volver \n";
-
                         String inputRecepcionista = JOptionPane.showInputDialog(menuRecepcionista);
                         if (inputRecepcionista == null) {
                             break;
