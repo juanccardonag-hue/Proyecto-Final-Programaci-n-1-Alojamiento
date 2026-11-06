@@ -62,7 +62,63 @@ public class Empresa {
             opcionRecepcionista = Integer.parseInt(inputRecepcionista);
             switch (opcionRecepcionista) {
                 case 1:
+<<<<<<< HEAD
                     recepcionistaAutenticado.registrarReservaDirecta(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
+=======
+                    Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
+
+                    if (huespedAutenticado == null) {
+                        break;
+                    }
+                    int opcionHuesped;
+                    do {
+                        String menuHuesped = "⏔⏔⏔ ꒰ Menú huésped ꒱ ⏔⏔⏔ \n\n" +
+                                "Atendiendo a: " + huespedAutenticado.getNombre() + "\n\n" +
+                                "Selecciona una opción del siguiente menú: \n" +
+                                "1. Gestionar mis datos personales (Actualizar Perfil)\n" +
+                                "2. Cotizar estancia con acompañantes\n" +
+                                "3. Reservar por el portal\n" +
+                                "4. Pago anticipado / abono al folio\n" +
+                                "5. Consultar mis reservas, estado y folio\n" +
+                                "6. Cancelar una reserva\n" +
+                                "0. Volver al menú principal\n";
+                        String inputHuesped = JOptionPane.showInputDialog(menuHuesped);
+                        if (inputHuesped == null) {
+                            break;
+                        }
+                        try {
+                            opcionHuesped = Integer.parseInt(inputHuesped.trim());
+                        } catch (NumberFormatException e) {
+                            opcionHuesped = -1;
+                        }
+
+                        switch (opcionHuesped) {
+                            case 1:
+                                huespedAutenticado.actualizarPerfilMenu();
+                                break;
+                            case 2:
+                                huespedAutenticado.cotizarEstanciaMenu(listaApartamentos, listaTemporadas);
+                                break;
+                            case 3:
+                                huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas, listaTemporadas);
+                                break;
+                            case 4:
+                                huespedAutenticado.realizarAbonoMenu();
+                                break;
+                            case 5:
+                                huespedAutenticado.consultarEstadoReservasFolioMenu();
+                                break;
+                            case 6:
+                                huespedAutenticado.cancelarReservaMenu();
+                                break;
+                            case 0:
+                                break;
+                            default:
+                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opción válida ⚠");
+                                break;
+                        }
+                    } while (opcionHuesped != 0);
+>>>>>>> d0885ff938e9342d5580e420ccc120718bab2791
                     break;
                 case 2:
                     recepcionistaAutenticado.registrarReservaExterna(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);

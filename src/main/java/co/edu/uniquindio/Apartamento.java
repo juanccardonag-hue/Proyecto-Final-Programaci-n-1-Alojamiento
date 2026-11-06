@@ -3,6 +3,7 @@ package co.edu.uniquindio;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 public class Apartamento {
 
@@ -49,7 +50,6 @@ public class Apartamento {
             this.motivoFueraServicio = null;
         }
     }
-
     // Registra una novedad
     public void registrarNovedad(String descripcion, String reportado) {
         if (descripcion != null) {
@@ -57,6 +57,21 @@ public class Apartamento {
             Novedad novedad = new Novedad(detalleCompleto, LocalDateTime.now());
             this.listNovedad.add(novedad);
         }
+    }
+    // Verifica si el apartamento está fuera de servicio o bloqueado por el administrador en un rango de fechas
+    public boolean estaBloqueadoRango(LocalDate inicio, LocalDate fin) {
+        if (this.estadoOperativo == EstadoOperativo.FUERA_SERVICIO) {
+            return true;
+        }
+        if (this.listBloqueo != null) {
+            for (Bloqueo b : listBloqueo) {
+                // Comprueba si el rango solicitado se cruza con algún bloqueo
+                if (inicio.isBefore(b.fechaFin()) && fin.isAfter(b.fechaInicio())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     public int getCapacidadMaxima() { return this.capaMaxPersona; }
     public long getPrecioBaja() { return precioBaja; }

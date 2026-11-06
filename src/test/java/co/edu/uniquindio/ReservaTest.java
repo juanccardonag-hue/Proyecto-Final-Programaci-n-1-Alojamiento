@@ -19,7 +19,7 @@ class ReservaTest {
 
     @BeforeEach
     void crearObjetosClases() {
-        titular = new Huesped("1094000222", "Camilo Cardona", LocalDate.of(2000, 10, 20), "3109876543", "camiloc@gmail.com");
+        titular = new Huesped("1094000222", "Camilo Cardona", LocalDate.of(2000, 10, 20), "3109876543", "camiloc@gmail.com","camilo1810");
         apartamento = new Apartamento("APT-101", "Suite Ejecutiva", 2, 4, "Vista al jardín", 100000L);
 
         reserva = new Reserva("FOL-001", LocalDate.of(2026, 11, 10), LocalDate.of(2026, 11, 15), Canal.DIRECTA, titular, apartamento, null, null);

@@ -16,16 +16,21 @@ public class Administrador extends Empleado {
         this.contrasenia = contrasenia;
     }
 
-    // Seguridad y autenticación
+    // --- Seguridad y Autenticación ---
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
         if (usuarioIngresado == null || contrasenaIngresada == null) {
             return false;
         }
+<<<<<<< HEAD
         return this.usuario.equalsIgnoreCase(usuarioIngresado.trim())
                 && this.contrasenia.equals(contrasenaIngresada.trim());
+=======
+        JOptionPane.showMessageDialog(null, "⚠ Usuario o contraseña de administración incorrectos", "Error de Autenticación ⚠❗", JOptionPane.ERROR_MESSAGE);
+        return false;
+>>>>>>> d0885ff938e9342d5580e420ccc120718bab2791
     }
 
-    // Control de acceso
+    // --- Control de Acceso y Credenciales ---
     public void gestionarControlAcceso(List<Recepcionista> listaRecepcionistas, List<Empleado> listaEmpleados) {
         String[] opciones = {"Registrar nuevo recepcionista", "Cambiar mi usuario/contraseña", "Registrar nuevo empleado", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null,
@@ -33,30 +38,34 @@ public class Administrador extends Empleado {
                 "Control de Acceso y Credenciales",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
 
-        if (seleccion == 0) { // Registrar Recepcionista
+        if (seleccion == 0) {
             String cedula = JOptionPane.showInputDialog("Cédula del recepcionista:");
             String nombre = JOptionPane.showInputDialog("Nombre completo:");
             String usuario = JOptionPane.showInputDialog("Usuario:");
             String contrasena = JOptionPane.showInputDialog("Contraseña:");
 
-            if (cedula != null && usuario != null && contrasena != null) {
-                listaRecepcionistas.add(new Recepcionista(cedula.trim(), nombre.trim(), LocalDate.now(), "", "", usuario.trim(), contrasena.trim()));
-                JOptionPane.showMessageDialog(null, "¡Recepcionista registrado exitosamente!");
+            if (codigoValido(cedula) && codigoValido(nombre) && codigoValido(usuario) && codigoValido(contrasena)) {
+                Recepcionista nuevoRecep = new Recepcionista(cedula.trim(), nombre.trim(), LocalDate.now(), "", "", usuario.trim(), contrasena.trim());
+
+                if (contratarEmpleado(listaEmpleados, nuevoRecep)) {
+                    listaRecepcionistas.add(nuevoRecep);
+                    JOptionPane.showMessageDialog(null, "¡Recepcionista registrado exitosamente!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "⚠ Todos los campos son obligatorios.", "Error de entrada ⚠", JOptionPane.WARNING_MESSAGE);
             }
 
-        } else if (seleccion == 1) { // Modificar credenciales del Admin
+        } else if (seleccion == 1) {
             String nuevoUsuario = JOptionPane.showInputDialog("Nuevo usuario (Tu usuario actual es: " + this.usuario + ")");
             String nuevaClave = JOptionPane.showInputDialog("Nueva contraseña:");
 
-            if (nuevoUsuario != null && !nuevoUsuario.trim().isEmpty()) {
-                this.usuario = nuevoUsuario.trim();
-            }
-            if (nuevaClave != null && !nuevaClave.trim().isEmpty()) {
-                this.contrasenia = nuevaClave.trim();
-            }
+            if (codigoValido(nuevoUsuario)) this.usuario = nuevoUsuario.trim();
+            if (codigoValido(nuevaClave)) this.contrasenia = nuevaClave.trim();
             JOptionPane.showMessageDialog(null, "¡Credenciales actualizadas correctamente!");
 
-        } else if (seleccion == 2) { // Registrar Empleado
+        } else if (seleccion == 2) {
             String cedula = JOptionPane.showInputDialog("Cédula del empleado:");
             String nombre = JOptionPane.showInputDialog("Nombre completo:");
             String telefono = JOptionPane.showInputDialog("Teléfono:");
@@ -64,28 +73,21 @@ public class Administrador extends Empleado {
             String usuario = JOptionPane.showInputDialog("Usuario:");
             String contrasena = JOptionPane.showInputDialog("Contraseña:");
 
-            if (cedula != null && nombre != null && usuario != null && contrasena != null) {
-                Empleado nuevoEmpleado = new Empleado(
-                        cedula.trim(),
-                        nombre.trim(),
-                        LocalDate.now(),
-                        telefono != null ? telefono.trim() : "",
-                        correo != null ? correo.trim() : "",
-                        usuario.trim(),
-                        contrasena.trim()
-                );
+            if (codigoValido(cedula) && codigoValido(nombre) && codigoValido(usuario) && codigoValido(contrasena)) {
+                Empleado nuevoEmpleado = new Empleado(cedula.trim(), nombre.trim(), LocalDate.now(), telefono != null ? telefono.trim() : "", correo != null ? correo.trim() : "", usuario.trim(), contrasena.trim());
 
-                boolean registrado = contratarEmpleado(listaEmpleados, nuevoEmpleado);
-                if (registrado) {
+                if (contratarEmpleado(listaEmpleados, nuevoEmpleado)) {
                     JOptionPane.showMessageDialog(null, "¡Empleado registrado exitosamente!");
                 } else {
                     JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "⚠ Debes completar cédula, nombre, usuario y contraseña.", "Error de entrada ⚠", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
 
-    // Gestión de apartamentos
+    // --- Gestión de Apartamentos ---
     public void gestionarApartamentos(List<Apartamento> listaApartamentos) {
         String[] opciones = {"Crear apartamento", "Modificar apartamento", "Poner fuera de servicio", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null,
@@ -93,28 +95,21 @@ public class Administrador extends Empleado {
                 "Gestión de Apartamentos",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
 
-        if (seleccion == 0) { // Crear Apartamento
+        if (seleccion == 0) {
             String codigo = JOptionPane.showInputDialog("Código del nuevo apartamento:");
             String nombre = JOptionPane.showInputDialog("Nombre / Identificador:");
             String dormitoriosStr = JOptionPane.showInputDialog("Número de dormitorios:");
             String capMaxStr = JOptionPane.showInputDialog("Capacidad máxima de personas:");
             String caracteristica = JOptionPane.showInputDialog("Características principales:");
-            String tarifaStr = JOptionPane.showInputDialog("Tarifa base por noche:");
+            String tarifaStr = JOptionPane.showInputDialog("Tarifa base por persona/noche:");
 
-            if (codigo != null && nombre != null && dormitoriosStr != null && capMaxStr != null && tarifaStr != null) {
+            if (codigoValido(codigo) && codigoValido(nombre) && dormitoriosStr != null && capMaxStr != null && tarifaStr != null) {
                 try {
                     int numDormitorios = Integer.parseInt(dormitoriosStr.trim());
                     int capMax = Integer.parseInt(capMaxStr.trim());
                     long tarifaBase = Long.parseLong(tarifaStr.trim());
 
-                    Apartamento nuevoApto = new Apartamento(
-                            codigo.trim(),
-                            nombre.trim(),
-                            numDormitorios,
-                            capMax,
-                            caracteristica != null ? caracteristica.trim() : "",
-                            tarifaBase
-                    );
+                    Apartamento nuevoApto = new Apartamento(codigo.trim(), nombre.trim(), numDormitorios, capMax, caracteristica != null ? caracteristica.trim() : "", tarifaBase);
 
                     if (crearApartamento(listaApartamentos, nuevoApto)) {
                         JOptionPane.showMessageDialog(null, "¡Apartamento creado exitosamente!");
@@ -122,27 +117,21 @@ public class Administrador extends Empleado {
                         JOptionPane.showMessageDialog(null, "⚠ Ya existe un apartamento registrado con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "⚠ Debes ingresar datos numéricos válidos para dormitorios, capacidad y tarifa.", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "⚠ Debes ingresar datos numéricos válidos.", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
                 }
             }
 
-        } else if (seleccion == 1) { // Modificar Apartamento
+        } else if (seleccion == 1) {
             String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a modificar:");
-            if (codigo != null) {
-                Apartamento aptoEncontrado = null;
-                for (Apartamento a : listaApartamentos) {
-                    if (a.getCodigo().equalsIgnoreCase(codigo.trim())) {
-                        aptoEncontrado = a;
-                        break;
-                    }
-                }
+            if (codigoValido(codigo)) {
+                Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
 
                 if (aptoEncontrado != null) {
                     String nuevoNombre = JOptionPane.showInputDialog("Nuevo nombre:", aptoEncontrado.getNombre());
                     String dormStr = JOptionPane.showInputDialog("Nuevo número de dormitorios:", aptoEncontrado.getNumeroDormitorio());
                     String capStr = JOptionPane.showInputDialog("Nueva capacidad máxima:", aptoEncontrado.getCapaMaxPersona());
                     String nuevaCaracteristica = JOptionPane.showInputDialog("Nuevas características:", aptoEncontrado.getCaracteristica());
-                    String tarifaStr = JOptionPane.showInputDialog("Nueva tarifa base:", aptoEncontrado.getTarifaPersonaNoche());
+                    String tarifaStr = JOptionPane.showInputDialog("Nueva tarifa base persona/noche:", aptoEncontrado.getTarifaPersonaNoche());
 
                     if (nuevoNombre != null && dormStr != null && capStr != null && tarifaStr != null) {
                         try {
@@ -162,16 +151,10 @@ public class Administrador extends Empleado {
                 }
             }
 
-        } else if (seleccion == 2) { // Poner fuera de servicio
+        } else if (seleccion == 2) {
             String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a retirar de servicio:");
-            if (codigo != null) {
-                Apartamento aptoEncontrado = null;
-                for (Apartamento a : listaApartamentos) {
-                    if (a.getCodigo().equalsIgnoreCase(codigo.trim())) {
-                        aptoEncontrado = a;
-                        break;
-                    }
-                }
+            if (codigoValido(codigo)) {
+                Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
 
                 if (aptoEncontrado != null) {
                     String motivo = JOptionPane.showInputDialog("Ingresa el motivo del retiro de servicio:");
@@ -184,88 +167,11 @@ public class Administrador extends Empleado {
             }
         }
     }
-    public void gestionarEmpleados(List<Empleado> listaEmpleados) {
-        String[] opciones = {"Contratar empleado", "Editar empleado", "Desvincular empleado", "Volver"};
-        int seleccion = JOptionPane.showOptionDialog(null,
-                "¿Qué acción deseas realizar en los empleados?",
-                "Gestión de Personal",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
 
-        if (seleccion == 0) { // Contratar Empleado
-            String cedula = JOptionPane.showInputDialog("Cédula del empleado:");
-            String nombre = JOptionPane.showInputDialog("Nombre completo:");
-            String telefono = JOptionPane.showInputDialog("Teléfono:");
-            String correo = JOptionPane.showInputDialog("Correo electrónico:");
-            String usuario = JOptionPane.showInputDialog("Usuario de acceso:");
-            String contrasena = JOptionPane.showInputDialog("Contraseña:");
-
-            if (cedula != null && nombre != null && usuario != null && contrasena != null) {
-                Empleado nuevoEmpleado = new Empleado(
-                        cedula.trim(),
-                        nombre.trim(),
-                        LocalDate.now(),
-                        telefono != null ? telefono.trim() : "",
-                        correo != null ? correo.trim() : "",
-                        usuario.trim(),
-                        contrasena.trim()
-                );
-
-                if (contratarEmpleado(listaEmpleados, nuevoEmpleado)) {
-                    JOptionPane.showMessageDialog(null, "¡Empleado contratado exitosamente!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 1) { // Editar Empleado
-            String cedula = JOptionPane.showInputDialog("Ingresa la cédula del empleado a editar:");
-            if (codigoValido(cedula)) {
-                Empleado empEncontrado = null;
-                for (Empleado e : listaEmpleados) {
-                    if (e.getCedula().equalsIgnoreCase(cedula.trim())) {
-                        empEncontrado = e;
-                        break;
-                    }
-                }
-
-                if (empEncontrado != null) {
-                    String nuevoNombre = JOptionPane.showInputDialog("Nuevo nombre:", empEncontrado.getNombre());
-                    String nuevoTelefono = JOptionPane.showInputDialog("Nuevo teléfono:", empEncontrado.getTelefono());
-                    String nuevoCorreo = JOptionPane.showInputDialog("Nuevo correo:", empEncontrado.getCorreo());
-
-                    if (nuevoNombre != null && nuevoTelefono != null && nuevoCorreo != null) {
-                        if (editarEmpleado(empEncontrado, nuevoNombre.trim(), nuevoTelefono.trim(), nuevoCorreo.trim())) {
-                            JOptionPane.showMessageDialog(null, "¡Datos del empleado actualizados correctamente!");
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún empleado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 2) { // Desvincular Empleado
-            String cedula = JOptionPane.showInputDialog("Ingresa la cédula del empleado a desvincular:");
-            if (codigoValido(cedula)) {
-                if (desvincularEmpleado(listaEmpleados, cedula.trim())) {
-                    JOptionPane.showMessageDialog(null, "¡Empleado desvinculado exitosamente!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
-    private boolean codigoValido(String input) { // Evita la repetición de código
-        return input != null && !input.trim().isEmpty();
-    }
-    // 2. Métodos  para el menú
     public boolean crearApartamento(List<Apartamento> listaApartamentos, Apartamento nuevoApto) {
-        if (nuevoApto == null) {
-            return false;
-        }
+        if (nuevoApto == null) return false;
         for (Apartamento a : listaApartamentos) {
-            if (a.getCodigo().equalsIgnoreCase(nuevoApto.getCodigo())) {
-                return false;
-            }
+            if (a.getCodigo().equalsIgnoreCase(nuevoApto.getCodigo())) return false;
         }
         listaApartamentos.add(nuevoApto);
         return true;
@@ -291,13 +197,68 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    // gestion de personal
+    // --- Gestión de Personal ---
+    public void gestionarEmpleados(List<Empleado> listaEmpleados) {
+        String[] opciones = {"Contratar empleado", "Editar empleado", "Desvincular empleado", "Volver"};
+        int seleccion = JOptionPane.showOptionDialog(null,
+                "¿Qué acción deseas realizar en los empleados?",
+                "Gestión de Personal",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+        if (seleccion == 0) {
+            String cedula = JOptionPane.showInputDialog("Cédula del empleado:");
+            String nombre = JOptionPane.showInputDialog("Nombre completo:");
+            String telefono = JOptionPane.showInputDialog("Teléfono:");
+            String correo = JOptionPane.showInputDialog("Correo electrónico:");
+            String usuario = JOptionPane.showInputDialog("Usuario de acceso:");
+            String contrasena = JOptionPane.showInputDialog("Contraseña:");
+
+            if (codigoValido(cedula) && codigoValido(nombre) && codigoValido(usuario) && codigoValido(contrasena)) {
+                Empleado nuevoEmpleado = new Empleado(cedula.trim(), nombre.trim(), LocalDate.now(), telefono != null ? telefono.trim() : "", correo != null ? correo.trim() : "", usuario.trim(), contrasena.trim());
+
+                if (contratarEmpleado(listaEmpleados, nuevoEmpleado)) {
+                    JOptionPane.showMessageDialog(null, "¡Empleado contratado exitosamente!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        } else if (seleccion == 1) {
+            String cedula = JOptionPane.showInputDialog("Ingresa la cédula del empleado a editar:");
+            if (codigoValido(cedula)) {
+                Empleado empEncontrado = buscarEmpleadoPorCedula(listaEmpleados, cedula.trim());
+
+                if (empEncontrado != null) {
+                    String nuevoNombre = JOptionPane.showInputDialog("Nuevo nombre:", empEncontrado.getNombre());
+                    String nuevoTelefono = JOptionPane.showInputDialog("Nuevo teléfono:", empEncontrado.getTelefono());
+                    String nuevoCorreo = JOptionPane.showInputDialog("Nuevo correo:", empEncontrado.getCorreo());
+
+                    if (nuevoNombre != null && nuevoTelefono != null && nuevoCorreo != null) {
+                        if (editarEmpleado(empEncontrado, nuevoNombre.trim(), nuevoTelefono.trim(), nuevoCorreo.trim())) {
+                            JOptionPane.showMessageDialog(null, "¡Datos del empleado actualizados correctamente!");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún empleado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        } else if (seleccion == 2) {
+            String cedula = JOptionPane.showInputDialog("Ingresa la cédula del empleado a desvincular:");
+            if (codigoValido(cedula)) {
+                if (desvincularEmpleado(listaEmpleados, cedula.trim())) {
+                    JOptionPane.showMessageDialog(null, "¡Empleado desvinculado exitosamente!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
     public boolean contratarEmpleado(List<Empleado> listaEmpleados, Empleado nuevoEmpleado) {
         if (nuevoEmpleado == null) return false;
         for (Empleado e : listaEmpleados) {
-            if (e.getCedula().equals(nuevoEmpleado.getCedula())) {
-                return false;
-            }
+            if (e.getCedula().equals(nuevoEmpleado.getCedula())) return false;
         }
         listaEmpleados.add(nuevoEmpleado);
         return true;
@@ -323,63 +284,64 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    //Gestion de traifas y temproada
+    // --- Gestión de Tarifas y Temporadas ---
     public void gestionarTemporadaTarifas(List<Apartamento> listaApartamentos, List<Temporada> listaTemporadas) {
-        String[] opciones = {"Definir temporada", "Configurar tarifas", "Volver"};
+        String[] opciones = {"Definir temporada", "Configurar tarifa base apto", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null,
                 "¿Qué acción deseas realizar?",
                 "Gestión de Temporadas y Costos",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
 
-        if (seleccion == 0) { // 1. Registrar Temporada
+        if (seleccion == 0) { // Definir temporada con validación anti-solapamiento
+            TipoTemporada[] tipos = TipoTemporada.values();
+            TipoTemporada tipoSel = (TipoTemporada) JOptionPane.showInputDialog(null,
+                    "Selecciona la categoría de temporada:", "Tipo de Temporada",
+                    JOptionPane.QUESTION_MESSAGE, null, tipos, tipos[0]);
+
             String fInicio = JOptionPane.showInputDialog("Fecha de inicio de la temporada (AAAA-MM-DD):");
             String fFin = JOptionPane.showInputDialog("Fecha de fin de la temporada (AAAA-MM-DD):");
-            String recargo = JOptionPane.showInputDialog("Porcentaje de recargo para la temporada (por ejemplo: 0.20 para 20%):");
+            String recargo = JOptionPane.showInputDialog("Porcentaje de recargo (ejemplo: 0.20 para 20%):");
 
-            if (fInicio != null && fFin != null && recargo != null) {
+            if (tipoSel != null && fInicio != null && fFin != null && recargo != null) {
                 try {
                     LocalDate inicio = LocalDate.parse(fInicio.trim());
                     LocalDate fin = LocalDate.parse(fFin.trim());
                     double porcentajeRecargo = Double.parseDouble(recargo.trim());
 
-                    Temporada nuevaTemporada = new Temporada(inicio, fin, porcentajeRecargo);
+                    if (!inicio.isBefore(fin) && !inicio.isEqual(fin)) {
+                        JOptionPane.showMessageDialog(null, "⚠ La fecha inicial debe ser anterior a la final.", "Error de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    Temporada nuevaTemporada = new Temporada(tipoSel, inicio, fin, porcentajeRecargo);
 
                     if (agregarTemporada(listaTemporadas, nuevaTemporada)) {
-                        JOptionPane.showMessageDialog(null, "¡Temporada registrada exitosamente!\n\n" +
+                        JOptionPane.showMessageDialog(null, "¡Temporada " + tipoSel + " registrada exitosamente!\n\n" +
                                 "✿ Periodo: del " + inicio + " al " + fin + "\n" +
                                 "✿ Recargo aplicado: " + (porcentajeRecargo * 100) + "%");
                     } else {
-                        JOptionPane.showMessageDialog(null, "⚠ La temporada ya se encuentra registrada.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "⚠ Error: Las fechas ingresadas se cruzan con una temporada previamente registrada.", "Conflicto de Temporadas ⚠", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "⚠ Datos de entrada inválidos ", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "⚠ Datos de entrada o formato de fechas inválido.", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
                 }
             }
 
-        } else if (seleccion == 1) { // 2. Definir Tarifas por Apartamento
+        } else if (seleccion == 1) { // Configurar tarifa base del apartamento
             String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a configurar:");
-            if (codigo != null && !codigo.trim().isEmpty()) {
-                Apartamento aptoEncontrado = null;
-                for (Apartamento a : listaApartamentos) {
-                    if (a.getCodigo().equalsIgnoreCase(codigo.trim())) {
-                        aptoEncontrado = a;
-                        break;
-                    }
-                }
+            if (codigoValido(codigo)) {
+                Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
 
                 if (aptoEncontrado != null) {
-                    String tempBaja = JOptionPane.showInputDialog("Tarifa base para Temporada Baja ($):");
-                    String tempAlta = JOptionPane.showInputDialog("Tarifa para Temporada Alta ($):");
+                    String tarifaStr = JOptionPane.showInputDialog("Nueva tarifa base por persona/noche ($):", aptoEncontrado.getTarifaPersonaNoche());
 
-                    if (tempBaja != null && tempAlta != null) {
+                    if (tarifaStr != null) {
                         try {
-                            long precioBaja = Long.parseLong(tempBaja.trim());
-                            long precioAlta = Long.parseLong(tempAlta.trim());
-
-                            definirTarifasApartamento(aptoEncontrado, precioBaja, precioAlta);
-                            JOptionPane.showMessageDialog(null, "¡Tarifas actualizadas correctamente para el apartamento: " + aptoEncontrado.getCodigo() + "!");
+                            long nuevaTarifa = Long.parseLong(tarifaStr.trim());
+                            aptoEncontrado.setTarifaPersonaNoche(nuevaTarifa);
+                            JOptionPane.showMessageDialog(null, "¡Tarifa base actualizada correctamente para el apartamento: " + aptoEncontrado.getCodigo() + "!");
                         } catch (NumberFormatException e) {
-                            JOptionPane.showMessageDialog(null, "⚠ Debes ingresar valores numéricos válidos para los precios.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "⚠ Debes ingresar un valor numérico válido para el precio.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else {
@@ -388,22 +350,61 @@ public class Administrador extends Empleado {
             }
         }
     }
-    public void definirTarifasApartamento(Apartamento apto, long precioBaja, long precioAlta) {
-        if (apto != null) {
-            apto.setPrecioBaja(precioBaja);
-            apto.setPrecioAlta(precioAlta);
+
+    public boolean agregarTemporada(List<Temporada> listaTemporadas, Temporada nuevaTemporada) {
+        if (nuevaTemporada == null || listaTemporadas == null) return false;
+
+        // Comprueba si hay solapamiento de fechas usando cruceCon
+        for (Temporada t : listaTemporadas) {
+            if (t.cruceCon(nuevaTemporada.getFechaInicio(), nuevaTemporada.getFechaFin())) {
+                return false;
+            }
+        }
+        listaTemporadas.add(nuevaTemporada);
+        return true;
+    }
+
+    // --- Política de Cancelación ---
+    public void configurarPoliticaCancelacionMenu() {
+        String diasTotalStr = JOptionPane.showInputDialog(null,
+                "Días de anticipación requeridos para la devolución total del dinero (100%):",
+                politicaCancelacion.getDiasDevolucionTotal());
+        String diasParcialStr = JOptionPane.showInputDialog(null,
+                "Días mínimos de anticipación para aplicar devolución parcial (Retención parcial) ejemplo: 2 equivale a 48 horas:",
+                politicaCancelacion.getDiasDevolucionParcial());
+        String pctRetencionStr = JOptionPane.showInputDialog(null,
+                "Porcentaje de retención para cancelaciones parciales (ejemplo 0.50 para 50%):",
+                politicaCancelacion.getPorcentajeRetencion());
+
+        if (diasTotalStr != null && diasParcialStr != null && pctRetencionStr != null) {
+            try {
+                int diasTotal = Integer.parseInt(diasTotalStr.trim());
+                int diasParcial = Integer.parseInt(diasParcialStr.trim());
+                double pctRetencion = Double.parseDouble(pctRetencionStr.trim());
+
+                PoliticaCancelacion nuevaPolitica = new PoliticaCancelacion(diasTotal, diasParcial, pctRetencion);
+
+                if (configurarPoliticaCancelacion(nuevaPolitica)) {
+                    JOptionPane.showMessageDialog(null, "꧁ Política de cancelación actualizada con éxito ꧂\n\n" +
+                            "✦ Más de " + diasTotal + " días: Devolución del 100%\n" +
+                            "✦ Entre " + diasParcial + " y " + diasTotal + " días la retención es del " + (pctRetencion * 100) + "%\n" +
+                            "✦ Menos de " + diasParcial + " días / No-show: Retención del 100%");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "⚠ Debes ingresar valores numéricos válidos.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    public boolean agregarTemporada(List<Temporada> listaTemporadas, Temporada nuevaTemporada) {
-        if (nuevaTemporada != null && !listaTemporadas.contains(nuevaTemporada)) {
-            listaTemporadas.add(nuevaTemporada);
+    public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
+        if (nuevaPolitica != null) {
+            this.politicaCancelacion = nuevaPolitica;
             return true;
         }
         return false;
     }
 
-    //Bloqueo de aptos
+    // --- Bloqueo de Apartamentos ---
     public boolean registrarBloqueo(Apartamento apto, LocalDate fechaInicio, LocalDate fechaFin, String motivo) {
         if (apto != null && fechaInicio != null && fechaFin != null && !fechaFin.isBefore(fechaInicio)) {
             Bloqueo nuevoBloqueo = new Bloqueo(fechaInicio, fechaFin, motivo);
@@ -415,18 +416,9 @@ public class Administrador extends Empleado {
 
     public void gestionarBloqueos(List<Apartamento> listaApartamentos) {
         String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a bloquear:");
-        if (codigo == null || codigo.trim().isEmpty()) {
-            return;
-        }
+        if (codigo == null || codigo.trim().isEmpty()) return;
 
-        Apartamento aptoEncontrado = null;
-        for (Apartamento a : listaApartamentos) {
-            if (a.getCodigo().equalsIgnoreCase(codigo.trim())) {
-                aptoEncontrado = a;
-                break;
-            }
-        }
-
+        Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
         if (aptoEncontrado == null) {
             JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
             return;
@@ -445,7 +437,6 @@ public class Administrador extends Empleado {
                     JOptionPane.showMessageDialog(null, "⚠ La fecha final no puede ser anterior a la fecha inicial.", "Error de fechas ⚠", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 if (registrarBloqueo(aptoEncontrado, fechaInicio, fechaFin, motivo.trim())) {
                     JOptionPane.showMessageDialog(null, "¡Fechas fuera de servicio registradas con éxito!\n\n" +
                             "❤ Apartamento: " + aptoEncontrado.getCodigo() + "\n" +
@@ -460,8 +451,7 @@ public class Administrador extends Empleado {
         }
     }
 
-
-    // Reportes
+    // --- Reportes Avanzados ---
     public long calcularNochesOcupadasApartamento(Apartamento apto, List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
         long nochesOcupadas = 0;
         for (Reserva r : listaReservas) {
@@ -493,7 +483,6 @@ public class Administrador extends Empleado {
     }
 
     public int contarReservasPorCanal(List<Reserva> listaReservas, Canal canalBuscado) {
-    // Reporte 3: Conteo de reservas filtradas por canal (incluyendo canceladas y no-show)
         int contador = 0;
         for (Reserva r : listaReservas) {
             if (r.getCanal() == canalBuscado) {
@@ -503,8 +492,6 @@ public class Administrador extends Empleado {
         return contador;
     }
 
-
-    // Reporte 4: Obtener lista de reservas activas con saldo pendiente en folio
     public List<Reserva> obtenerReservasSaldoPendiente(List<Reserva> listaReservas) {
         List<Reserva> conSaldo = new ArrayList<>();
         for (Reserva r : listaReservas) {
@@ -515,11 +502,9 @@ public class Administrador extends Empleado {
         return conSaldo;
     }
 
-    // Reporte 5: Identificar el apartamento que registra la mayor cantidad de novedades
     public Apartamento obtenerApartamentoNovedades(List<Apartamento> listaApartamentos) {
-        if (listaApartamentos == null || listaApartamentos.isEmpty()) {
-            return null;
-        }
+        if (listaApartamentos == null || listaApartamentos.isEmpty()) return null;
+
         Apartamento aptoMasNovedades = listaApartamentos.get(0);
         int maxNovedades = aptoMasNovedades.getListNovedad().size();
 
@@ -533,18 +518,12 @@ public class Administrador extends Empleado {
         }
         return aptoMasNovedades;
     }
+
     public void reporteOcupacionApartamento(List<Apartamento> listaApartamentos, List<Reserva> listaReservas) {
         String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento:");
         if (codigo == null || codigo.trim().isEmpty()) return;
 
-        Apartamento aptoEncontrado = null;
-        for (Apartamento a : listaApartamentos) {
-            if (a.getCodigo().equalsIgnoreCase(codigo.trim())) {
-                aptoEncontrado = a;
-                break;
-            }
-        }
-
+        Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
         if (aptoEncontrado == null) {
             JOptionPane.showMessageDialog(null, "⚠ No se encontró el apartamento con código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
             return;
@@ -595,6 +574,7 @@ public class Administrador extends Empleado {
             JOptionPane.showMessageDialog(null, "Total de reservas realizadas vía " + canalSeleccionado + ": " + total);
         }
     }
+
     public void reporteSaldosPendientes(List<Reserva> listaReservas) {
         List<Reserva> pendientes = obtenerReservasSaldoPendiente(listaReservas);
         if (pendientes.isEmpty()) {
@@ -611,7 +591,6 @@ public class Administrador extends Empleado {
         JOptionPane.showMessageDialog(null, mensaje);
     }
 
-
     public void reporteApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
         Apartamento apto = obtenerApartamentoNovedades(listaApartamentos);
         if (apto == null) {
@@ -622,50 +601,26 @@ public class Administrador extends Empleado {
         }
     }
 
-    //PoliticaCancelacion
-    public void configurarPoliticaCancelacionMenu() {
-        String diasTotalStr = JOptionPane.showInputDialog(null,
-                "Días de anticipación requeridos para la devolución total del dinero (100%):",
-                politicaCancelacion.getDiasDevolucionTotal());
-        String diasParcialStr = JOptionPane.showInputDialog(null,
-                "Días mínimos de anticipación para aplicar devolución parcial (Retencion total)ejemplo: 2 equivale a 48 horas:",
-                politicaCancelacion.getDiasDevolucionParcial());
-        String pctRetencionStr = JOptionPane.showInputDialog(null,
-                "Porcentaje de retención para cancelaciones parciales (ejemplo 0.50 para 50%):",
-                politicaCancelacion.getPorcentajeRetencion());
+    // --- Métodos Auxiliares Privados ---
+    private boolean codigoValido(String input) {
+        return input != null && !input.trim().isEmpty();
+    }
 
-        if (diasTotalStr != null && diasParcialStr != null && pctRetencionStr != null) {
-            try {
-                int diasTotal = Integer.parseInt(diasTotalStr.trim());
-                int diasParcial = Integer.parseInt(diasParcialStr.trim());
-                double pctRetencion = Double.parseDouble(pctRetencionStr.trim());
-
-                PoliticaCancelacion nuevaPolitica = new PoliticaCancelacion(diasTotal, diasParcial, pctRetencion);
-
-                if (configurarPoliticaCancelacion(nuevaPolitica)) {
-                    JOptionPane.showMessageDialog(null, "꧁ Política de cancelación actualizada con éxito ꧂\n\n" +
-                            "✦ Más de " + diasTotal + " días: Devolución del 100%\n" +
-                            "✦ Entre " + diasParcial + " y " + diasTotal + " días la retención es del " + (pctRetencion * 100) + "%\n" +
-                            "✦ Menos de " + diasParcial + " días / No-show: Retención del 100%");
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "⚠ Debes ingresar valores numéricos válidos.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-            }
+    private Apartamento buscarApartamentoPorCodigo(List<Apartamento> listaApartamentos, String codigo) {
+        for (Apartamento a : listaApartamentos) {
+            if (a.getCodigo().equalsIgnoreCase(codigo)) return a;
         }
-    }
-    // Configuración de la política de cancelación
-    public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
-        if (nuevaPolitica != null) {
-            this.politicaCancelacion = nuevaPolitica;
-            return true;
-        }
-        return false;
-    }
-    public PoliticaCancelacion getPoliticaCancelacion() {
-        return politicaCancelacion;
+        return null;
     }
 
-    // Getters y Setters
+    private Empleado buscarEmpleadoPorCedula(List<Empleado> listaEmpleados, String cedula) {
+        for (Empleado e : listaEmpleados) {
+            if (e.getCedula().equalsIgnoreCase(cedula)) return e;
+        }
+        return null;
+    }
+    // --- Getters y Setters ---
+    public PoliticaCancelacion getPoliticaCancelacion() { return politicaCancelacion; }
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }
     public String getContrasena() { return contrasenia; }

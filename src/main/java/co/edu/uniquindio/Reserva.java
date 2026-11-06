@@ -24,7 +24,6 @@ public class Reserva {
     private List<DetalleNocheReserva> detallesReserva;
 
     public Reserva(String codigoFolio, LocalDate fechaEntrada, LocalDate fechaSalida, Canal canal, Huesped titular, Apartamento apartamento, Empleado empleado, String codigoExterno) {
-
         this.codigoFolio = codigoFolio;
         this.fechaEntrada = fechaEntrada;
         this.fechaSalida = fechaSalida;
@@ -46,14 +45,14 @@ public class Reserva {
         this.ocupantes = new ArrayList<>();
         this.detallesReserva = new ArrayList<>();
     }
-    // Cnostructor para reservas creadas por el huesped desde el portal
+
+    // Constructor para reservas creadas por el huésped desde el portal
     public Reserva(String codigoFolio, LocalDate fechaEntrada, LocalDate fechaSalida, Canal canal, Huesped titular, Apartamento apartamento, long valorTotal) {
         this(codigoFolio, fechaEntrada, fechaSalida, canal, titular, apartamento, null, null);
         this.valorTotal = valorTotal;
     }
-    // FUNCIONALIDADES DE LÓGICA DE NEGOCIO
 
-    // Calcula el número de noches de la estancia
+    // Calculamos el número de noches de la estancia
     public long calcularNoches() {
         if (fechaEntrada == null || fechaSalida == null) {
             return 0;
@@ -61,7 +60,6 @@ public class Reserva {
         long noches = 0;
         LocalDate fechaAuxiliar = fechaEntrada;
 
-        // Mientras la fecha sea menor a la fecha de salida
         while (fechaAuxiliar.isBefore(fechaSalida)) {
             noches++;
             fechaAuxiliar = fechaAuxiliar.plusDays(1);
@@ -69,7 +67,7 @@ public class Reserva {
         return noches;
     }
 
-    //Contamos cuántos ocupantes pagan tarifa
+    // Cuenta cuántos ocupantes pagan tarifa (exonerando a menores de 6 años)
     public int contarOcupantesPagantes() {
         int contadorPagantes = 0;
         for (int i = 0; i < ocupantes.size(); i++) {
@@ -78,11 +76,13 @@ public class Reserva {
                 contadorPagantes++;
             }
         }
-        return contadorPagantes;
+        // Si aún no se han registrado ocupantes en la lista, se asume mínimo 1 pagante
+        return Math.max(1, contadorPagantes);
     }
 
-    // Buscamos fecha en temporada
+    // Busca si una fecha cae en alguna temporada de recargo
     private Temporada buscarTemporada(LocalDate fecha, List<Temporada> temporadas) {
+        if (temporadas == null) return null;
         for (int i = 0; i < temporadas.size(); i++) {
             Temporada t = temporadas.get(i);
             if (t.aplicaEnFecha(fecha)) {
@@ -92,7 +92,7 @@ public class Reserva {
         return null;
     }
 
-    // Liquidamos noche a noche
+    // Liquida el costo estancia noche a noche y lo registra en el Folio
     public void liquidarEstancia(List<Temporada> temporadas) {
         detallesReserva.clear();
         int pagantes = contarOcupantesPagantes();
@@ -100,27 +100,24 @@ public class Reserva {
         LocalDate fechaAuxiliar = fechaEntrada;
 
         while (fechaAuxiliar.isBefore(fechaSalida)) {
-
             Temporada temp = buscarTemporada(fechaAuxiliar, temporadas);
-
             DetalleNocheReserva detalle = new DetalleNocheReserva(fechaAuxiliar, pagantes, apartamento.getTarifaPersonaNoche(), temp);
 
             detallesReserva.add(detalle);
             totalEstancia += detalle.getSubtotal();
 
-            // Avanzamos al siguiente día
             fechaAuxiliar = fechaAuxiliar.plusDays(1);
         }
 
         this.valorTotal = totalEstancia;
-        this.folio.getListaCargo().clear();
-        this.folio.agregarCargo("Alojamiento estancia (" + calcularNoches() + " noches)", valorTotal);
+        if (this.folio != null) {
+            this.folio.getListaCargo().clear();
+            this.folio.agregarCargo("Alojamiento estancia (" + calcularNoches() + " noches)", valorTotal);
+        }
     }
 
-
-    // Cambiamos el estado de la reserva
+    // Cambia el estado de la reserva siguiendo
     public boolean cambiarEstado(EstadoReserva nuevoEstado) {
-
         if (this.estado == EstadoReserva.PENDIENTE) {
             if (nuevoEstado == EstadoReserva.CONFIRMADA || nuevoEstado == EstadoReserva.CANCELADA) {
                 this.estado = nuevoEstado;
@@ -139,19 +136,17 @@ public class Reserva {
                 return true;
             }
         }
-
-        // Si se intenta cualquier otro cambio no permitido, se rechaza
         return false;
     }
 
-    //Verificamos si una reserva esta activa (PENDIENTE, CONFIRMADA o EN_CURSO)
+    // Verifica si la reserva está activa
     public boolean estaActiva() {
         return (this.estado == EstadoReserva.PENDIENTE ||
                 this.estado == EstadoReserva.CONFIRMADA ||
                 this.estado == EstadoReserva.EN_CURSO);
     }
 
-    // Anti doble Venta: Comprueba si esta reserva se cruza en fechas con otro rango
+    // Anti Doble Venta: comprueba solapamiento de fechas
     public boolean cruceCon(LocalDate entradaBuscar, LocalDate salidaBuscar) {
         return (entradaBuscar.isBefore(this.fechaSalida) && salidaBuscar.isAfter(this.fechaEntrada));
     }
@@ -159,16 +154,13 @@ public class Reserva {
     // Revisa si pasaron 24 horas desde la creación sin confirmarse
     public boolean estaVencida(LocalDateTime fechaHoraActual) {
         if (this.estado == EstadoReserva.PENDIENTE) {
-            // Le sumamos 24 horas a la fecha de creación para hallar la hora límite
             LocalDateTime fechaLimite = this.fechaHoraCreacion.plusHours(24);
-
-            // Si la hora actual ya es después de la límite, la reserva venció
             return fechaHoraActual.isAfter(fechaLimite);
         }
         return false;
     }
 
-    // Permite agregar un ocupante a la reserva
+    // Agrega un ocupante a la reserva
     public boolean agregarOcupante(Ocupante ocupante) {
         if (ocupante != null) {
             this.ocupantes.add(ocupante);
@@ -176,7 +168,8 @@ public class Reserva {
         }
         return false;
     }
-    // Calculamos los días de antelación
+
+    // Calcula el monto de devolución según políticas y días de antelación
     public long calcularDevolucionCancelacion(LocalDate fechaCancelacion) {
         if (fechaCancelacion == null || fechaCancelacion.isAfter(this.fechaEntrada)) {
             return 0;
@@ -189,93 +182,68 @@ public class Reserva {
             fechaAuxiliar = fechaAuxiliar.plusDays(1);
         }
 
-        long totalPagado = this.folio.calcularTotalPagos();
+        long totalPagado = (long) getTotalAbonado();
 
-        // Más de 7 días: se devuelve el 100% de lo pagado
+        // Más de 7 días: devolución del 100% de lo pagado
         if (diasAntelacion > 7) {
             return totalPagado;
         }
 
-        // Entre 2 y 7 días: se retiene el 50% del valor de la estancia
+        // Entre 2 y 7 días: retención del 50% del valor de la estancia
         if (diasAntelacion >= 2) {
-            long retencion = this.valorTotal / 2;
+            long retencion = getValorTotal() / 2;
             long devolucion = totalPagado - retencion;
-
-            if (devolucion > 0) {
-                return devolucion;
-            } else {
-                return 0;
-            }
+            return Math.max(0, devolucion);
         }
 
         // Menos de 48 horas: retención del 100% del valor de la estancia
-        long devolucion = totalPagado - this.valorTotal;
-        if (devolucion > 0) {
-            return devolucion;
-        } else {
-            return 0;
-        }
+        long devolucion = totalPagado - getValorTotal();
+        return Math.max(0, devolucion);
     }
+
+    // Registra un abono y confirma la reserva si alcanza o supera el 30% del total
     public boolean registrarAbono(long monto, MedioPago medioPago) {
         if (monto > 0 && this.folio != null) {
             this.folio.registrarPago(monto, medioPago);
 
-            // Si la reserva está PENDIENTE y con este pago suma al menos el 30% del total, cambia a CONFIRMADA
-            if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (this.valorTotal * 0.30)) {
+            if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (getValorTotal() * 0.30)) {
                 cambiarEstado(EstadoReserva.CONFIRMADA);
             }
             return true;
         }
         return false;
     }
-
-    public String getCodigoReserva() { return this.codigoFolio; }
-
-    public LocalDate getFechaInicio() { return this.fechaEntrada; }
-
-    public LocalDate getFechaFin() { return this.fechaSalida; }
-
-    //Consulta el total pagado desde el objeto Folio
-    public double getTotalAbonado() {
-        if (this.folio != null) {
-            return this.folio.calcularTotalPagos();
+    // Retorna el total del Folio (estancia + cargos adicionales)
+    public long getValorTotal() {
+        if (this.folio != null && this.folio.calcularTotalCargos() > 0) {
+            return (long) this.folio.calcularTotalCargos();
         }
-        return 0.0;
+        return this.valorTotal;
     }
+    public double getTotalAbonado() {if (this.folio != null) {return this.folio.calcularTotalPagos();}return 0.0;}
+    public double getSaldoFolio() {return (double) getValorTotal() - getTotalAbonado();}
 
-    //Consulta el saldo pendiente restando los pagos del valor total
-    public double getSaldoFolio() {
-        return this.valorTotal - getTotalAbonado();
-    }
-
-    //Permite registrar un abono directo en el Folio y confirma la reserva si alcanza el 30%
-
-
-    //es para forzar el cambio de estado si es necesario
-    public void setEstado(EstadoReserva nuevoEstado) {
-        this.estado = nuevoEstado;
-    }
-
+    // Getters y Setters Estándar
+    public String getCodigoReserva() { return this.codigoFolio; }
+    public LocalDate getFechaInicio() { return this.fechaEntrada; }
+    public LocalDate getFechaFin() { return this.fechaSalida; }
     public String getCodigoFolio() { return codigoFolio; }
     public LocalDate getFechaEntrada() { return fechaEntrada; }
     public LocalDate getFechaSalida() { return fechaSalida; }
     public Canal getCanal() { return canal; }
     public EstadoReserva getEstado() { return estado; }
-
+    public void setEstado(EstadoReserva nuevoEstado) { this.estado = nuevoEstado; }
     public String getCodigoExterno() { return codigoExterno; }
     public void setCodigoExterno(String codigoExterno) { this.codigoExterno = codigoExterno; }
-    public long getValorTotal() { return valorTotal; }
+    public double getComisionPlataforma() { return comisionPlataforma; }
     public LocalDateTime getFechaHoraCreacion() { return fechaHoraCreacion; }
     public Huesped getTitular() { return titular; }
+    public void setTitular(Huesped titular) { this.titular = titular; }
     public Apartamento getApartamento() { return apartamento; }
     public void setApartamento(Apartamento apartamento) { this.apartamento = apartamento; }
-
+    public Empleado getEmpleado() { return empleado; }
+    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
     public Folio getFolio() { return folio; }
     public List<Ocupante> getOcupantes() { return ocupantes; }
     public List<DetalleNocheReserva> getDetallesReserva() { return detallesReserva; }
-
-    @Override
-    public String toString() {
-        return "Reserva " + codigoFolio + " - " + estado + " (" + fechaEntrada + " a " + fechaSalida + ")";
-    }
 }
