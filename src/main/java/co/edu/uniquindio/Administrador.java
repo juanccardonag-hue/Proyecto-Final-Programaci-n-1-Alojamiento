@@ -18,23 +18,11 @@ public class Administrador extends Empleado {
 
     // Seguridad y autenticación
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
-        return this.usuario.equalsIgnoreCase(usuarioIngresado) && this.contrasenia.equals(contrasenaIngresada);
-    }
-
-    public boolean loginAdmin() {
-        String usuarioInput = JOptionPane.showInputDialog("Ingresa tu usuario:");
-        if (usuarioInput == null || usuarioInput.trim().isEmpty()) return false;
-
-        String claveInput = JOptionPane.showInputDialog("Ingresa tu contraseña:");
-        if (claveInput == null || claveInput.trim().isEmpty()) return false;
-
-        if (autenticar(usuarioInput.trim(), claveInput.trim())) {
-            JOptionPane.showMessageDialog(null, "¡Bienvenido/a Administrador/a " + getNombre() + "! ˶˃ᵕ˂˶");
-            return true;
+        if (usuarioIngresado == null || contrasenaIngresada == null) {
+            return false;
         }
-
-        JOptionPane.showMessageDialog(null, "⚠ Usuario o contraseña de  incorrectos", "Error de Autenticación ⚠❗", JOptionPane.ERROR_MESSAGE);
-        return false;
+        return this.usuario.equalsIgnoreCase(usuarioIngresado.trim())
+                && this.contrasenia.equals(contrasenaIngresada.trim());
     }
 
     // Control de acceso
