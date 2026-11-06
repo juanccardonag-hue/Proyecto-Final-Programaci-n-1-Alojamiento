@@ -62,9 +62,7 @@ public class Empresa {
             opcionRecepcionista = Integer.parseInt(inputRecepcionista);
             switch (opcionRecepcionista) {
                 case 1:
-<<<<<<< HEAD
                     recepcionistaAutenticado.registrarReservaDirecta(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
-=======
                     Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
 
                     if (huespedAutenticado == null) {
@@ -118,7 +116,6 @@ public class Empresa {
                                 break;
                         }
                     } while (opcionHuesped != 0);
->>>>>>> d0885ff938e9342d5580e420ccc120718bab2791
                     break;
                 case 2:
                     recepcionistaAutenticado.registrarReservaExterna(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
@@ -222,7 +219,7 @@ public class Empresa {
             }
         } while (opcionAdmin != 0);
     }
-    public void abrirMenuHuesped(){
+    /*public void abrirMenuHuesped(){
         Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
         if (huespedAutenticado == null) {
             return;
@@ -275,9 +272,28 @@ public class Empresa {
                     break;
             }
         } while (opcionHuesped != 0);
-    }
+    }*/
 
     public Administrador getAdministrador() {
         return administrador;
+    }
+    public List<Empleado> getListaEmpleados() {
+        return listaEmpleados;
+    }
+
+    public List<Apartamento> getListaApartamentos() {
+        return listaApartamentos;
+    }
+
+    public List<Temporada> getListaTemporadas() {
+        return listaTemporadas;
+    }
+
+    public List<Recepcionista> getListaRecepcionistas() {
+        return listaRecepcionistas;
+    }
+
+    public List<Reserva> getListaReservas() {
+        return listaReservas;
     }
 }

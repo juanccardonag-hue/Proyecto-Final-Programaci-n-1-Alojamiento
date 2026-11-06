@@ -4,10 +4,8 @@ import co.edu.uniquindio.Administrador;
 import co.edu.uniquindio.Empresa;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class UI extends JFrame{
+public class UI extends JFrame {
     private JPanel mainPanel;
     private JLabel welcomeTittle;
     private JLabel rolTittle;
@@ -18,7 +16,7 @@ public class UI extends JFrame{
     private Administrador admin;
     private Empresa empresa;
 
-    public UI (Empresa empresa){
+    public UI(Empresa empresa) {
         this.empresa = empresa;
         this.admin = empresa.getAdministrador();
 
@@ -33,18 +31,13 @@ public class UI extends JFrame{
         initListeners();
     }
 
-    private void initListeners(){
+    private void initListeners() {
         adminBtn.addActionListener(e -> {
             LoginAdmin dialogLogin = new LoginAdmin(this, empresa);
             dialogLogin.setVisible(true); // Se muestra la ventana y espera a que ingrese datos
         });
-        huespedBtn.addActionListener(e -> empresa.abrirMenuHuesped());
+        //huespedBtn.addActionListener(e -> empresa.abrirMenuHuesped());
 
         recepcionistaBtn.addActionListener(e -> empresa.abrirMenuRecepcionista());
-    }
-
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 }

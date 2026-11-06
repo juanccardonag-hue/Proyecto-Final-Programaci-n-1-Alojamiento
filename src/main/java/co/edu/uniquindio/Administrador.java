@@ -21,13 +21,8 @@ public class Administrador extends Empleado {
         if (usuarioIngresado == null || contrasenaIngresada == null) {
             return false;
         }
-<<<<<<< HEAD
         return this.usuario.equalsIgnoreCase(usuarioIngresado.trim())
                 && this.contrasenia.equals(contrasenaIngresada.trim());
-=======
-        JOptionPane.showMessageDialog(null, "⚠ Usuario o contraseña de administración incorrectos", "Error de Autenticación ⚠❗", JOptionPane.ERROR_MESSAGE);
-        return false;
->>>>>>> d0885ff938e9342d5580e420ccc120718bab2791
     }
 
     // --- Control de Acceso y Credenciales ---
