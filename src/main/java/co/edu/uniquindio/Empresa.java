@@ -28,9 +28,6 @@ public class Empresa {
 
         // Administrador de prueba
         this.administrador = new Administrador("41911188", "Jhon Mendez", LocalDate.of(1967, 11, 13), "3219393229", "mendezj@hotel.com", "adminPrincipal", "jhon-123");
-
-        // Recepcionista de prueba
-        this.listaRecepcionistas.add(new Recepcionista("1094000111", "Fanny Morales", LocalDate.of(1967, 2, 19), "3001234567", "fannyM@hotel.com", "recep01", "fanny-123"));
     }
 
     public String getNit() { return nit; }
@@ -168,6 +165,11 @@ public class Empresa {
                     break;
 
                 case 3:
+                    Recepcionista recepcionistaAutenticado = Recepcionista.loginRecepcionista(listaRecepcionistas);
+
+                        if (recepcionistaAutenticado == null) {
+                        break;
+                    }
                     int opcionRecepcionista;
                     do {
                         String menuRecepcionista = "⏔⏔⏔ ꒰ Menu recepcionista ꒱ ⏔⏔⏔ \n\n" +
@@ -190,14 +192,31 @@ public class Empresa {
                         opcionRecepcionista = Integer.parseInt(inputRecepcionista);
                         switch (opcionRecepcionista) {
                             case 1:
+                                recepcionistaAutenticado.registrarReservaDirecta(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
+                                break;
                             case 2:
+                                recepcionistaAutenticado.registrarReservaExterna(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
+                                break;
                             case 3:
+                                recepcionistaAutenticado.confirmarReserva(listaReservas);
+                                break;
                             case 4:
+                                recepcionistaAutenticado.realizarCheckIn(listaReservas);
+                                break;
                             case 5:
+                                recepcionistaAutenticado.realizarCheckOut(listaReservas);
+                                break;
                             case 6:
+                                recepcionistaAutenticado.gestionarFolio(listaReservas);
+                                break;
                             case 7:
+                                recepcionistaAutenticado.cambiarEstadoApartamento(listaApartamentos);
+                                break;
                             case 8:
+                                recepcionistaAutenticado.registrarNovedadApartamento(listaApartamentos);
+                                break;
                             case 9:
+                                recepcionistaAutenticado.declararNoShow(listaReservas);
                                 break;
                             case 0:
                                 break;
