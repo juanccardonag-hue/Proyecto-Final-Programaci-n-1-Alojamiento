@@ -62,7 +62,9 @@ public class Empresa {
             opcionRecepcionista = Integer.parseInt(inputRecepcionista);
             switch (opcionRecepcionista) {
                 case 1:
+
                     recepcionistaAutenticado.registrarReservaDirecta(listaHuespedes, listaApartamentos, listaReservas, listaTemporadas);
+
                     Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
 
                     if (huespedAutenticado == null) {
@@ -219,7 +221,7 @@ public class Empresa {
             }
         } while (opcionAdmin != 0);
     }
-    /*public void abrirMenuHuesped(){
+    public void abrirMenuHuesped(){
         Huesped huespedAutenticado = Huesped.loginHuesped(listaHuespedes);
         if (huespedAutenticado == null) {
             return;
@@ -251,10 +253,10 @@ public class Empresa {
                     huespedAutenticado.actualizarPerfilMenu();
                     break;
                 case 3:
-                    huespedAutenticado.cotizarEstanciaMenu(listaApartamentos);
+                    huespedAutenticado.cotizarEstanciaMenu(listaApartamentos, listaTemporadas);
                     break;
                 case 4:
-                    huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas);
+                    huespedAutenticado.crearReservaPortalMenu(listaApartamentos, listaReservas, listaTemporadas);
                     break;
                 case 5:
                     huespedAutenticado.realizarAbonoMenu();
@@ -272,11 +274,21 @@ public class Empresa {
                     break;
             }
         } while (opcionHuesped != 0);
-    }*/
+    }
 
+    // --- GETTERS ---
     public Administrador getAdministrador() {
         return administrador;
     }
+
+    public List<Huesped> getListaHuespedes() {
+        return listaHuespedes;
+    }
+
+    public List<Recepcionista> getListaRecepcionistas() {
+        return listaRecepcionistas;
+    }
+
     public List<Empleado> getListaEmpleados() {
         return listaEmpleados;
     }
@@ -287,10 +299,6 @@ public class Empresa {
 
     public List<Temporada> getListaTemporadas() {
         return listaTemporadas;
-    }
-
-    public List<Recepcionista> getListaRecepcionistas() {
-        return listaRecepcionistas;
     }
 
     public List<Reserva> getListaReservas() {
