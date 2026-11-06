@@ -562,13 +562,13 @@ public class Administrador extends Empleado {
             return;
         }
 
-        String fInicioStr = JOptionPane.showInputDialog("Fecha inicio (AAAA-MM-DD):");
-        String fFinStr = JOptionPane.showInputDialog("Fecha fin (AAAA-MM-DD):");
+        String fInicio = JOptionPane.showInputDialog("Fecha inicio (AAAA-MM-DD):");
+        String fFin = JOptionPane.showInputDialog("Fecha fin (AAAA-MM-DD):");
 
-        if (fInicioStr != null && fFinStr != null) {
+        if (fInicio != null && fFin != null) {
             try {
-                LocalDate inicio = LocalDate.parse(fInicioStr.trim());
-                LocalDate fin = LocalDate.parse(fFinStr.trim());
+                LocalDate inicio = LocalDate.parse(fInicio.trim());
+                LocalDate fin = LocalDate.parse(fFin.trim());
 
                 long noches = calcularNochesOcupadasApartamento(aptoEncontrado, listaReservas, inicio, fin);
                 JOptionPane.showMessageDialog(null, "El apartamento " + aptoEncontrado.getCodigo() + " tiene " + noches + " noches ocupadas en el periodo.");
@@ -579,13 +579,13 @@ public class Administrador extends Empleado {
     }
 
     public void reporteIngresosPeriodo(List<Reserva> listaReservas) {
-        String fInicioStr = JOptionPane.showInputDialog("Fecha inicio (AAAA-MM-DD):");
-        String fFinStr = JOptionPane.showInputDialog("Fecha fin (AAAA-MM-DD):");
+        String fInicio = JOptionPane.showInputDialog("Fecha inicio (AAAA-MM-DD):");
+        String fFin = JOptionPane.showInputDialog("Fecha fin (AAAA-MM-DD):");
 
-        if (fInicioStr != null && fFinStr != null) {
+        if (fInicio != null && fFin != null) {
             try {
-                LocalDate inicio = LocalDate.parse(fInicioStr.trim());
-                LocalDate fin = LocalDate.parse(fFinStr.trim());
+                LocalDate inicio = LocalDate.parse(fInicio.trim());
+                LocalDate fin = LocalDate.parse(fFin.trim());
 
                 long ingresos = calcularIngresosPeriodo(listaReservas, inicio, fin);
                 JOptionPane.showMessageDialog(null, "Ingresos totales en el período: $" + ingresos);
@@ -607,7 +607,6 @@ public class Administrador extends Empleado {
             JOptionPane.showMessageDialog(null, "Total de reservas realizadas vía " + canalSeleccionado + ": " + total);
         }
     }
-
     public void reporteSaldosPendientes(List<Reserva> listaReservas) {
         List<Reserva> pendientes = obtenerReservasSaldoPendiente(listaReservas);
         if (pendientes.isEmpty()) {
@@ -615,14 +614,15 @@ public class Administrador extends Empleado {
             return;
         }
 
-        StringBuilder sb = new StringBuilder(" ‧₊˚✧ Reservas con saldo pendiente ✧˚₊‧ \n\n");
+        String mensaje = " ‧₊˚✧ Reservas con saldo pendiente ✧˚₊‧ \n\n";
         for (Reserva r : pendientes) {
-            sb.append("Código: ").append(r.getCodigoReserva())
-                    .append(" | Apartamento: ").append(r.getApartamento().getCodigo())
-                    .append(" | Saldo Pendiente: $").append(r.getSaldoFolio()).append("\n");
+            mensaje += "Código: " + r.getCodigoReserva() +
+                    " | Apartamento: " + r.getApartamento().getCodigo() +
+                    " | Saldo Pendiente: $" + r.getSaldoFolio() + "\n";
         }
-        JOptionPane.showMessageDialog(null, sb.toString());
+        JOptionPane.showMessageDialog(null, mensaje);
     }
+
 
     public void reporteApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
         Apartamento apto = obtenerApartamentoNovedades(listaApartamentos);

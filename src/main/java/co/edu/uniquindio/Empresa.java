@@ -41,12 +41,12 @@ public class Empresa {
     public void menu() {
         int opcion;
         do {
-            String menuPrinci = " ⊹₊˚‧︵‿₊୨ Menu Aparta-Suites UQ ୧₊‿︵‧˚₊⊹ \n\n" +
-                    "⋅★ Selecciona un rol del siguiente menu: ★⋅ \n" +
+            String menuPrinci = " ⊹₊˚‧︵‿₊୨ Menú Aparta-Suites UQ ୧₊‿︵‧˚₊⊹ \n\n" +
+                    "⋅★ Selecciona un rol del siguiente menú: ★⋅ \n" +
                     "1. Soy huesped \n" +
                     "2. Soy administrador \n" +
                     "3. Soy recepcionista \n" +
-                    "0. Salir del menu";
+                    "0. Salir del menú";
 
             String mostrarMenu = JOptionPane.showInputDialog(menuPrinci);
             if (mostrarMenu == null) {
@@ -58,15 +58,15 @@ public class Empresa {
                 case 1:
                     int opcionHuesped;
                     do {
-                        String menuHuesped = "⏔⏔⏔ ꒰ Menu huesped ꒱ ⏔⏔⏔ \n\n" +
-                                "Selecciona una opcion del siguiente menu: \n" +
+                        String menuHuesped = "⏔⏔⏔ ꒰ Menú huesped ꒱ ⏔⏔⏔ \n\n" +
+                                "Selecciona una opcion del siguiente menú: \n" +
                                 "1. Registar datos personales\n" +
                                 "2. Gestionar datos personales\n" +
                                 "3. Cotizar estancia\n" +
-                                "4. Reservar por el portal (se pedira registro de los ocupantes donde se pide su fecha de nacimiento entre otros datos)\n" +
+                                "4. Reservar por el portal (se pedirá registro de los ocupantes de su fecha de nacimiento, entre otros datos..)\n" +
                                 "5. Pago anticipado y/o abono al folio (cuenta)\n" +
-                                "6. Conusltar reservas, estado, y saldo de cada folio \n" +
-                                "7. Cancelar un reserva pendiente o confirmada\n" +
+                                "6. Consultar reservas, estado y saldo de cada folio \n" +
+                                "7. Cancelar una reserva pendiente o confirmada\n" +
                                 "0. Volver \n";
                         String inputHuesped = JOptionPane.showInputDialog(menuHuesped);
                         if (inputHuesped == null) {
@@ -91,7 +91,7 @@ public class Empresa {
                             case 0:
                                 break;
                             default:
-                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opcion valida ⚠ ");
+                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opción valida ⚠ ");
                                 break;
                         }
                     } while (opcionHuesped != 0);
@@ -103,16 +103,16 @@ public class Empresa {
                     }
                     int opcionAdmin;
                     do {
-                        String menuAdmin = "⏔⏔⏔ ꒰ Menu administrador/a ꒱ ⏔⏔⏔ \n\n" +
-                                "Selecciona una opcion del siguiente menu: \n" +
-                                "1. Gestionar empleados (contratos, desvinculacion, entre otros)\n" +
+                        String menuAdmin = "⏔⏔⏔ ꒰ Menú administrador/a ꒱ ⏔⏔⏔ \n\n" +
+                                "Selecciona una opción del siguiente menú: \n" +
+                                "1. Gestionar empleados (contratos, desvinculación, entre otros..)\n" +
                                 "2. Modificar apartamentos \n" +
                                 "3. Definir fechas de temporada y sus costos por apto \n" +
-                                "4. Configurar la politica de cancelacion \n" +
+                                "4. Configurar la politica de cancelación \n" +
                                 "5. Registro de rangos de fechas en que un apartamento no se puede vender y su motivo\n" +
                                 "6. Control de acceso de cada rol mediante usuario y contraseña \n\n" +
                                 " . ݁₊ ⊹ . ݁ Consulta de reportes avanzados: ݁ . ⊹ ₊ ݁.\n" +
-                                "7. Ocupacion por apartamento \n" +
+                                "7. Ocupación por apartamento \n" +
                                 "8. Ingresos por periodo \n" +
                                 "9. Reservas por canal \n" +
                                 "10. Saldos pendientes \n" +
@@ -161,7 +161,7 @@ public class Empresa {
                             case 0:
                                 break;
                             default:
-                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opcion valida ⚠");
+                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opción valida ⚠");
                                 break;
                         }
                     } while (opcionAdmin != 0);
@@ -170,8 +170,8 @@ public class Empresa {
                 case 3:
                     int opcionRecepcionista;
                     do {
-                        String menuRecepcionista = "⏔⏔⏔ ꒰ Menu recepcionista ꒱ ⏔⏔⏔ \n\n" +
-                                "Selecciona una opcion del siguiente menu: \n" +
+                        String menuRecepcionista = "⏔⏔⏔ ꒰ Menú recepcionista ꒱ ⏔⏔⏔ \n\n" +
+                                "Selecciona una opción del siguiente menú: \n" +
                                 "1. Registro de reservas para huespedes \n" +
                                 "2. Recepción de reservas del canal Externo, con su código de plataforma\n" +
                                 "3. Confrimar reservas pendientes \n" +
@@ -179,7 +179,7 @@ public class Empresa {
                                 "5. Registro de chek-out (salida) de los grupos\n" +
                                 "6. Registro de pagos y de cargos por servicios adicionales en el folio\n" +
                                 "7. Cambiar el estado operativo de los apartamentos \n" +
-                                "8. Registar de novedades en apto \n" +
+                                "8. Registar novedades en apto \n" +
                                 "9. Declarar un no-show \n" +
                                 "0. Volver \n";
 
@@ -190,19 +190,28 @@ public class Empresa {
                         opcionRecepcionista = Integer.parseInt(inputRecepcionista);
                         switch (opcionRecepcionista) {
                             case 1:
+
                             case 2:
+
                             case 3:
+
                             case 4:
+
                             case 5:
+
                             case 6:
+
                             case 7:
+
                             case 8:
+
                             case 9:
+
                                 break;
                             case 0:
                                 break;
                             default:
-                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opcion valida ⚠");
+                                JOptionPane.showMessageDialog(null, "⚠ Por favor ingresa una opción valida ⚠");
                                 break;
                         }
                     } while (opcionRecepcionista != 0);
@@ -212,7 +221,7 @@ public class Empresa {
                     JOptionPane.showMessageDialog(null, "─── ⋆⋅☆ Programa finalizado ☆⋅⋆ ──");
                     break;
                 default:
-                    JOptionPane.showMessageDialog(null, " ⚠ Por favor ingresa una opcion valida ⚠");
+                    JOptionPane.showMessageDialog(null, " ⚠ Por favor ingresa una opción valida ⚠");
                     break;
             }
         } while (opcion != 0);
