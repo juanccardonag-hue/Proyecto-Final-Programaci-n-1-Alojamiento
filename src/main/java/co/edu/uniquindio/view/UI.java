@@ -20,11 +20,6 @@ public class UI extends JFrame {
     public UI(Empresa empresa) {
         this.empresa = empresa;
         this.admin = empresa.getAdministrador();
-
-        // ----------------------------------------------------
-        // 1. INTEGRAR EL FONDO CON LA IMAGEN DE RESOURCES
-        // ----------------------------------------------------
-        // Reemplaza "/fondo.jpg" con el nombre exacto de tu archivo en resources (ej. "/fondo.png")
         PanelConFondo fondo = new PanelConFondo("/fondo.jpg");
         fondo.setLayout(new BorderLayout());
 
@@ -41,9 +36,7 @@ public class UI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // ----------------------------------------------------
-        // 2. ESTILOS Y TEXTOS BONITOS EN PALETA ROSA
-        // ----------------------------------------------------
+        //texto en letra rosada
         welcomeTittle.setText("<html><center>"
                 + "<h1 style='color: #4A2E35; font-family: Segoe UI;'>¡Bienvenido/a!</h1>"
                 + "<p style='color: #7A5A62; font-size: 13px;'>Sistema de gestión de alojamientos de <b>Aparta-Suites UQ</b></p>"
@@ -74,10 +67,13 @@ public class UI extends JFrame {
             opciones.setVisible(true);
         });
 
-        recepcionistaBtn.addActionListener(e -> empresa.abrirMenuRecepcionista());
+        recepcionistaBtn.addActionListener(e -> {
+            LoginRecepcionista loginRecepcion = new LoginRecepcionista(this, empresa);
+            loginRecepcion.setVisible(true);
+        });
     }
 
-    // Método para darle diseño rosa translúcido a los botones del form
+    // metodo para darle diseño a los botones principales
     private void estilizarBoton(JButton btn, String emoji, String texto) {
         if (btn == null) return;
 
@@ -93,7 +89,7 @@ public class UI extends JFrame {
                 BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
 
-        // Efecto hover al pasar el ratón
+        // Efecto hover al pasar el mouse
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(new Color(253, 225, 233));

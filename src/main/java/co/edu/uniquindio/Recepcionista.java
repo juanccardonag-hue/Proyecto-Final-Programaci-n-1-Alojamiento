@@ -442,4 +442,5 @@ public class Recepcionista extends Empleado {
         }
         return null;
     }
+
 }
