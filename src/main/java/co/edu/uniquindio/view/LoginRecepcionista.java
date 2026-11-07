@@ -1,5 +1,6 @@
 package co.edu.uniquindio.view;
 
+import co.edu.uniquindio.Empleado;
 import co.edu.uniquindio.Empresa;
 import co.edu.uniquindio.Recepcionista;
 
@@ -27,10 +28,7 @@ public class LoginRecepcionista extends JDialog {
     }
 
     private void initListeners() {
-        // Evento botón Iniciar Sesión
         buttonSesion.addActionListener(e -> iniciarSesion());
-
-        // Evento botón Volver
         buttonVolver.addActionListener(e -> dispose());
     }
 
@@ -38,7 +36,7 @@ public class LoginRecepcionista extends JDialog {
         String usuario = inputUsuario.getText().trim();
         String contrasena = inputContrasena.getText().trim();
 
-        // 1. Validar campos vacíos
+        //  Validar campos vacíos
         if (usuario.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Por favor ingresa tu usuario y contraseña.",
@@ -47,7 +45,7 @@ public class LoginRecepcionista extends JDialog {
             return;
         }
 
-        // 2. Autenticación con la lista de recepcionistas de la empresa
+        // Autenticación con la lista de recepcionistas de la empresa
         Recepcionista recepcionistaEncontrado = null;
 
         if (empresa.getListaRecepcionistas() != null) {
@@ -60,18 +58,17 @@ public class LoginRecepcionista extends JDialog {
             }
         }
 
-        // 3. Resultado de la autenticación
         if (recepcionistaEncontrado != null) {
             JOptionPane.showMessageDialog(this,
                     "¡Bienvenido/a, " + recepcionistaEncontrado.getNombre() + "!",
                     "Acceso Concedido 🎉",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            dispose(); // Cierra esta ventana modal
+            dispose();
 
-            // Abrir el menú principal del recepcionista
-            // MenuRecepcionistaView menu = new MenuRecepcionistaView((JFrame) getParent(), empresa, recepcionistaEncontrado);
-            // menu.setVisible(true);
+            // Abrir el Menú de Recepcionista
+            menuRecepcionista menu = new menuRecepcionista(null, empresa, (Empleado) recepcionistaEncontrado);
+            menu.setVisible(true);
 
         } else {
             JOptionPane.showMessageDialog(this,
