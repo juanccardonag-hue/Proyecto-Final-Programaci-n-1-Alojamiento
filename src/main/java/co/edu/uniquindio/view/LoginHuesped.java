@@ -6,7 +6,6 @@ import co.edu.uniquindio.Huesped;
 import javax.swing.*;
 
 public class LoginHuesped extends JDialog {
-    // Variables vinculadas exactamente con el Component Tree del diseñador .form
     private JPanel contentPane;
     private JButton btnIngreso;
     private JTextField inputCedula;
@@ -14,10 +13,12 @@ public class LoginHuesped extends JDialog {
     private JButton buttonCancel;
 
     private Empresa empresa;
+    private JFrame parentFrame;
 
     public LoginHuesped(JFrame parent, Empresa empresa) {
         super(parent, "Login Huésped", true);
         this.empresa = empresa;
+        this.parentFrame = parent;
 
         setContentPane(contentPane);
         setSize(400, 300);
@@ -46,11 +47,13 @@ public class LoginHuesped extends JDialog {
 
         // Validación del huésped por cédula o correo
         Huesped huespedAutenticado = null;
-        for (Huesped h : empresa.getListaHuespedes()) {
-            if ((h.getCedula().equalsIgnoreCase(cedula) || h.getCorreo().equalsIgnoreCase(cedula))
-                    && h.getContrasena().equals(contrasena)) {
-                huespedAutenticado = h;
-                break;
+        if (empresa.getListaHuespedes() != null) {
+            for (Huesped h : empresa.getListaHuespedes()) {
+                if ((h.getCedula().equalsIgnoreCase(cedula) || h.getCorreo().equalsIgnoreCase(cedula))
+                        && h.getContrasena().equals(contrasena)) {
+                    huespedAutenticado = h;
+                    break;
+                }
             }
         }
 
@@ -61,7 +64,10 @@ public class LoginHuesped extends JDialog {
                     JOptionPane.INFORMATION_MESSAGE);
 
             dispose();
-            empresa.abrirMenuHuesped();
+
+            menuHuesped menu = new menuHuesped(parentFrame, empresa);
+            menu.setVisible(true);
+
         } else {
             JOptionPane.showMessageDialog(this,
                     "⚠ Cédula/correo o contraseña incorrectos",
