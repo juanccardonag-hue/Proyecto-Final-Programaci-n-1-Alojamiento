@@ -1,6 +1,7 @@
 package co.edu.uniquindio.view;
 
 import co.edu.uniquindio.Empresa;
+import co.edu.uniquindio.Huesped;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,13 +18,15 @@ public class menuHuesped extends JDialog {
     private JButton btnCerrar;
 
     private Empresa empresa;
+    private Huesped huespedActual;
 
-    public menuHuesped(JFrame parent, Empresa empresa) {
+    public menuHuesped(JFrame parent, Empresa empresa, Huesped huespedActual) {
         super(parent, "Menú Huésped - Aparta-Suites UQ", true);
         this.empresa = empresa;
+        this.huespedActual = huespedActual;
 
         setContentPane(contentPane);
-        setSize(950, 750); // Tamaño para asegurar que la cuadrícula se vea completa y holgada
+        setSize(950, 750);
         setResizable(false);
         setLocationRelativeTo(parent);
 
@@ -32,33 +35,44 @@ public class menuHuesped extends JDialog {
     }
 
     private void initListeners() {
+        // 1. Gestión de Perfil
         btnPerfil.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Gestión Perfil");
+            GestionPerfilHuesped perfilView = new GestionPerfilHuesped(this, empresa, huespedActual);
+            perfilView.setVisible(true);
         });
 
-        // Evento para consultar disponibilidad por fechas
+        // 2. Disponibilidad de Apartamentos
         btnDisponibilidad.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Disponibilidad Apartamento");
+            DisponibilidadAptoHuesped disponibilidadView = new DisponibilidadAptoHuesped(this, empresa, huespedActual);
+            disponibilidadView.setVisible(true);
         });
 
+        // 3. Cotizar Estancia
         btnEstancia.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Cotizar Estancia");
+            CotizarEstanciaHuesped cotizarView = new CotizarEstanciaHuesped(this, empresa, huespedActual);
+            cotizarView.setVisible(true);
         });
 
+        // 4. Reserva Portal (Ya corregido y conectado)
         btnReserva.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Reserva Portal");
+            ReservaPortalHuesped reservaView = new ReservaPortalHuesped(this, empresa, huespedActual);
+            reservaView.setVisible(true);
         });
 
+        // 5. Cartera de Pagos (Conectado con 30% y validación de reserva)
         btnPago.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Pagos");
+            PagosHuesped pagosView = new PagosHuesped(this, empresa, huespedActual);
+            pagosView.setVisible(true);
         });
-
+        // 6. Consultas e historial
         btnConsulta.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Consultas");
+            ConsultasHuesped consultasView = new ConsultasHuesped(this, empresa, huespedActual);
+            consultasView.setVisible(true);
         });
-
+        //cancelacion de reservas
         btnCancelar.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Abrir módulo: Cancelación");
+            CancelarReservaHuesped cancelarView = new CancelarReservaHuesped(this, empresa, huespedActual);
+            cancelarView.setVisible(true);
         });
 
         btnCerrar.addActionListener(e -> dispose());
@@ -69,7 +83,6 @@ public class menuHuesped extends JDialog {
                 "Gestión Perfil",
                 "Información personal<br>Actualizar datos<br>⠀");
 
-        // Configuración para la imagen /disponibilidad.png
         configurarBoton(btnDisponibilidad, "/disponibilidad.png",
                 "Disponibilidad Apto",
                 "Consultar por fechas<br>Filtrar capacidad<br>⠀");

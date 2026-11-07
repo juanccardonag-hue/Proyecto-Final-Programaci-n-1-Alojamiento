@@ -98,4 +98,9 @@ public class Apartamento {
     public void setListNovedad(List<Novedad> listNovedad) {this.listNovedad = listNovedad;}
     public void setPrecioBaja(long precioBaja) {this.precioBaja = precioBaja;}
     public void setPrecioAlta(long precioAlta) {this.precioAlta = precioAlta;}
+    @Override
+    public String toString() {
+        return nombre + " (Cap: " + capaMaxPersona + " pers. - $" + tarifaPersonaNoche + "/noche)";
+    }
+
 }
