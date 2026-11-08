@@ -8,8 +8,6 @@ import java.awt.*;
 
 public class MenuAdmin extends JDialog {
     private JPanel mainPanel;
-    private JLabel tittleGestion;
-    private JLabel tittleReporte;
     private JButton btnEmpleados;
     private JButton btnApartamentos;
     private JButton btnTemporadas;
@@ -30,10 +28,10 @@ public class MenuAdmin extends JDialog {
         this.empresa = empresa;
 
         setContentPane(mainPanel);
-        setSize(950, 750);
+        setSize(1000, 750);
         setResizable(false);
         setLocationRelativeTo(parent);
-
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initListeners();
         icons();
     }
@@ -42,7 +40,10 @@ public class MenuAdmin extends JDialog {
         Administrador admin = empresa.getAdministrador();
 
         //gestión
-        btnEmpleados.addActionListener(e -> admin.gestionarEmpleados(empresa.getListaEmpleados()));
+        btnEmpleados.addActionListener(e -> {
+            MenuGestionEmpleado menuEmp = new MenuGestionEmpleado(this, empresa);
+            menuEmp.setVisible(true);
+        });
         btnApartamentos.addActionListener(e -> admin.gestionarApartamentos(empresa.getListaApartamentos()));
         btnTemporadas.addActionListener(e -> admin.gestionarTemporadaTarifas(empresa.getListaApartamentos(), empresa.getListaTemporadas()));
         btnPolitica.addActionListener(e -> admin.configurarPoliticaCancelacionMenu());
@@ -156,5 +157,4 @@ public class MenuAdmin extends JDialog {
             }
         });
     }
-
 }

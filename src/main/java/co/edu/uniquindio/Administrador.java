@@ -251,27 +251,64 @@ public class Administrador extends Empleado {
     }
 
     public boolean contratarEmpleado(List<Empleado> listaEmpleados, Empleado nuevoEmpleado) {
-        if (nuevoEmpleado == null) return false;
+        if (nuevoEmpleado == null || nuevoEmpleado.getCedula() == null) return false;
+
         for (Empleado e : listaEmpleados) {
-            if (e.getCedula().equals(nuevoEmpleado.getCedula())) return false;
+            if (e.getCedula().equalsIgnoreCase(nuevoEmpleado.getCedula().trim())) {
+                return false;
+            }
         }
+
         listaEmpleados.add(nuevoEmpleado);
         return true;
     }
 
+    public boolean contratarEmpleado(List<Empleado> listaEmpleados, String cedula, String nombre,
+                                     String telefono, String correo, String usuario, String contrasena) {
+        if (cedula == null || cedula.trim().isEmpty() ||
+                nombre == null || nombre.trim().isEmpty() ||
+                usuario == null || usuario.trim().isEmpty() ||
+                contrasena == null || contrasena.trim().isEmpty()) {
+            return false;
+        }
+
+        Recepcionista nuevoRecepcionista = new Recepcionista(
+                cedula.trim(),
+                nombre.trim(),
+                LocalDate.now(),
+                telefono != null ? telefono.trim() : "",
+                correo != null ? correo.trim() : "",
+                usuario.trim(),
+                contrasena.trim()
+        );
+
+        return contratarEmpleado(listaEmpleados, nuevoRecepcionista);
+    }
+
     public boolean editarEmpleado(Empleado empleado, String nuevoNombre, String nuevoTelefono, String nuevoCorreo) {
-        if (empleado != null) {
-            empleado.setNombre(nuevoNombre);
-            empleado.setTelefono(nuevoTelefono);
-            empleado.setCorreo(nuevoCorreo);
+        if (empleado != null && nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+            empleado.setNombre(nuevoNombre.trim());
+
+            if (nuevoTelefono != null) {
+                empleado.setTelefono(nuevoTelefono.trim());
+            } else {
+                empleado.setTelefono("");
+            }
+
+            if (nuevoCorreo != null) {
+                empleado.setCorreo(nuevoCorreo.trim());
+            } else {
+                empleado.setCorreo("");
+            }
             return true;
         }
         return false;
     }
 
     public boolean desvincularEmpleado(List<Empleado> listaEmpleados, String cedula) {
+        if (cedula == null) return false;
         for (int i = 0; i < listaEmpleados.size(); i++) {
-            if (listaEmpleados.get(i).getCedula().equals(cedula)) {
+            if (listaEmpleados.get(i).getCedula().equalsIgnoreCase(cedula.trim())) {
                 listaEmpleados.remove(i);
                 return true;
             }
@@ -608,7 +645,7 @@ public class Administrador extends Empleado {
         return null;
     }
 
-    private Empleado buscarEmpleadoPorCedula(List<Empleado> listaEmpleados, String cedula) {
+    public Empleado buscarEmpleadoPorCedula(List<Empleado> listaEmpleados, String cedula) {
         for (Empleado e : listaEmpleados) {
             if (e.getCedula().equalsIgnoreCase(cedula)) return e;
         }
