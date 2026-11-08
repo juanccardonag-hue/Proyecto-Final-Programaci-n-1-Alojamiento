@@ -16,4 +16,6 @@ public class Empleado extends Persona {
     }
     public String getUsuario() {return usuario;}
     public String getContrasenia() {return contrasenia;}
+    public void setUsuario(String usuario) {this.usuario = usuario;}
+    public void setContrasenia(String contrasenia) {this.contrasenia = contrasenia;}
 }

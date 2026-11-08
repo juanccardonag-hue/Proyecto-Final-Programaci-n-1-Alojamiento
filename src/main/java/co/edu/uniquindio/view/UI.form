@@ -30,7 +30,7 @@
             </constraints>
             <properties>
               <font name="Vensim Sans Mono" size="18" style="1"/>
-              <foreground color="-3797339"/>
+              <foreground color="-16746570"/>
               <text value="Bienvenido/a! Este es el sistema de gestión de alojamientos de Aparta-Suites UQ"/>
             </properties>
           </component>
@@ -42,7 +42,7 @@
               <background color="-1"/>
               <borderPainted value="true"/>
               <font name="Vensim Sans Mono" size="14" style="0"/>
-              <foreground color="-3781447"/>
+              <foreground color="-16746570"/>
               <margin top="10" left="20" bottom="10" right="20"/>
               <text value="Soy administrador"/>
             </properties>
@@ -53,7 +53,7 @@
             </constraints>
             <properties>
               <font name="Vensim Sans Mono" size="14" style="0"/>
-              <foreground color="-3781447"/>
+              <foreground color="-16746570"/>
               <margin top="10" left="20" bottom="10" right="20"/>
               <text value="Soy huesped"/>
             </properties>
@@ -64,7 +64,7 @@
             </constraints>
             <properties>
               <font name="Vensim Sans Mono" size="14" style="0"/>
-              <foreground color="-3781447"/>
+              <foreground color="-16746570"/>
               <margin top="10" left="20" bottom="10" right="20"/>
               <text value="Soy recepcionista"/>
             </properties>

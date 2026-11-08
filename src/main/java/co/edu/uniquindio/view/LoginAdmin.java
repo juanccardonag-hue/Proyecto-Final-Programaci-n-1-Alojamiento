@@ -26,7 +26,7 @@ public class LoginAdmin extends JDialog {
         this.empresa = empresa;
 
         setContentPane(mainPanel);
-        setSize(500, 400);
+        setSize(500, 300);
         setResizable(false);
         setLocationRelativeTo(parent);
 

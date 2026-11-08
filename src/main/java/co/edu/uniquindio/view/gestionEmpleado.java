@@ -34,7 +34,7 @@ public class gestionEmpleado extends JDialog {
             setTitle("Registrar Nuevo Recepcionista");
         } else {
             setTitle("Editar Recepcionista");
-        };
+        }
 
         setContentPane(mainPanel);
         setSize(800, 650);
@@ -54,13 +54,11 @@ public class gestionEmpleado extends JDialog {
             cargarDatosEmpleado();
         }
 
-        if (this.empleadoEditar != null) {
-            cargarDatosEmpleado();
-        }
         initListeners();
         configurarBoton(btnCancelar, "Cancelar");
         configurarBoton(btnGuardar, "Guardar");
     }
+
     private void configurarBoton(JButton boton, String titulo) {
         if (boton == null) return;
 
@@ -96,11 +94,11 @@ public class gestionEmpleado extends JDialog {
                         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                         g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(java.awt.Color.LIGHT_GRAY);
-                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15); // 15 es el nivel de curvatura
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10) // Margen interno del texto
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
 
@@ -131,6 +129,7 @@ public class gestionEmpleado extends JDialog {
         Administrador admin = empresa.getAdministrador();
         boolean exito;
 
+        // AQUÍ FUE DONDE SE APLICÓ EL CAMBIO
         if (empleadoEditar == null) {
             exito = admin.contratarEmpleado(
                     empresa.getListaEmpleados(),
@@ -138,6 +137,9 @@ public class gestionEmpleado extends JDialog {
             );
         } else {
             exito = admin.editarEmpleado(empleadoEditar, nombre, telefono, correo);
+            if (exito && !contrasena.isEmpty()) {
+                empleadoEditar.setContrasenia(contrasena);
+            }
         }
 
         if (exito) {

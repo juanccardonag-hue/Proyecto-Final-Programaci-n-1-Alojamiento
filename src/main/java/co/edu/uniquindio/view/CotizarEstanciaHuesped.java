@@ -46,12 +46,10 @@ public class CotizarEstanciaHuesped extends JDialog {
             }
         }
     }
-
     private void initListeners() {
         buttonOK.addActionListener(e -> calcularCotizacion());
         buttonCancel.addActionListener(e -> dispose());
     }
-
     private void calcularCotizacion() {
         Apartamento aptoSeleccionado = (Apartamento) comboBox1.getSelectedItem();
         String inicioStr = inputFechaInicio.getText().trim();
@@ -97,7 +95,6 @@ public class CotizarEstanciaHuesped extends JDialog {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
             if (fin.isBefore(inicio) || fin.isEqual(inicio)) {
                 JOptionPane.showMessageDialog(this,
                         "La fecha final debe ser posterior a la fecha de inicio.",

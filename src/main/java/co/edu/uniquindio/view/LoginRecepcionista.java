@@ -19,8 +19,10 @@ public class LoginRecepcionista extends JDialog {
         super(parent, "Iniciar Sesión - Recepcionista", true);
         this.empresa = empresa;
 
-        setContentPane(contentPane);
-        setSize(420, 320);
+        if (contentPane != null) {
+            setContentPane(contentPane);
+        }
+        pack();
         setResizable(false);
         setLocationRelativeTo(parent);
 
@@ -28,15 +30,19 @@ public class LoginRecepcionista extends JDialog {
     }
 
     private void initListeners() {
-        buttonSesion.addActionListener(e -> iniciarSesion());
-        buttonVolver.addActionListener(e -> dispose());
+        if (buttonSesion != null) {
+            buttonSesion.addActionListener(e -> iniciarSesion());
+        }
+        if (buttonVolver != null) {
+            buttonVolver.addActionListener(e -> dispose());
+        }
     }
 
     private void iniciarSesion() {
         String usuario = inputUsuario.getText().trim();
         String contrasena = inputContrasena.getText().trim();
 
-        //  Validar campos vacíos
+        // 1. Validar campos vacíos
         if (usuario.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Por favor ingresa tu usuario y contraseña.",
@@ -45,29 +51,53 @@ public class LoginRecepcionista extends JDialog {
             return;
         }
 
-        // Autenticación con la lista de recepcionistas de la empresa
-        Recepcionista recepcionistaEncontrado = null;
+        Empleado recepcionistaEncontrado = null;
 
+        // 2. Buscar primero en listaRecepcionistas si existe
         if (empresa.getListaRecepcionistas() != null) {
             for (Recepcionista r : empresa.getListaRecepcionistas()) {
-                if ((r.getCedula().equalsIgnoreCase(usuario) || r.getCorreo().equalsIgnoreCase(usuario))
-                        && r.getContrasenia().equals(contrasena)) {
+                boolean coincideId = (r.getUsuario() != null && r.getUsuario().equalsIgnoreCase(usuario))
+                        || (r.getCedula() != null && r.getCedula().equalsIgnoreCase(usuario))
+                        || (r.getCorreo() != null && r.getCorreo().equalsIgnoreCase(usuario));
+
+                boolean coincideClave = r.getContrasenia() != null && r.getContrasenia().equals(contrasena);
+
+                if (coincideId && coincideClave) {
                     recepcionistaEncontrado = r;
                     break;
                 }
             }
         }
 
+        // 3. Si no se encontró arriba, buscar en listaEmpleados (para los creados desde gestionEmpleado)
+        if (recepcionistaEncontrado == null && empresa.getListaEmpleados() != null) {
+            for (Empleado emp : empresa.getListaEmpleados()) {
+                if (emp instanceof Recepcionista || emp.getClass().getSimpleName().equalsIgnoreCase("Recepcionista") || emp.getUsuario() != null) {
+                    boolean coincideId = (emp.getUsuario() != null && emp.getUsuario().equalsIgnoreCase(usuario))
+                            || (emp.getCedula() != null && emp.getCedula().equalsIgnoreCase(usuario))
+                            || (emp.getCorreo() != null && emp.getCorreo().equalsIgnoreCase(usuario));
+
+                    boolean coincideClave = emp.getContrasenia() != null && emp.getContrasenia().equals(contrasena);
+
+                    if (coincideId && coincideClave) {
+                        recepcionistaEncontrado = emp;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 4. Resultado de la autenticación
         if (recepcionistaEncontrado != null) {
             JOptionPane.showMessageDialog(this,
                     "¡Bienvenido/a, " + recepcionistaEncontrado.getNombre() + "!",
                     "Acceso Concedido 🎉",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            dispose();
+            dispose(); // Cerrar ventana de Login
 
-            // Abrir el Menú de Recepcionista
-            menuRecepcionista menu = new menuRecepcionista(null, empresa, (Empleado) recepcionistaEncontrado);
+            // Abrir Menú de Recepcionista
+            menuRecepcionista menu = new menuRecepcionista(null, empresa, recepcionistaEncontrado);
             menu.setVisible(true);
 
         } else {
