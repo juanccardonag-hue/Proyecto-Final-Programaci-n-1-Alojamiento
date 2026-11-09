@@ -20,15 +20,12 @@ public class UI extends JFrame {
     public UI(Empresa empresa) {
         this.empresa = empresa;
         this.admin = empresa.getAdministrador();
-        PanelConFondo fondo = new PanelConFondo("/fondo.jpg");
-        fondo.setLayout(new BorderLayout());
 
-        // Hacemos el mainPanel transparente para que se vea la imagen detrás
-        mainPanel.setOpaque(false);
-        fondo.add(mainPanel, BorderLayout.CENTER);
-
-        // Establecemos el panel con fondo como el panel principal de la ventana
-        setContentPane(fondo);
+        if (mainPanel != null) {
+            mainPanel.setOpaque(true);
+            mainPanel.setBackground(new Color(240, 244, 248)); // #F0F4F8
+            setContentPane(mainPanel);
+        }
 
         // Configuración de la ventana
         setTitle("Gestión Aparta-Suites UQ");
@@ -36,19 +33,17 @@ public class UI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        //texto en letra rosada
         welcomeTittle.setText("<html><center>"
-                + "<h1 style='color: #4A2E35; font-family: Segoe UI;'>¡Bienvenido/a!</h1>"
-                + "<p style='color: #7A5A62; font-size: 13px;'>Sistema de gestión de alojamientos de <b>Aparta-Suites UQ</b></p>"
+                + "<h1 style='color: #1B365D; font-family: Segoe UI;'>¡Bienvenido/a!</h1>"
+                + "<p style='color: #335C8D; font-size: 13px;'>Sistema de gestión de alojamientos de <b>Aparta-Suites UQ</b></p>"
                 + "</center></html>");
         welcomeTittle.setHorizontalAlignment(SwingConstants.CENTER);
 
         if (rolTittle != null) {
-            rolTittle.setText("<html><center><b style='color: #8C4A5A; font-size: 14px;'>Selecciona el rol a gestionar:</b></center></html>");
+            rolTittle.setText("<html><center><b style='color: #2C3E50; font-size: 14px;'>Selecciona el rol a gestionar:</b></center></html>");
             rolTittle.setHorizontalAlignment(SwingConstants.CENTER);
         }
 
-        // Estilizar los 3 botones para que tengan ícono y no se corte el texto
         estilizarBoton(adminBtn, "🔑", "Soy administrador");
         estilizarBoton(huespedBtn, "🧳", "Soy huésped");
         estilizarBoton(recepcionistaBtn, "👨‍💼", "Soy recepcionista");
@@ -73,7 +68,6 @@ public class UI extends JFrame {
         });
     }
 
-    // metodo para darle diseño a los botones principales
     private void estilizarBoton(JButton btn, String emoji, String texto) {
         if (btn == null) return;
 
@@ -81,26 +75,28 @@ public class UI extends JFrame {
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Blanco ligeramente rosado y translúcido
-        btn.setBackground(new Color(255, 245, 247, 230));
-        btn.setForeground(new Color(74, 46, 53));
+        // Blanco azulado suave
+        btn.setBackground(new Color(245, 248, 252));
+        btn.setForeground(new Color(27, 54, 93)); // #1B365D
         btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(218, 165, 178), 2, true),
+                BorderFactory.createLineBorder(new Color(180, 205, 230), 2, true),
                 BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
 
-        // Efecto hover al pasar el mouse
+        // Efecto hover al pasar el mouse (se vuelve un azul más vivo al entrar y vuelve al original al salir)
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(253, 225, 233));
+                btn.setBackground(new Color(220, 235, 248));
             }
+
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(255, 245, 247, 230));
+                btn.setBackground(new Color(245, 248, 252));
             }
         });
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 }

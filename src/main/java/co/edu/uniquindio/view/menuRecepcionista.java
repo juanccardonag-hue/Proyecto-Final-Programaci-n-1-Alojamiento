@@ -20,6 +20,7 @@ public class menuRecepcionista extends JDialog {
     private JButton btnNovedades;
     private JButton btnNoShow;
     private JButton buttonCancel;
+    private Recepcionista recepcionistaLogueado;
 
     private Empresa empresa;
     private Recepcionista recepcionistaActual;
@@ -65,55 +66,54 @@ public class menuRecepcionista extends JDialog {
             });
         }
 
-//        // 4. Check-In de Grupos
-//        if (btnCheckIn != null) {
-//            btnCheckIn.addActionListener(e -> {
-//                if (recepcionistaActual != null) {
-//                    recepcionistaActual.realizarCheckIn(empresa.getListaReservas());
-//                }
-//            });
-//        }
-//        // 5. Check-Out de Grupos
-//        if (btnCheckOut != null) {
-//            btnCheckOut.addActionListener(e -> {
-//                if (recepcionistaActual != null) {
-//                    recepcionistaActual.realizarCheckOut(empresa.getListaReservas());
-//                }
-//            });
-//        }
-//        // 6. Registro de Pagos y Cargos en Folio
-//        if (btnPagos != null) {
-//            btnPagos.addActionListener(e -> {
-//                if (recepcionistaActual != null) {
-//                    recepcionistaActual.gestionarFolio(empresa.getListaReservas());
-//                }
-//            });
-//        }
-//        // 7. Cambio de Estado Operativo de Apartamentos
-//        if (btnCambioEstado != null) {
-//            btnCambioEstado.addActionListener(e -> {
-//                if (recepcionistaActual != null) {
-//                    recepcionistaActual.cambiarEstadoApartamento(empresa.getListaApartamentos());
-//                }
-//            });
-//        }
-//        // 8. Registrar Novedades en Apartamento
-//        if (btnNovedades != null) {
-//            btnNovedades.addActionListener(e -> {
-//                if (recepcionistaActual != null) {
-//                    recepcionistaActual.registrarNovedadApartamento(empresa.getListaApartamentos());
-//                }
-//            });
-//        }
-//        // 9. Declarar No-Show
-//        if (btnNoShow != null) {
-//            btnNoShow.addActionListener(e -> {
-//                if (recepcionistaActual != null) {
-//                    recepcionistaActual.declararNoShow(empresa.getListaReservas());
-//                }
-//            });
-//        }
-        // Volver / Cerrar Sesión
+        // 4. Check-In de Grupos / Individual
+        if (btnCheckIn != null) {
+            btnCheckIn.addActionListener(e -> {
+                CheckInRecepcionista ventanaCheckIn = new CheckInRecepcionista(this, empresa);
+                ventanaCheckIn.setVisible(true);
+            });
+        }
+        // 5. Check-Out
+        if (btnCheckOut != null) {
+            btnCheckOut.addActionListener(e -> {
+                CheckOutRecepcionista v = new CheckOutRecepcionista(this, empresa);
+                v.setVisible(true);
+            });
+        }
+
+        // 6. Registro de Pagos y Cargos (Folio)
+        if (btnPagos!= null) {
+            btnPagos.addActionListener(e -> {
+                FolioPagosRecepcionista v = new FolioPagosRecepcionista(this, empresa);
+                v.setVisible(true);
+            });
+        }
+
+        // 7. Control Operativo de Apartamentos
+        if (btnCambioEstado != null) {
+            btnCambioEstado.addActionListener(e -> {
+                ControlOperativoRecepcionista v = new ControlOperativoRecepcionista(this, empresa);
+                v.setVisible(true);
+            });
+        }
+
+        // 8. Registrar Novedad en Apartamento
+        if (btnNovedades != null) {
+            btnNovedades.addActionListener(e -> {
+                RegistrarNovedadRecepcionista v = new RegistrarNovedadRecepcionista(this, empresa, recepcionistaLogueado);
+                v.setVisible(true);
+            });
+        }
+
+        // 9. Declarar No-Show
+        if (btnNoShow != null) {
+            btnNoShow.addActionListener(e -> {
+                DeclararNoShowRecepcionista v = new DeclararNoShowRecepcionista(this, empresa);
+                v.setVisible(true);
+            });
+        }
+
+        // 10. Cerrar Sesión / Salir
         if (buttonCancel != null) {
             buttonCancel.addActionListener(e -> dispose());
         }

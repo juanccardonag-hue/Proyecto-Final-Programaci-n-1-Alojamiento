@@ -44,9 +44,10 @@ public class ReservaDirectaRecepcionista extends JDialog {
         aplicarBordeRedondo(txtCedulaHuesped);
         aplicarBordeRedondo(txtFechaEntrada);
         aplicarBordeRedondo(txtFechaSalida);
-        configurarBoton(btnBuscarHuesped, "Buscar");
-        configurarBoton(btnReservar, "Confirmar Reserva");
-        configurarBoton(btnCancelar, "Volver al Menú");
+
+        configurarBotonSencillo(btnBuscarHuesped, "Buscar");
+        configurarBotonSencillo(btnReservar, "Confirmar Reserva");
+        configurarBotonSencillo(btnCancelar, "Volver al Menú");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {
@@ -66,13 +67,13 @@ public class ReservaDirectaRecepcionista extends JDialog {
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
-    //efecto y estilo al boton
-    private void configurarBoton(JButton boton, String titulo) {
+
+    private void configurarBotonSencillo(JButton boton, String texto) {
         if (boton == null) return;
-        if (titulo != null && !titulo.isEmpty()) boton.setText(titulo);
+        if (texto != null && !texto.isEmpty()) boton.setText(texto);
 
         Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
-        Font fuenteHover = new Font("Segoe UI", Font.BOLD, 15);
+        Font fuenteHover = new Font("Segoe UI", Font.BOLD, 14);
         boton.setFont(fuenteNormal);
 
         boton.addMouseListener(new MouseAdapter() {
@@ -98,7 +99,7 @@ public class ReservaDirectaRecepcionista extends JDialog {
             }
         }
     }
-    //configuración de los botones buscar,confirmar reserva y volver al menu
+
     private void initListeners() {
         if (btnBuscarHuesped != null) btnBuscarHuesped.addActionListener(e -> buscarOAgregarHuesped());
         if (btnReservar != null) btnReservar.addActionListener(e -> procesarReserva());
@@ -112,15 +113,7 @@ public class ReservaDirectaRecepcionista extends JDialog {
             return;
         }
 
-        huespedSeleccionado = null;
-        if (empresa.getListaHuespedes() != null) {
-            for (Huesped h : empresa.getListaHuespedes()) {
-                if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedula)) {
-                    huespedSeleccionado = h;
-                    break;
-                }
-            }
-        }
+        huespedSeleccionado = buscarHuespedPorCedula(cedula);
 
         if (huespedSeleccionado != null) {
             lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre());
@@ -131,20 +124,16 @@ public class ReservaDirectaRecepcionista extends JDialog {
                     "Huésped No Encontrado", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (opc == JOptionPane.YES_OPTION) {
-                // Abre el formulario  RegistroHuesped
                 RegistroHuespedView ventanaRegistro = new RegistroHuespedView(null, empresa);
                 ventanaRegistro.setVisible(true);
 
-                // Al cerrar la ventana, autoselecciona el huésped si fue creado correctamente
-                if (empresa.getListaHuespedes() != null) {
-                    for (Huesped h : empresa.getListaHuespedes()) {
-                        if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedula)) {
-                            huespedSeleccionado = h;
-                            lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre() + " (Registrado)");
-                            lblInfoHuesped.setForeground(new Color(0, 128, 0));
-                            break;
-                        }
-                    }
+                huespedSeleccionado = buscarHuespedPorCedula(cedula);
+                if (huespedSeleccionado != null) {
+                    lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre() + " (Registrado)");
+                    lblInfoHuesped.setForeground(new Color(0, 128, 0));
+                } else {
+                    lblInfoHuesped.setText("Huésped: No seleccionado");
+                    lblInfoHuesped.setForeground(Color.RED);
                 }
             } else {
                 lblInfoHuesped.setText("Huésped: No seleccionado");
@@ -153,6 +142,16 @@ public class ReservaDirectaRecepcionista extends JDialog {
         }
     }
 
+    private Huesped buscarHuespedPorCedula(String cedula) {
+        if (empresa.getListaHuespedes() != null) {
+            for (Huesped h : empresa.getListaHuespedes()) {
+                if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedula)) {
+                    return h;
+                }
+            }
+        }
+        return null;
+    }
     private void procesarReserva() {
         if (huespedSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Selecciona o registra un huésped primero.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
@@ -162,14 +161,17 @@ public class ReservaDirectaRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "Selecciona un apartamento.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
         String itemApto = (String) comboApartamentos.getSelectedItem();
-        String codApto = itemApto.split(" - ")[0].trim();
+        String codApto = itemApto.split("-")[0].trim();
 
         Apartamento apto = null;
-        for (Apartamento a : empresa.getListaApartamentos()) {
-            if (a.getCodigo().equalsIgnoreCase(codApto)) {
-                apto = a;
-                break;
+        if (empresa.getListaApartamentos() != null) {
+            for (Apartamento a : empresa.getListaApartamentos()) {
+                if (a.getCodigo().equalsIgnoreCase(codApto)) {
+                    apto = a;
+                    break;
+                }
             }
         }
 
@@ -187,11 +189,13 @@ public class ReservaDirectaRecepcionista extends JDialog {
                 return;
             }
 
-            for (Reserva reser : empresa.getListaReservas()) {
-                if (reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
-                    if (reser.cruceCon(entrada, salida)) {
-                        JOptionPane.showMessageDialog(this, "El apartamento ya cuenta con una reserva en esas fechas.", "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                        return;
+            if (empresa.getListaReservas() != null) {
+                for (Reserva reser : empresa.getListaReservas()) {
+                    if (reser.getApartamento() != null && reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
+                        if (reser.cruceCon(entrada, salida)) {
+                            JOptionPane.showMessageDialog(this, "El apartamento ya cuenta con una reserva en esas fechas.", "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                     }
                 }
             }
@@ -208,7 +212,7 @@ public class ReservaDirectaRecepcionista extends JDialog {
             dispose();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Debe ser AAAA-MM-DD.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Debe ser AAAA-MM-DD.", "Error de Formato ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
