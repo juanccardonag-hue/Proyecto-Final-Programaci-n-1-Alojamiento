@@ -9,7 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
 
-public class menuRecepcionista extends JDialog {
+public class MenuRecepcionista extends JDialog {
     private JPanel contentPane;
 
     private JButton btnDirecto;
@@ -26,7 +26,7 @@ public class menuRecepcionista extends JDialog {
     private Empresa empresa;
     private Empleado recepcionistaActual;
 
-    public menuRecepcionista(JFrame parent, Empresa empresa, Empleado recepcionistaActual) {
+    public MenuRecepcionista(JFrame parent, Empresa empresa, Empleado recepcionistaActual) {
         super(parent, "Menú Recepcionista - Aparta-Suites UQ", true);
         this.empresa = empresa;
         this.recepcionistaActual = recepcionistaActual;

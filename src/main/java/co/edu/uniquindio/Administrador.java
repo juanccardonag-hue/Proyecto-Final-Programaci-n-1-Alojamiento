@@ -83,84 +83,11 @@ public class Administrador extends Empleado {
     }
 
     // --- Gestión de Apartamentos ---
-    public void gestionarApartamentos(List<Apartamento> listaApartamentos) {
-        String[] opciones = {"Crear apartamento", "Modificar apartamento", "Poner fuera de servicio", "Volver"};
-        int seleccion = JOptionPane.showOptionDialog(null,
-                "¿Qué acción deseas realizar sobre los apartamentos?",
-                "Gestión de Apartamentos",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-
-        if (seleccion == 0) {
-            String codigo = JOptionPane.showInputDialog("Código del nuevo apartamento:");
-            String nombre = JOptionPane.showInputDialog("Nombre / Identificador:");
-            String dormitoriosStr = JOptionPane.showInputDialog("Número de dormitorios:");
-            String capMaxStr = JOptionPane.showInputDialog("Capacidad máxima de personas:");
-            String caracteristica = JOptionPane.showInputDialog("Características principales:");
-            String tarifaStr = JOptionPane.showInputDialog("Tarifa base por persona/noche:");
-
-            if (codigoValido(codigo) && codigoValido(nombre) && dormitoriosStr != null && capMaxStr != null && tarifaStr != null) {
-                try {
-                    int numDormitorios = Integer.parseInt(dormitoriosStr.trim());
-                    int capMax = Integer.parseInt(capMaxStr.trim());
-                    long tarifaBase = Long.parseLong(tarifaStr.trim());
-
-                    Apartamento nuevoApto = new Apartamento(codigo.trim(), nombre.trim(), numDormitorios, capMax, caracteristica != null ? caracteristica.trim() : "", tarifaBase);
-
-                    if (crearApartamento(listaApartamentos, nuevoApto)) {
-                        JOptionPane.showMessageDialog(null, "¡Apartamento creado exitosamente!");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "⚠ Ya existe un apartamento registrado con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "⚠ Debes ingresar datos numéricos válidos.", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 1) {
-            String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a modificar:");
-            if (codigoValido(codigo)) {
-                Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
-
-                if (aptoEncontrado != null) {
-                    String nuevoNombre = JOptionPane.showInputDialog("Nuevo nombre:", aptoEncontrado.getNombre());
-                    String dormStr = JOptionPane.showInputDialog("Nuevo número de dormitorios:", aptoEncontrado.getNumeroDormitorio());
-                    String capStr = JOptionPane.showInputDialog("Nueva capacidad máxima:", aptoEncontrado.getCapaMaxPersona());
-                    String nuevaCaracteristica = JOptionPane.showInputDialog("Nuevas características:", aptoEncontrado.getCaracteristica());
-                    String tarifaStr = JOptionPane.showInputDialog("Nueva tarifa base persona/noche:", aptoEncontrado.getTarifaPersonaNoche());
-
-                    if (nuevoNombre != null && dormStr != null && capStr != null && tarifaStr != null) {
-                        try {
-                            int dorm = Integer.parseInt(dormStr.trim());
-                            int cap = Integer.parseInt(capStr.trim());
-                            long tarifa = Long.parseLong(tarifaStr.trim());
-
-                            if (modificarApartamento(aptoEncontrado, nuevoNombre.trim(), dorm, cap, nuevaCaracteristica != null ? nuevaCaracteristica.trim() : "", tarifa)) {
-                                JOptionPane.showMessageDialog(null, "¡Apartamento modificado correctamente!");
-                            }
-                        } catch (NumberFormatException e) {
-                            JOptionPane.showMessageDialog(null, "⚠ Datos numéricos inválidos.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 2) {
-            String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a retirar de servicio:");
-            if (codigoValido(codigo)) {
-                Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
-
-                if (aptoEncontrado != null) {
-                    String motivo = JOptionPane.showInputDialog("Ingresa el motivo del retiro de servicio:");
-                    if (motivo != null && eliminarApto(aptoEncontrado, motivo.trim())) {
-                        JOptionPane.showMessageDialog(null, "El apartamento fue marcado como FUERA DE SERVICIO.");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+    public Apartamento buscarApartamento(List<Apartamento> listaApartamentos, String codigo) {
+        for (Apartamento a : listaApartamentos) {
+            if (a.getCodigo().equalsIgnoreCase(codigo)) return a;
         }
+        return null;
     }
 
     public boolean crearApartamento(List<Apartamento> listaApartamentos, Apartamento nuevoApto) {
@@ -193,63 +120,13 @@ public class Administrador extends Empleado {
     }
 
     // --- Gestión de Personal ---
-    public void gestionarEmpleados(List<Empleado> listaEmpleados) {
-        String[] opciones = {"Contratar empleado", "Editar empleado", "Desvincular empleado", "Volver"};
-        int seleccion = JOptionPane.showOptionDialog(null,
-                "¿Qué acción deseas realizar en los empleados?",
-                "Gestión de Personal",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-
-        if (seleccion == 0) {
-            String cedula = JOptionPane.showInputDialog("Cédula del empleado:");
-            String nombre = JOptionPane.showInputDialog("Nombre completo:");
-            String telefono = JOptionPane.showInputDialog("Teléfono:");
-            String correo = JOptionPane.showInputDialog("Correo electrónico:");
-            String usuario = JOptionPane.showInputDialog("Usuario de acceso:");
-            String contrasena = JOptionPane.showInputDialog("Contraseña:");
-
-            if (codigoValido(cedula) && codigoValido(nombre) && codigoValido(usuario) && codigoValido(contrasena)) {
-                Empleado nuevoEmpleado = new Empleado(cedula.trim(), nombre.trim(), LocalDate.now(), telefono != null ? telefono.trim() : "", correo != null ? correo.trim() : "", usuario.trim(), contrasena.trim());
-
-                if (contratarEmpleado(listaEmpleados, nuevoEmpleado)) {
-                    JOptionPane.showMessageDialog(null, "¡Empleado contratado exitosamente!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 1) {
-            String cedula = JOptionPane.showInputDialog("Ingresa la cédula del empleado a editar:");
-            if (codigoValido(cedula)) {
-                Empleado empEncontrado = buscarEmpleadoPorCedula(listaEmpleados, cedula.trim());
-
-                if (empEncontrado != null) {
-                    String nuevoNombre = JOptionPane.showInputDialog("Nuevo nombre:", empEncontrado.getNombre());
-                    String nuevoTelefono = JOptionPane.showInputDialog("Nuevo teléfono:", empEncontrado.getTelefono());
-                    String nuevoCorreo = JOptionPane.showInputDialog("Nuevo correo:", empEncontrado.getCorreo());
-
-                    if (nuevoNombre != null && nuevoTelefono != null && nuevoCorreo != null) {
-                        if (editarEmpleado(empEncontrado, nuevoNombre.trim(), nuevoTelefono.trim(), nuevoCorreo.trim())) {
-                            JOptionPane.showMessageDialog(null, "¡Datos del empleado actualizados correctamente!");
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún empleado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 2) {
-            String cedula = JOptionPane.showInputDialog("Ingresa la cédula del empleado a desvincular:");
-            if (codigoValido(cedula)) {
-                if (desvincularEmpleado(listaEmpleados, cedula.trim())) {
-                    JOptionPane.showMessageDialog(null, "¡Empleado desvinculado exitosamente!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+    public Empleado buscarEmpleado(List<Empleado> listaEmpleados, String cedula) {
+        for (Empleado e : listaEmpleados) {
+            if (e.getCedula().equalsIgnoreCase(cedula))
+                return e;
         }
+        return null;
     }
-
     public boolean contratarEmpleado(List<Empleado> listaEmpleados, Empleado nuevoEmpleado) {
         if (nuevoEmpleado == null || nuevoEmpleado.getCedula() == null) return false;
 
@@ -362,7 +239,7 @@ public class Administrador extends Empleado {
         } else if (seleccion == 1) { // Configurar tarifa base del apartamento
             String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a configurar:");
             if (codigoValido(codigo)) {
-                Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
+                Apartamento aptoEncontrado = buscarApartamento(listaApartamentos, codigo.trim());
 
                 if (aptoEncontrado != null) {
                     String tarifaStr = JOptionPane.showInputDialog("Nueva tarifa base por persona/noche ($):", aptoEncontrado.getTarifaPersonaNoche());
@@ -450,7 +327,7 @@ public class Administrador extends Empleado {
         String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a bloquear:");
         if (codigo == null || codigo.trim().isEmpty()) return;
 
-        Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
+        Apartamento aptoEncontrado = buscarApartamento(listaApartamentos, codigo.trim());
         if (aptoEncontrado == null) {
             JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
             return;
@@ -555,7 +432,7 @@ public class Administrador extends Empleado {
         String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento:");
         if (codigo == null || codigo.trim().isEmpty()) return;
 
-        Apartamento aptoEncontrado = buscarApartamentoPorCodigo(listaApartamentos, codigo.trim());
+        Apartamento aptoEncontrado = buscarApartamento(listaApartamentos, codigo.trim());
         if (aptoEncontrado == null) {
             JOptionPane.showMessageDialog(null, "⚠ No se encontró el apartamento con código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
             return;
@@ -633,24 +510,12 @@ public class Administrador extends Empleado {
         }
     }
 
-    // --- Métodos Auxiliares Privados ---
     private boolean codigoValido(String input) {
         return input != null && !input.trim().isEmpty();
     }
 
-    private Apartamento buscarApartamentoPorCodigo(List<Apartamento> listaApartamentos, String codigo) {
-        for (Apartamento a : listaApartamentos) {
-            if (a.getCodigo().equalsIgnoreCase(codigo)) return a;
-        }
-        return null;
-    }
 
-    public Empleado buscarEmpleadoPorCedula(List<Empleado> listaEmpleados, String cedula) {
-        for (Empleado e : listaEmpleados) {
-            if (e.getCedula().equalsIgnoreCase(cedula)) return e;
-        }
-        return null;
-    }
+
     // --- Getters y Setters ---
     public PoliticaCancelacion getPoliticaCancelacion() { return politicaCancelacion; }
     public String getUsuario() { return usuario; }

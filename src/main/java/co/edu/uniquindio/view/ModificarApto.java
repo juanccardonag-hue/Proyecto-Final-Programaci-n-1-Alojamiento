@@ -1,26 +1,27 @@
 package co.edu.uniquindio.view;
 
-import co.edu.uniquindio.Empleado;
+import co.edu.uniquindio.Apartamento;
 import co.edu.uniquindio.Empresa;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class desvincularRecepcionista extends JDialog {
+public class ModificarApto extends JDialog {
     private JPanel mainPanel;
-    private JTextField txtCedula;
-    private JTextField txtNombre;
-    private JTextField txtCorreo;
-    private JButton btnDesvincular;
+    private JTextField textCodigo;
+    private JTextField textDormitorios;
+    private JTextField textCapacidad;
+    private JTextField textCaracteristicas;
+    private JTextField textTarifa;
     private JButton btnBuscar;
+    private JButton btnModificar;
     private JButton btnCancelar;
-    private JLabel tittle;
 
     private Empresa empresa;
-    private Empleado empleadoEncontrado;
+    private Apartamento apartamentoEncontrado;
 
-    public desvincularRecepcionista(JDialog parent, Empresa empresa) {
-        super(parent, "Desvincular recepcionista", true);
+    public ModificarApto(JDialog parent, Empresa empresa){
+        super(parent, "Modificar apartamento", true);
         this.empresa = empresa;
 
         setContentPane(mainPanel);
@@ -30,12 +31,11 @@ public class desvincularRecepcionista extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
-        txtNombre.setEnabled(false);
-        txtCorreo.setEnabled(false);
-
-        aplicarBordeRedondo(txtCedula);
-        aplicarBordeRedondo(txtNombre);
-        aplicarBordeRedondo(txtCorreo);
+        aplicarBordeRedondo(textCapacidad);
+        aplicarBordeRedondo(textCaracteristicas);
+        aplicarBordeRedondo(textDormitorios);
+        aplicarBordeRedondo(textCodigo);
+        aplicarBordeRedondo(textTarifa);
 
         icons();
         initListeners();
@@ -43,59 +43,83 @@ public class desvincularRecepcionista extends JDialog {
 
     private void initListeners() {
         btnBuscar.addActionListener(e -> {
-            String cedula = txtCedula.getText().trim();
-            Empleado emp = empresa.getAdministrador().buscarEmpleadoPorCedula(empresa.getListaEmpleados(), cedula);
+            String codigo = textCodigo.getText().trim();
 
-            if (emp != null) {
-                this.empleadoEncontrado = emp;
-                txtNombre.setText(emp.getNombre());
-                txtCorreo.setText(emp.getCorreo());
-            } else {
-                this.empleadoEncontrado = null;
-                txtNombre.setText("");
-                txtCorreo.setText("");
+            if (codigo.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "⚠ No se encontró ningún recepcionista con esa cédula ⚠",
-                        "No encontrado",
+                        "⚠ Por favor ingresa el código del apartamento a buscar ⚠",
+                        "Campo vacío",
                         JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            Apartamento apto = empresa.getAdministrador().buscarApartamento(empresa.getListaApartamentos(), codigo);
+
+            if (apto != null) {
+                this.apartamentoEncontrado = apto;
+                textDormitorios.setText(String.valueOf(apto.getNumeroDormitorio()));
+                textCapacidad.setText(String.valueOf(apto.getCapaMaxPersona()));
+                textCaracteristicas.setText(apto.getCaracteristica());
+                textTarifa.setText(String.valueOf(apto.getTarifaPersonaNoche()));
+            } else {
+                this.apartamentoEncontrado = null;
+                JOptionPane.showMessageDialog(this,
+                        "⚠ No se encontró ningún apartamento con el código: " + codigo + " ⚠",
+                        "No encontrado",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        btnDesvincular.addActionListener(e -> {
-            if (empleadoEncontrado == null) {
+        btnModificar.addActionListener(e -> {
+            if (apartamentoEncontrado == null) {
                 JOptionPane.showMessageDialog(this,
-                        "⚠ Busca un recepcionista antes de desvincular ⚠",
+                        "⚠ Debe buscar un apartamento antes de guardar los cambios ⚠",
                         "Atención",
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            boolean exito = empresa.getAdministrador().desvincularEmpleado(
-                    empresa.getListaEmpleados(),
-                    empleadoEncontrado.getCedula()
-            );
+            try {
+                int dorm = Integer.parseInt(textDormitorios.getText().trim());
+                int cap = Integer.parseInt(textCapacidad.getText().trim());
+                String caracteristicas = textCaracteristicas.getText().trim();
+                long tarifa = Long.parseLong(textTarifa.getText().trim());
 
-            if (exito) {
+                boolean exito = empresa.getAdministrador().modificarApartamento(
+                        apartamentoEncontrado,
+                        apartamentoEncontrado.getNombre(), // Mantiene el nombre actual del apartamento
+                        dorm,
+                        cap,
+                        caracteristicas,
+                        tarifa
+                );
+
+                if (exito) {
+                    JOptionPane.showMessageDialog(this,
+                            "¡Apartamento modificado correctamente!",
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "⚠ No se pudo modificar el apartamento ⚠",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "¡Recepcionista desvinculado correctamente!",
-                        "Éxito",
-                        JOptionPane.INFORMATION_MESSAGE);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "⚠ No se pudo realizar la desvinculación ⚠",
-                        "Error",
+                        "⚠ Datos inválidos ⚠",
+                        "Error de entrada",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
-
         btnCancelar.addActionListener(e -> dispose());
     }
-
     public void icons() {
         configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
-        configurarBoton(btnCancelar, "", "Cancelar");
-        configurarBoton(btnDesvincular, "", "Desvincular");
+        configurarBoton(btnCancelar,"","Cancelar");
+        configurarBoton(btnModificar, "","Guardar");
     }
 
     private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
@@ -156,8 +180,7 @@ public class desvincularRecepcionista extends JDialog {
             }
         });
     }
-
-    private void aplicarBordeRedondo(JTextField campo) {
+    void aplicarBordeRedondo(JTextField campo) {
         campo.setOpaque(false);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 new javax.swing.border.AbstractBorder() {
@@ -166,11 +189,11 @@ public class desvincularRecepcionista extends JDialog {
                         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                         g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(java.awt.Color.LIGHT_GRAY);
-                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15); // 15 es el nivel de curvatura
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10) // Margen interno del texto
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
 }

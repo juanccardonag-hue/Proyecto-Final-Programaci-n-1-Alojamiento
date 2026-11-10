@@ -180,12 +180,12 @@ public class Empresa {
             }
             opcionAdmin = Integer.parseInt(inputAdmin);
             switch (opcionAdmin) {
-                case 1:
-                    administrador.gestionarEmpleados(listaEmpleados);
-                    break;
-                case 2:
-                    administrador.gestionarApartamentos(listaApartamentos);
-                    break;
+//                case 1:
+//                    administrador.gestionarEmpleados(listaEmpleados);
+//                    break;
+//                case 2:
+//                    administrador.gestionarApartamentos(listaApartamentos);
+//                    break;
                 case 3:
                     administrador.gestionarTemporadaTarifas(listaApartamentos,listaTemporadas);
                     break;

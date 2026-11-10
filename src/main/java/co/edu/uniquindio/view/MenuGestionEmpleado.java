@@ -1,6 +1,5 @@
 package co.edu.uniquindio.view;
 
-import co.edu.uniquindio.Empleado;
 import co.edu.uniquindio.Empresa;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ public class MenuGestionEmpleado extends JDialog{
     private JLabel tittle;
     private Empresa empresa;
 
-    public MenuGestionEmpleado  (JDialog parent, Empresa empresa) {
+    public MenuGestionEmpleado (JDialog parent, Empresa empresa) {
         super(parent, "Gestión de Empleados", true);
         this.empresa = empresa;
 
@@ -32,17 +31,17 @@ public class MenuGestionEmpleado extends JDialog{
     private void initListeners() {
         btnVolver.addActionListener(e -> dispose());
         btnContratar.addActionListener(e -> {
-            gestionEmpleado formContratar = new gestionEmpleado(this, empresa);
+            GestionEmpleado formContratar = new GestionEmpleado(this, empresa);
             formContratar.setVisible(true);
         });
 
         btnEditar.addActionListener(e -> {
-            editarRecepcionista formEditar = new editarRecepcionista(this, empresa);
+            EditarRecepcionista formEditar = new EditarRecepcionista(this, empresa);
             formEditar.setVisible(true);
         });
 
         btnDesvincular.addActionListener(e -> {
-            desvincularRecepcionista formDesvincular = new desvincularRecepcionista(this, empresa);
+            DesvincularRecepcionista formDesvincular = new DesvincularRecepcionista(this, empresa);
             formDesvincular.setVisible(true);
         });
 

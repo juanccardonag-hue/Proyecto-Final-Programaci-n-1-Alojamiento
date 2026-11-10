@@ -6,7 +6,7 @@ import co.edu.uniquindio.Huesped;
 import javax.swing.*;
 import java.awt.*;
 
-public class menuHuesped extends JDialog {
+public class MenuHuesped extends JDialog {
     private JPanel contentPane;
     private JButton btnPerfil;
     private JButton btnReserva;
@@ -20,7 +20,7 @@ public class menuHuesped extends JDialog {
     private Empresa empresa;
     private Huesped huespedActual;
 
-    public menuHuesped(JFrame parent, Empresa empresa, Huesped huespedActual) {
+    public MenuHuesped(JFrame parent, Empresa empresa, Huesped huespedActual) {
         super(parent, "Menú Huésped - Aparta-Suites UQ", true);
         this.empresa = empresa;
         this.huespedActual = huespedActual;

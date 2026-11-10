@@ -65,7 +65,7 @@ public class LoginHuesped extends JDialog {
 
             dispose();
 
-            menuHuesped menu = new menuHuesped(parentFrame, empresa, huespedAutenticado);
+            MenuHuesped menu = new MenuHuesped(parentFrame, empresa, huespedAutenticado);
             menu.setVisible(true);
 
         } else {

@@ -44,7 +44,10 @@ public class MenuAdmin extends JDialog {
             MenuGestionEmpleado menuEmp = new MenuGestionEmpleado(this, empresa);
             menuEmp.setVisible(true);
         });
-        btnApartamentos.addActionListener(e -> admin.gestionarApartamentos(empresa.getListaApartamentos()));
+        btnApartamentos.addActionListener(e -> {
+                MenuGestionAptos menuAptos = new MenuGestionAptos(this, empresa);
+                menuAptos.setVisible(true);
+            });
         btnTemporadas.addActionListener(e -> admin.gestionarTemporadaTarifas(empresa.getListaApartamentos(), empresa.getListaTemporadas()));
         btnPolitica.addActionListener(e -> admin.configurarPoliticaCancelacionMenu());
         btnBloqueos.addActionListener(e -> admin.gestionarBloqueos(empresa.getListaApartamentos()));

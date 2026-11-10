@@ -67,7 +67,7 @@ public class LoginRecepcionista extends JDialog {
             dispose();
 
             // Abrir el Menú de Recepcionista
-            menuRecepcionista menu = new menuRecepcionista(null, empresa, (Empleado) recepcionistaEncontrado);
+            MenuRecepcionista menu = new MenuRecepcionista(null, empresa, (Empleado) recepcionistaEncontrado);
             menu.setVisible(true);
 
         } else {

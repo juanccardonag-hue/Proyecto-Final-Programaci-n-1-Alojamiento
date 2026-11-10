@@ -6,7 +6,7 @@ import co.edu.uniquindio.Empresa;
 import javax.swing.*;
 import java.awt.*;
 
-public class editarRecepcionista extends JDialog {
+public class EditarRecepcionista extends JDialog {
 
     private JTextField textCedula;
     private JButton btnBuscar;
@@ -22,7 +22,7 @@ public class editarRecepcionista extends JDialog {
     private JPasswordField txtContrasena;
     private JButton btnCancelar;
 
-    public editarRecepcionista(JDialog parent, Empresa empresa) {
+    public EditarRecepcionista(JDialog parent, Empresa empresa) {
         super(parent, "Editar Recepcionista", true);
         this.empresa = empresa;
 
@@ -47,7 +47,7 @@ public class editarRecepcionista extends JDialog {
     private void initListeners() {
         btnBuscar.addActionListener(e -> {
             String cedula = textCedula.getText().trim();
-            Empleado emp = empresa.getAdministrador().buscarEmpleadoPorCedula(empresa.getListaEmpleados(), cedula);
+            Empleado emp = empresa.getAdministrador().buscarEmpleado(empresa.getListaEmpleados(), cedula);
 
             if (emp != null) {
                 this.empleadoEncontrado = emp;

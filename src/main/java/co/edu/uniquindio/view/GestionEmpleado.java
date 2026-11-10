@@ -7,7 +7,7 @@ import co.edu.uniquindio.Empresa;
 import javax.swing.*;
 import java.awt.*;
 
-public class gestionEmpleado extends JDialog {
+public class GestionEmpleado extends JDialog {
     private JPanel mainPanel;
     private JTextField txtUsuario;
     private JTextField textCedula;
@@ -21,12 +21,12 @@ public class gestionEmpleado extends JDialog {
     private Empresa empresa;
     private Empleado empleadoEditar;
 
-    public gestionEmpleado(JDialog parent, Empresa empresa) {
+    public GestionEmpleado(JDialog parent, Empresa empresa) {
         this(parent, empresa, null);
     }
 
-    public gestionEmpleado(JDialog parent, Empresa empresa, Empleado empleadoEditar) {
-        super(parent, "", true);
+    public GestionEmpleado(JDialog parent, Empresa empresa, Empleado empleadoEditar) {
+        super(parent, "Registrar Recepcionista", true);
         this.empresa = empresa;
         this.empleadoEditar = empleadoEditar;
 
