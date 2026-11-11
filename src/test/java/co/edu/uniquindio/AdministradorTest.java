@@ -91,7 +91,7 @@ class AdministradorTest {
     void testEliminarApto() {
         LOG.info("Iniciando prueba: Eliminación Lógica de Apartamento");
 
-        assertTrue(admin.eliminarApto(apto1, "Daño en la tubería principal"));
+        assertTrue(admin.cambiarEstadoApto(apto1, "Daño en la tubería principal"));
         assertEquals(EstadoOperativo.FUERA_SERVICIO, apto1.getEstadoOperativo());
         assertEquals("Daño en la tubería principal", apto1.getMotivoFueraServicio());
 

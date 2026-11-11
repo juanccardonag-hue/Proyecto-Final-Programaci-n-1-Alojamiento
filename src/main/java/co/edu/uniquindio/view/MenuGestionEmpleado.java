@@ -31,7 +31,7 @@ public class MenuGestionEmpleado extends JDialog{
     private void initListeners() {
         btnVolver.addActionListener(e -> dispose());
         btnContratar.addActionListener(e -> {
-            GestionEmpleado formContratar = new GestionEmpleado(this, empresa);
+            Contratar formContratar = new Contratar(this, empresa);
             formContratar.setVisible(true);
         });
 

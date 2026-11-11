@@ -9,7 +9,6 @@ import java.awt.*;
 public class EliminarApto extends JDialog {
     private JPanel mainPanel;
     private JTextField textCodigo;
-    private JTextField textMotivo;
     private JButton btnBuscar;
     private JButton btnEliminar;
     private JButton btnCancelar;
@@ -18,26 +17,23 @@ public class EliminarApto extends JDialog {
     private Apartamento apartamentoEncontrado;
 
     public EliminarApto(JDialog parent, Empresa empresa) {
-        super(parent, "Eliminar Apartamento", true);
+        super(parent, "Eliminar Apartamento del Sistema", true);
         this.empresa = empresa;
 
         setContentPane(mainPanel);
-        setSize(850, 650);
+        setSize(700, 450);
         setResizable(false);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
-        // Aplicar bordes redondeados a los inputs
         aplicarBordeRedondo(textCodigo);
-        aplicarBordeRedondo(textMotivo);
 
         icons();
         initListeners();
     }
 
     private void initListeners() {
-        // 1. EVENTO BUSCAR
         btnBuscar.addActionListener(e -> {
             String codigo = textCodigo.getText().trim();
             if (codigo.isEmpty()) {
@@ -47,6 +43,7 @@ public class EliminarApto extends JDialog {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
             Apartamento apto = empresa.getAdministrador().buscarApartamento(empresa.getListaApartamentos(), codigo);
 
             if (apto != null) {
@@ -54,10 +51,10 @@ public class EliminarApto extends JDialog {
                 JOptionPane.showMessageDialog(this,
                         "¡Apartamento localizado!\n\n" +
                                 "Código: " + apto.getCodigo() + "\n" +
+                                "Nombre: " + apto.getNombre() + "\n" +
                                 "Dormitorios: " + apto.getNumeroDormitorio() + "\n" +
-                                "Capacidad: " + apto.getCapaMaxPersona() + " personas\n" +
-                                "Estado actual: " + apto.getEstadoOperativo(),
-                        "Apartamento encontrado",
+                                "Capacidad: " + apto.getCapaMaxPersona() + " personas",
+                        "Apartamento Encontrado",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 this.apartamentoEncontrado = null;
@@ -67,38 +64,37 @@ public class EliminarApto extends JDialog {
                         JOptionPane.ERROR_MESSAGE);
             }
         });
+
         btnEliminar.addActionListener(e -> {
             if (apartamentoEncontrado == null) {
                 JOptionPane.showMessageDialog(this,
-                        "⚠ Debe buscar un apartamento existente antes de retirarlo de servicio ⚠",
+                        "⚠ Debe buscar un apartamento antes de eliminarlo ⚠",
                         "Atención",
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            String motivo = textMotivo.getText().trim();
+            int confirmacion = JOptionPane.showConfirmDialog(this,
+                    "¿Estás seguro/a de que deseas eliminar permanentemente el apartamento " + apartamentoEncontrado.getCodigo() + "?\nEsta acción no se puede deshacer.",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
 
-            if (motivo.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "⚠ Debes ingresar el motivo por el cual entra fuera de servicio ⚠",
-                        "Motivo requerido",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                boolean exito = empresa.getAdministrador().eliminarApartamento(empresa.getListaApartamentos(), apartamentoEncontrado);
 
-            boolean exito = empresa.getAdministrador().eliminarApto(apartamentoEncontrado, motivo);
-
-            if (exito) {
-                JOptionPane.showMessageDialog(this,
-                        "¡El apartamento " + apartamentoEncontrado.getCodigo() + " fue marcado como FUERA DE SERVICIO!",
-                        "Operación Exitosa",
-                        JOptionPane.INFORMATION_MESSAGE);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "⚠ No se pudo cambiar el estado del apartamento ⚠",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                if (exito) {
+                    JOptionPane.showMessageDialog(this,
+                            "¡El apartamento " + apartamentoEncontrado.getCodigo() + " ha sido eliminado correctamente!",
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "⚠ No se pudo eliminar el apartamento del sistema ⚠",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         btnCancelar.addActionListener(e -> dispose());
@@ -106,8 +102,8 @@ public class EliminarApto extends JDialog {
 
     public void icons() {
         configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
-        configurarBoton(btnCancelar, "", "Cancelar");
-        configurarBoton(btnEliminar, "", "Fuera de servicio");
+        configurarBoton(btnCancelar, "","Cancelar");
+        configurarBoton(btnEliminar, "","Eliminar Definitivamente");
     }
 
     private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
@@ -155,8 +151,10 @@ public class EliminarApto extends JDialog {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
+                // 1. Restaura el texto
                 boton.setFont(fuenteNormal);
 
+                // 2. Restaura el ícono
                 if (imagenOriginal != null) {
                     boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
                 }
@@ -167,7 +165,7 @@ public class EliminarApto extends JDialog {
         });
     }
 
-    void aplicarBordeRedondo(JTextField campo) {
+    private void aplicarBordeRedondo(JTextField campo) {
         if (campo == null) return;
         campo.setOpaque(false);
         campo.setBorder(BorderFactory.createCompoundBorder(

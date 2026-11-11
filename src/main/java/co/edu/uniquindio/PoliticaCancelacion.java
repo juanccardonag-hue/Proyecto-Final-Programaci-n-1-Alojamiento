@@ -11,9 +11,9 @@ public class PoliticaCancelacion {
         this.porcentajeRetencion = 0.50;
     }
     public PoliticaCancelacion(int diasDevolucionTotal, int diasDevolucionParcial, double porcentajeRetencion) {
-        this.diasDevolucionTotal = 7;
-        this.diasDevolucionParcial = 2;
-        this.porcentajeRetencion = 0.50;
+        this.diasDevolucionTotal = diasDevolucionTotal;
+        this.diasDevolucionParcial = diasDevolucionParcial;
+        this.porcentajeRetencion = porcentajeRetencion;
     }
     // Getters y Setters
     public int getDiasDevolucionTotal() {

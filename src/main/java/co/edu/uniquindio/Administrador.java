@@ -26,60 +26,33 @@ public class Administrador extends Empleado {
     }
 
     // --- Control de Acceso y Credenciales ---
-    public void gestionarControlAcceso(List<Recepcionista> listaRecepcionistas, List<Empleado> listaEmpleados) {
-        String[] opciones = {"Registrar nuevo recepcionista", "Cambiar mi usuario/contraseña", "Registrar nuevo empleado", "Volver"};
-        int seleccion = JOptionPane.showOptionDialog(null,
-                "¿Qué acción deseas realizar?",
-                "Control de Acceso y Credenciales",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-
-        if (seleccion == 0) {
-            String cedula = JOptionPane.showInputDialog("Cédula del recepcionista:");
-            String nombre = JOptionPane.showInputDialog("Nombre completo:");
-            String usuario = JOptionPane.showInputDialog("Usuario:");
-            String contrasena = JOptionPane.showInputDialog("Contraseña:");
-
-            if (codigoValido(cedula) && codigoValido(nombre) && codigoValido(usuario) && codigoValido(contrasena)) {
-                Recepcionista nuevoRecep = new Recepcionista(cedula.trim(), nombre.trim(), LocalDate.now(), "", "", usuario.trim(), contrasena.trim());
-
-                if (contratarEmpleado(listaEmpleados, nuevoRecep)) {
-                    listaRecepcionistas.add(nuevoRecep);
-                    JOptionPane.showMessageDialog(null, "¡Recepcionista registrado exitosamente!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "⚠ Todos los campos son obligatorios.", "Error de entrada ⚠", JOptionPane.WARNING_MESSAGE);
-            }
-
-        } else if (seleccion == 1) {
-            String nuevoUsuario = JOptionPane.showInputDialog("Nuevo usuario (Tu usuario actual es: " + this.usuario + ")");
-            String nuevaClave = JOptionPane.showInputDialog("Nueva contraseña:");
-
-            if (codigoValido(nuevoUsuario)) this.usuario = nuevoUsuario.trim();
-            if (codigoValido(nuevaClave)) this.contrasenia = nuevaClave.trim();
-            JOptionPane.showMessageDialog(null, "¡Credenciales actualizadas correctamente!");
-
-        } else if (seleccion == 2) {
-            String cedula = JOptionPane.showInputDialog("Cédula del empleado:");
-            String nombre = JOptionPane.showInputDialog("Nombre completo:");
-            String telefono = JOptionPane.showInputDialog("Teléfono:");
-            String correo = JOptionPane.showInputDialog("Correo electrónico:");
-            String usuario = JOptionPane.showInputDialog("Usuario:");
-            String contrasena = JOptionPane.showInputDialog("Contraseña:");
-
-            if (codigoValido(cedula) && codigoValido(nombre) && codigoValido(usuario) && codigoValido(contrasena)) {
-                Empleado nuevoEmpleado = new Empleado(cedula.trim(), nombre.trim(), LocalDate.now(), telefono != null ? telefono.trim() : "", correo != null ? correo.trim() : "", usuario.trim(), contrasena.trim());
-
-                if (contratarEmpleado(listaEmpleados, nuevoEmpleado)) {
-                    JOptionPane.showMessageDialog(null, "¡Empleado registrado exitosamente!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ Ya existe un empleado registrado con la cédula: " + cedula, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "⚠ Debes completar cédula, nombre, usuario y contraseña.", "Error de entrada ⚠", JOptionPane.WARNING_MESSAGE);
-            }
+    public boolean cambiarCredenciales(String nuevoUsuario, String nuevaClave) {
+        boolean actualizado = false;
+        if (nuevoUsuario != null && !nuevoUsuario.trim().isEmpty()) {
+            this.usuario = nuevoUsuario.trim();
+            actualizado = true;
         }
+        if (nuevaClave != null && !nuevaClave.trim().isEmpty()) {
+            this.contrasenia = nuevaClave.trim();
+            actualizado = true;
+        }
+        return actualizado;
+    }
+
+    public boolean registrarRecepcionista(List<Recepcionista> listaRecepcionistas, List<Empleado> listaEmpleados, Recepcionista nuevoRecepcionista) {
+        if (nuevoRecepcionista == null || listaRecepcionistas == null || listaEmpleados == null) return false;
+
+        // Registra al recepcionista como empleado y lo agrega a la lista con acceso al Login
+        if (contratarEmpleado(listaEmpleados, nuevoRecepcionista)) {
+            listaRecepcionistas.add(nuevoRecepcionista);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean registrarEmpleado(List<Empleado> listaEmpleados, Empleado nuevoEmpleado) {
+        if (nuevoEmpleado == null || listaEmpleados == null) return false;
+        return contratarEmpleado(listaEmpleados, nuevoEmpleado);
     }
 
     // --- Gestión de Apartamentos ---
@@ -111,10 +84,17 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    public boolean eliminarApto(Apartamento apto, String motivo) {
+    public boolean cambiarEstadoApto(Apartamento apto, String motivo) {
         if (apto != null) {
             apto.cambiarEstado(EstadoOperativo.FUERA_SERVICIO, motivo);
             return true;
+        }
+        return false;
+    }
+
+    public boolean eliminarApartamento(List<Apartamento> listaApartamentos, Apartamento apto) {
+        if (apto != null && listaApartamentos != null) {
+            return listaApartamentos.remove(apto);
         }
         return false;
     }
@@ -131,8 +111,8 @@ public class Administrador extends Empleado {
         if (nuevoEmpleado == null || nuevoEmpleado.getCedula() == null) return false;
 
         for (Empleado e : listaEmpleados) {
-            if (e.getCedula().equalsIgnoreCase(nuevoEmpleado.getCedula().trim())) {
-                return false;
+            if (e.getCedula() != null && e.getCedula().equalsIgnoreCase(nuevoEmpleado.getCedula().trim())) {
+                return false; // Ya existe por cédula
             }
         }
 
@@ -140,26 +120,28 @@ public class Administrador extends Empleado {
         return true;
     }
 
-    public boolean contratarEmpleado(List<Empleado> listaEmpleados, String cedula, String nombre,
-                                     String telefono, String correo, String usuario, String contrasena) {
-        if (cedula == null || cedula.trim().isEmpty() ||
-                nombre == null || nombre.trim().isEmpty() ||
-                usuario == null || usuario.trim().isEmpty() ||
-                contrasena == null || contrasena.trim().isEmpty()) {
+    public boolean registrarCredencialesRecepcionista(List<Empleado> listaEmpleados, List<Recepcionista> listaRecepcionistas, String cedula, String usuario, String contrasena) {
+        Empleado emp = buscarEmpleado(listaEmpleados, cedula);
+        if (emp == null) {
             return false;
         }
 
-        Recepcionista nuevoRecepcionista = new Recepcionista(
-                cedula.trim(),
-                nombre.trim(),
+        if (usuario == null || usuario.trim().isEmpty() || contrasena == null || contrasena.trim().isEmpty()) {
+            return false;
+        }
+
+        Recepcionista recep = new Recepcionista(
+                emp.getCedula(),
+                emp.getNombre(),
                 LocalDate.now(),
-                telefono != null ? telefono.trim() : "",
-                correo != null ? correo.trim() : "",
+                emp.getTelefono(),
+                emp.getCorreo(),
                 usuario.trim(),
                 contrasena.trim()
         );
 
-        return contratarEmpleado(listaEmpleados, nuevoRecepcionista);
+        listaRecepcionistas.add(recep);
+        return true;
     }
 
     public boolean editarEmpleado(Empleado empleado, String nuevoNombre, String nuevoTelefono, String nuevoCorreo) {
@@ -194,76 +176,8 @@ public class Administrador extends Empleado {
     }
 
     // --- Gestión de Tarifas y Temporadas ---
-    public void gestionarTemporadaTarifas(List<Apartamento> listaApartamentos, List<Temporada> listaTemporadas) {
-        String[] opciones = {"Definir temporada", "Configurar tarifa base apto", "Volver"};
-        int seleccion = JOptionPane.showOptionDialog(null,
-                "¿Qué acción deseas realizar?",
-                "Gestión de Temporadas y Costos",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-
-        if (seleccion == 0) { // Definir temporada con validación anti-solapamiento
-            TipoTemporada[] tipos = TipoTemporada.values();
-            TipoTemporada tipoSel = (TipoTemporada) JOptionPane.showInputDialog(null,
-                    "Selecciona la categoría de temporada:", "Tipo de Temporada",
-                    JOptionPane.QUESTION_MESSAGE, null, tipos, tipos[0]);
-
-            String fInicio = JOptionPane.showInputDialog("Fecha de inicio de la temporada (AAAA-MM-DD):");
-            String fFin = JOptionPane.showInputDialog("Fecha de fin de la temporada (AAAA-MM-DD):");
-            String recargo = JOptionPane.showInputDialog("Porcentaje de recargo (ejemplo: 0.20 para 20%):");
-
-            if (tipoSel != null && fInicio != null && fFin != null && recargo != null) {
-                try {
-                    LocalDate inicio = LocalDate.parse(fInicio.trim());
-                    LocalDate fin = LocalDate.parse(fFin.trim());
-                    double porcentajeRecargo = Double.parseDouble(recargo.trim());
-
-                    if (!inicio.isBefore(fin) && !inicio.isEqual(fin)) {
-                        JOptionPane.showMessageDialog(null, "⚠ La fecha inicial debe ser anterior a la final.", "Error de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    Temporada nuevaTemporada = new Temporada(tipoSel, inicio, fin, porcentajeRecargo);
-
-                    if (agregarTemporada(listaTemporadas, nuevaTemporada)) {
-                        JOptionPane.showMessageDialog(null, "¡Temporada " + tipoSel + " registrada exitosamente!\n\n" +
-                                "✿ Periodo: del " + inicio + " al " + fin + "\n" +
-                                "✿ Recargo aplicado: " + (porcentajeRecargo * 100) + "%");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "⚠ Error: Las fechas ingresadas se cruzan con una temporada previamente registrada.", "Conflicto de Temporadas ⚠", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "⚠ Datos de entrada o formato de fechas inválido.", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-        } else if (seleccion == 1) { // Configurar tarifa base del apartamento
-            String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a configurar:");
-            if (codigoValido(codigo)) {
-                Apartamento aptoEncontrado = buscarApartamento(listaApartamentos, codigo.trim());
-
-                if (aptoEncontrado != null) {
-                    String tarifaStr = JOptionPane.showInputDialog("Nueva tarifa base por persona/noche ($):", aptoEncontrado.getTarifaPersonaNoche());
-
-                    if (tarifaStr != null) {
-                        try {
-                            long nuevaTarifa = Long.parseLong(tarifaStr.trim());
-                            aptoEncontrado.setTarifaPersonaNoche(nuevaTarifa);
-                            JOptionPane.showMessageDialog(null, "¡Tarifa base actualizada correctamente para el apartamento: " + aptoEncontrado.getCodigo() + "!");
-                        } catch (NumberFormatException e) {
-                            JOptionPane.showMessageDialog(null, "⚠ Debes ingresar un valor numérico válido para el precio.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
-
     public boolean agregarTemporada(List<Temporada> listaTemporadas, Temporada nuevaTemporada) {
         if (nuevaTemporada == null || listaTemporadas == null) return false;
-
-        // Comprueba si hay solapamiento de fechas usando cruceCon
         for (Temporada t : listaTemporadas) {
             if (t.cruceCon(nuevaTemporada.getFechaInicio(), nuevaTemporada.getFechaFin())) {
                 return false;
@@ -273,41 +187,9 @@ public class Administrador extends Empleado {
         return true;
     }
 
-    // --- Política de Cancelación ---
-    public void configurarPoliticaCancelacionMenu() {
-        String diasTotalStr = JOptionPane.showInputDialog(null,
-                "Días de anticipación requeridos para la devolución total del dinero (100%):",
-                politicaCancelacion.getDiasDevolucionTotal());
-        String diasParcialStr = JOptionPane.showInputDialog(null,
-                "Días mínimos de anticipación para aplicar devolución parcial (Retención parcial) ejemplo: 2 equivale a 48 horas:",
-                politicaCancelacion.getDiasDevolucionParcial());
-        String pctRetencionStr = JOptionPane.showInputDialog(null,
-                "Porcentaje de retención para cancelaciones parciales (ejemplo 0.50 para 50%):",
-                politicaCancelacion.getPorcentajeRetencion());
-
-        if (diasTotalStr != null && diasParcialStr != null && pctRetencionStr != null) {
-            try {
-                int diasTotal = Integer.parseInt(diasTotalStr.trim());
-                int diasParcial = Integer.parseInt(diasParcialStr.trim());
-                double pctRetencion = Double.parseDouble(pctRetencionStr.trim());
-
-                PoliticaCancelacion nuevaPolitica = new PoliticaCancelacion(diasTotal, diasParcial, pctRetencion);
-
-                if (configurarPoliticaCancelacion(nuevaPolitica)) {
-                    JOptionPane.showMessageDialog(null, "꧁ Política de cancelación actualizada con éxito ꧂\n\n" +
-                            "✦ Más de " + diasTotal + " días: Devolución del 100%\n" +
-                            "✦ Entre " + diasParcial + " y " + diasTotal + " días la retención es del " + (pctRetencion * 100) + "%\n" +
-                            "✦ Menos de " + diasParcial + " días / No-show: Retención del 100%");
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "⚠ Debes ingresar valores numéricos válidos.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
-        if (nuevaPolitica != null) {
-            this.politicaCancelacion = nuevaPolitica;
+    public boolean actualizarTarifaBase(Apartamento apto, long nuevaTarifa) {
+        if (apto != null && nuevaTarifa > 0) {
+            apto.setTarifaPersonaNoche(nuevaTarifa);
             return true;
         }
         return false;
@@ -323,45 +205,24 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    public void gestionarBloqueos(List<Apartamento> listaApartamentos) {
-        String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento a bloquear:");
-        if (codigo == null || codigo.trim().isEmpty()) return;
+    // --- Política de Cancelación ---
 
-        Apartamento aptoEncontrado = buscarApartamento(listaApartamentos, codigo.trim());
-        if (aptoEncontrado == null) {
-            JOptionPane.showMessageDialog(null, "⚠ No se encontró ningún apartamento con el código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
+    public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
+        if (nuevaPolitica != null) {
+            this.politicaCancelacion = nuevaPolitica;
+            return true;
         }
-
-        String fInicio = JOptionPane.showInputDialog("Fecha de inicio del bloqueo (AAAA-MM-DD):");
-        String fFin = JOptionPane.showInputDialog("Fecha de fin del bloqueo (AAAA-MM-DD):");
-        String motivo = JOptionPane.showInputDialog("Motivo de indisponibilidad:");
-
-        if (fInicio != null && fFin != null && motivo != null) {
-            try {
-                LocalDate fechaInicio = LocalDate.parse(fInicio.trim());
-                LocalDate fechaFin = LocalDate.parse(fFin.trim());
-
-                if (fechaFin.isBefore(fechaInicio)) {
-                    JOptionPane.showMessageDialog(null, "⚠ La fecha final no puede ser anterior a la fecha inicial.", "Error de fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (registrarBloqueo(aptoEncontrado, fechaInicio, fechaFin, motivo.trim())) {
-                    JOptionPane.showMessageDialog(null, "¡Fechas fuera de servicio registradas con éxito!\n\n" +
-                            "❤ Apartamento: " + aptoEncontrado.getCodigo() + "\n" +
-                            "❤ Período no disponible desde: " + fechaInicio + " hasta: " + fechaFin + "\n" +
-                            "❤ Motivo registrado: " + motivo.trim());
-                } else {
-                    JOptionPane.showMessageDialog(null, "⚠ No se pudo registrar el bloqueo", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "⚠ Formato de fecha inválido. El formato es AAAA-MM-DD.", "Error de entrada ⚠", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        return false;
     }
 
     // --- Reportes Avanzados ---
     public long calcularNochesOcupadasApartamento(Apartamento apto, List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
+        if (apto == null || listaReservas == null || fechaInicio == null || fechaFin == null) {
+            return 0;
+        }
+        if (fechaInicio.isAfter(fechaFin)) {
+            return 0;
+        }
         long nochesOcupadas = 0;
         for (Reserva r : listaReservas) {
             if (r.getApartamento().getCodigo().equals(apto.getCodigo()) && r.estaActiva()) {
@@ -380,6 +241,12 @@ public class Administrador extends Empleado {
     }
 
     public long calcularIngresosPeriodo(List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin) {
+        if (listaReservas == null || fechaInicio == null || fechaFin == null) {
+            return 0;
+        }
+        if (fechaInicio.isAfter(fechaFin)) {
+            return 0;
+        }
         long ingresosTotales = 0;
         for (Reserva r : listaReservas) {
             if (!r.getEstado().equals(EstadoReserva.CANCELADA)) {
@@ -392,6 +259,9 @@ public class Administrador extends Empleado {
     }
 
     public int contarReservasPorCanal(List<Reserva> listaReservas, Canal canalBuscado) {
+        if (listaReservas == null || canalBuscado == null) {
+            return 0;
+        }
         int contador = 0;
         for (Reserva r : listaReservas) {
             if (r.getCanal() == canalBuscado) {
@@ -403,8 +273,11 @@ public class Administrador extends Empleado {
 
     public List<Reserva> obtenerReservasSaldoPendiente(List<Reserva> listaReservas) {
         List<Reserva> conSaldo = new ArrayList<>();
+        if (listaReservas == null) {
+            return conSaldo;
+        }
         for (Reserva r : listaReservas) {
-            if (r.estaActiva() && r.getSaldoFolio() > 0) {
+            if (r != null && r.estaActiva() && r.getSaldoFolio() > 0) {
                 conSaldo.add(r);
             }
         }
@@ -412,109 +285,28 @@ public class Administrador extends Empleado {
     }
 
     public Apartamento obtenerApartamentoNovedades(List<Apartamento> listaApartamentos) {
-        if (listaApartamentos == null || listaApartamentos.isEmpty()) return null;
+        if (listaApartamentos == null || listaApartamentos.isEmpty()) {
+            return null;
+        }
 
-        Apartamento aptoMasNovedades = listaApartamentos.get(0);
-        int maxNovedades = aptoMasNovedades.getListNovedad().size();
+        Apartamento aptoMasNovedades = null;
+        int maxNovedades = -1;
 
-        for (int i = 1; i < listaApartamentos.size(); i++) {
-            Apartamento actual = listaApartamentos.get(i);
-            int cantNovedadesActual = actual.getListNovedad().size();
-            if (cantNovedadesActual > maxNovedades) {
-                maxNovedades = cantNovedadesActual;
-                aptoMasNovedades = actual;
+        for (Apartamento actual : listaApartamentos) {
+            if (actual != null && actual.getListNovedad() != null) {
+                int cantNovedadesActual = actual.getListNovedad().size();
+                if (cantNovedadesActual > maxNovedades) {
+                    maxNovedades = cantNovedadesActual;
+                    aptoMasNovedades = actual;
+                }
             }
         }
         return aptoMasNovedades;
     }
 
-    public void reporteOcupacionApartamento(List<Apartamento> listaApartamentos, List<Reserva> listaReservas) {
-        String codigo = JOptionPane.showInputDialog("Ingresa el código del apartamento:");
-        if (codigo == null || codigo.trim().isEmpty()) return;
-
-        Apartamento aptoEncontrado = buscarApartamento(listaApartamentos, codigo.trim());
-        if (aptoEncontrado == null) {
-            JOptionPane.showMessageDialog(null, "⚠ No se encontró el apartamento con código: " + codigo, "Error ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String fInicio = JOptionPane.showInputDialog("Fecha inicio (AAAA-MM-DD):");
-        String fFin = JOptionPane.showInputDialog("Fecha fin (AAAA-MM-DD):");
-
-        if (fInicio != null && fFin != null) {
-            try {
-                LocalDate inicio = LocalDate.parse(fInicio.trim());
-                LocalDate fin = LocalDate.parse(fFin.trim());
-
-                long noches = calcularNochesOcupadasApartamento(aptoEncontrado, listaReservas, inicio, fin);
-                JOptionPane.showMessageDialog(null, "El apartamento " + aptoEncontrado.getCodigo() + " tiene " + noches + " noches ocupadas en el periodo.");
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "⚠ Formato de fecha inválido. Usa AAAA-MM-DD", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    public void reporteIngresosPeriodo(List<Reserva> listaReservas) {
-        String fInicio = JOptionPane.showInputDialog("Fecha inicio (AAAA-MM-DD):");
-        String fFin = JOptionPane.showInputDialog("Fecha fin (AAAA-MM-DD):");
-
-        if (fInicio != null && fFin != null) {
-            try {
-                LocalDate inicio = LocalDate.parse(fInicio.trim());
-                LocalDate fin = LocalDate.parse(fFin.trim());
-
-                long ingresos = calcularIngresosPeriodo(listaReservas, inicio, fin);
-                JOptionPane.showMessageDialog(null, "Ingresos totales en el período: $" + ingresos);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "⚠ Formato de fecha inválido. Usa AAAA-MM-DD", "Error ⚠", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    public void reporteReservasPorCanal(List<Reserva> listaReservas) {
-        Canal[] canales = Canal.values();
-        Canal canalSeleccionado = (Canal) JOptionPane.showInputDialog(null,
-                "Selecciona el canal de reserva:",
-                "Reservas por Canal",
-                JOptionPane.QUESTION_MESSAGE, null, canales, canales[0]);
-
-        if (canalSeleccionado != null) {
-            int total = contarReservasPorCanal(listaReservas, canalSeleccionado);
-            JOptionPane.showMessageDialog(null, "Total de reservas realizadas vía " + canalSeleccionado + ": " + total);
-        }
-    }
-
-    public void reporteSaldosPendientes(List<Reserva> listaReservas) {
-        List<Reserva> pendientes = obtenerReservasSaldoPendiente(listaReservas);
-        if (pendientes.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No hay reservas activas con saldo pendiente.");
-            return;
-        }
-
-        String mensaje = " ‧₊˚✧ Reservas con saldo pendiente ✧˚₊‧ \n\n";
-        for (Reserva r : pendientes) {
-            mensaje += "Código: " + r.getCodigoReserva() +
-                    " | Apartamento: " + r.getApartamento().getCodigo() +
-                    " | Saldo Pendiente: $" + r.getSaldoFolio() + "\n";
-        }
-        JOptionPane.showMessageDialog(null, mensaje);
-    }
-
-    public void reporteApartamentoConMasNovedades(List<Apartamento> listaApartamentos) {
-        Apartamento apto = obtenerApartamentoNovedades(listaApartamentos);
-        if (apto == null) {
-            JOptionPane.showMessageDialog(null, "No hay apartamentos registrados.");
-        } else {
-            JOptionPane.showMessageDialog(null, "El apartamento con más novedades es: " + apto.getCodigo() +
-                    " (" + apto.getNombre() + ") con " + apto.getListNovedad().size() + " novedades.");
-        }
-    }
-
     private boolean codigoValido(String input) {
         return input != null && !input.trim().isEmpty();
     }
-
-
 
     // --- Getters y Setters ---
     public PoliticaCancelacion getPoliticaCancelacion() { return politicaCancelacion; }

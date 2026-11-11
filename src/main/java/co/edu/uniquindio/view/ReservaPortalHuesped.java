@@ -76,9 +76,7 @@ public class ReservaPortalHuesped extends JDialog {
         }
     }
 
-    private void onOK() {
-        realizarReserva();
-    }
+    private void onOK() {realizarReserva();}
 
     private void onCancel() {
         dispose();
@@ -128,7 +126,7 @@ public class ReservaPortalHuesped extends JDialog {
                 return;
             }
 
-            // Validar disponibilidad en backend considerando bloqueos y cruce de reservas
+            // Validar disponibilidad
             boolean estaDisponible = huespedActual.consultarApartamentosDisponibles(empresa.getListaApartamentos(), empresa.getListaReservas(), inicio, fin, personasTotal).contains(aptoSeleccionado);
 
             if (!estaDisponible) {
@@ -136,6 +134,7 @@ public class ReservaPortalHuesped extends JDialog {
                 return;
             }
 
+            // datos de ocupantes
             List<Ocupante> ocupantes = new ArrayList<>();
             ocupantes.add(new Ocupante(huespedActual.getNombre(), huespedActual.getFechaNacimiento()));
 
@@ -178,12 +177,10 @@ public class ReservaPortalHuesped extends JDialog {
             }
             String codigoReserva = "RES-" + UUID.randomUUID().toString().substring(0, 5).toUpperCase();
             Reserva nuevaReserva = new Reserva(codigoReserva, inicio, fin, Canal.PORTAL, huespedActual, aptoSeleccionado, null, null);
-
             for (Ocupante oc : ocupantes) {
                 nuevaReserva.agregarOcupante(oc);
             }
-
-            // Liquidación con temporadas y exoneraciones (<6 años)
+            //Liquidar la estancia
             nuevaReserva.liquidarEstancia(empresa.getListaTemporadas());
 
             long totalEstancia = nuevaReserva.getValorTotal();

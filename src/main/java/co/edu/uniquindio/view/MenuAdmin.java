@@ -45,20 +45,46 @@ public class MenuAdmin extends JDialog {
             menuEmp.setVisible(true);
         });
         btnApartamentos.addActionListener(e -> {
-                MenuGestionAptos menuAptos = new MenuGestionAptos(this, empresa);
+            MenuGestionAptos menuAptos = new MenuGestionAptos(this, empresa);
                 menuAptos.setVisible(true);
             });
-        btnTemporadas.addActionListener(e -> admin.gestionarTemporadaTarifas(empresa.getListaApartamentos(), empresa.getListaTemporadas()));
-        btnPolitica.addActionListener(e -> admin.configurarPoliticaCancelacionMenu());
-        btnBloqueos.addActionListener(e -> admin.gestionarBloqueos(empresa.getListaApartamentos()));
-        btnControlAcceso.addActionListener(e -> admin.gestionarControlAcceso(empresa.getListaRecepcionistas(), empresa.getListaEmpleados()));
-
+        btnTemporadas.addActionListener(e -> {
+            MenuTemporadas menuTemporadas = new MenuTemporadas(this, empresa);
+            menuTemporadas.setVisible(true);
+        });
+        btnPolitica.addActionListener(e -> {
+            PoliticaCancelacionVista politicaCancelacion = new PoliticaCancelacionVista(this, empresa);
+            politicaCancelacion.setVisible(true);
+        });
+        btnBloqueos.addActionListener(e -> {
+            BloqueoAptos bloqueoAptos = new BloqueoAptos(this, empresa);
+            bloqueoAptos.setVisible(true);
+        });
+        btnControlAcceso.addActionListener(e -> {
+            MenuControlAcceso menuControlAcceso = new MenuControlAcceso(this, empresa);
+            menuControlAcceso.setVisible(true);
+        });
         // Reportes
-        btnReporteOcupacion.addActionListener(e -> admin.reporteOcupacionApartamento(empresa.getListaApartamentos(), empresa.getListaReservas()));
-        btnReporteIngresos.addActionListener(e -> admin.reporteIngresosPeriodo(empresa.getListaReservas()));
-        btnReporteCanal.addActionListener(e -> admin.reporteReservasPorCanal(empresa.getListaReservas()));
-        btnReporteSaldos.addActionListener(e -> admin.reporteSaldosPendientes(empresa.getListaReservas()));
-        btnReporteNovedades.addActionListener(e -> admin.reporteApartamentoConMasNovedades(empresa.getListaApartamentos()));
+        btnReporteOcupacion.addActionListener(e -> {
+            OcupacionApto ocupacionApto = new OcupacionApto(this, empresa);
+            ocupacionApto.setVisible(true);
+        });
+        btnReporteIngresos.addActionListener(e -> {
+            ReporteIngresos reporteIngresos = new ReporteIngresos(this, empresa);
+            reporteIngresos.setVisible(true);
+        });
+        btnReporteCanal.addActionListener(e -> {
+            ReservasCanal reservasCanal = new ReservasCanal (this,empresa);
+            reservasCanal.setVisible(true);
+        });
+        btnReporteSaldos.addActionListener(e -> {
+            SaldosPendientes saldosPendientes = new SaldosPendientes(this, empresa);
+            saldosPendientes.setVisible(true);
+        });
+        btnReporteNovedades.addActionListener(e -> {
+            ApartamentosNovedades apartamentosNovedades = new ApartamentosNovedades (this, empresa);
+            apartamentosNovedades.setVisible(true);
+        });
 
         // Salir
         btnCerrarSesion.addActionListener(e -> dispose());

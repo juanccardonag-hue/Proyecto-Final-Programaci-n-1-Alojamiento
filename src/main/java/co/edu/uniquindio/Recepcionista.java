@@ -113,7 +113,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Reserva Externa ---
+    // Reserva Externa
     public void registrarReservaExterna(List<Huesped> listaHuespedes, List<Apartamento> listaApartamentos, List<Reserva> listaReservas, List<Temporada> listaTemporadas) {
         String codExterno = JOptionPane.showInputDialog("Código de la plataforma externa:");
         if (codExterno == null || codExterno.trim().isEmpty()) return;
@@ -181,7 +181,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Confirmación de Reservas ---
+    // Confirmación de Reservas
     public void confirmarReserva(List<Reserva> listaReservas) {
         String codigo = JOptionPane.showInputDialog("Ingresa el código de la reserva a confirmar:");
         if (codigo == null || codigo.trim().isEmpty()) return;
@@ -259,7 +259,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Gestión de Folio con Bloqueo de Pagos en Reservas Inactivas/Canceladas ---
+    // Gestión de Folio con Bloqueo de Pagos en Reservas Inactivas/Canceladas
     public void gestionarFolio(List<Reserva> listaReservas) {
         String[] opciones = {"Registrar Pago", "Registrar Cargo Adicional", "Volver"};
         int seleccion = JOptionPane.showOptionDialog(null, "¿Qué acción deseas realizar?", "Gestión de Folio",
@@ -333,7 +333,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Control Operativo Visual de Apartamentos ---
+    // Control Operativo de Apartamentos
     public void cambiarEstadoApartamento(List<Apartamento> listaApartamentos) {
         if (listaApartamentos == null || listaApartamentos.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No hay apartamentos registrados.");
@@ -365,7 +365,6 @@ public class Recepcionista extends Empleado {
                     JOptionPane.QUESTION_MESSAGE, null, estados, apto.getEstadoOperativo());
 
             if (nuevoEstado != null) {
-                // Previene poner manualmente en OCUPADO si no es mediante un Check-In
                 if (nuevoEstado == EstadoOperativo.OCUPADO && apto.getEstadoOperativo() != EstadoOperativo.OCUPADO) {
                     JOptionPane.showMessageDialog(null, "⚠ El estado OCUPADO solo se establece automáticamente al realizar el Check-In de un grupo.", "Aviso ⚠", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -378,7 +377,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Registro Novedad y No-Show ---
+    //  Registro Novedad y No-Show
     public void registrarNovedadApartamento(List<Apartamento> listaApartamentos) {
         String cod = JOptionPane.showInputDialog("Código del apartamento:");
         if (cod == null || cod.trim().isEmpty()) return;
@@ -415,7 +414,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Auxiliares ---
+    // uxiliares
     private Huesped buscarHuesped(List<Huesped> listaHuespedes, String cedula) {
         if (listaHuespedes != null) {
             for (Huesped h : listaHuespedes) {

@@ -180,39 +180,6 @@ public class Empresa {
             }
             opcionAdmin = Integer.parseInt(inputAdmin);
             switch (opcionAdmin) {
-//                case 1:
-//                    administrador.gestionarEmpleados(listaEmpleados);
-//                    break;
-//                case 2:
-//                    administrador.gestionarApartamentos(listaApartamentos);
-//                    break;
-                case 3:
-                    administrador.gestionarTemporadaTarifas(listaApartamentos,listaTemporadas);
-                    break;
-                case 4:
-                    administrador.configurarPoliticaCancelacionMenu();
-                    break;
-                case 5:
-                    administrador.gestionarBloqueos(listaApartamentos);
-                    break;
-                case 6:
-                    administrador.gestionarControlAcceso(listaRecepcionistas, listaEmpleados);
-                    break;
-                case 7:
-                    administrador.reporteOcupacionApartamento(listaApartamentos, listaReservas);
-                    break;
-                case 8:
-                    administrador.reporteIngresosPeriodo(listaReservas);
-                    break;
-                case 9:
-                    administrador.reporteReservasPorCanal(listaReservas);
-                    break;
-                case 10:
-                    administrador.reporteSaldosPendientes(listaReservas);
-                    break;
-                case 11:
-                    administrador.reporteApartamentoConMasNovedades(listaApartamentos);
-                    break;
                 case 0:
                     break;
                 default:

@@ -6,35 +6,34 @@ import co.edu.uniquindio.Empresa;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
-public class GestionEmpleado extends JDialog {
+public class Contratar extends JDialog {
     private JPanel mainPanel;
-    private JTextField txtUsuario;
     private JTextField textCedula;
     private JTextField txtTelefono;
     private JTextField txtNombre;
     private JTextField txtCorreo;
-    private JPasswordField txtContrasena;
     private JButton btnGuardar;
     private JButton btnCancelar;
 
     private Empresa empresa;
     private Empleado empleadoEditar;
 
-    public GestionEmpleado(JDialog parent, Empresa empresa) {
+    public Contratar(JDialog parent, Empresa empresa) {
         this(parent, empresa, null);
     }
 
-    public GestionEmpleado(JDialog parent, Empresa empresa, Empleado empleadoEditar) {
-        super(parent, "Registrar Recepcionista", true);
+    public Contratar(JDialog parent, Empresa empresa, Empleado empleadoEditar) {
+        super(parent, "Contratar Recepcionista", true);
         this.empresa = empresa;
         this.empleadoEditar = empleadoEditar;
 
         if (empleadoEditar == null) {
-            setTitle("Registrar Nuevo Recepcionista");
+            setTitle("Contratar Nuevo Recepcionista");
         } else {
             setTitle("Editar Recepcionista");
-        };
+        }
 
         setContentPane(mainPanel);
         setSize(800, 650);
@@ -47,20 +46,16 @@ public class GestionEmpleado extends JDialog {
         aplicarBordeRedondo(txtNombre);
         aplicarBordeRedondo(txtCorreo);
         aplicarBordeRedondo(txtTelefono);
-        aplicarBordeRedondo(txtUsuario);
-        aplicarBordeRedondo(txtContrasena);
 
         if (this.empleadoEditar != null) {
             cargarDatosEmpleado();
         }
 
-        if (this.empleadoEditar != null) {
-            cargarDatosEmpleado();
-        }
         initListeners();
         configurarBoton(btnCancelar, "Cancelar");
         configurarBoton(btnGuardar, "Guardar");
     }
+
     private void configurarBoton(JButton boton, String titulo) {
         if (boton == null) return;
 
@@ -96,11 +91,11 @@ public class GestionEmpleado extends JDialog {
                         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                         g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(java.awt.Color.LIGHT_GRAY);
-                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15); // 15 es el nivel de curvatura
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10) // Margen interno del texto
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
 
@@ -110,9 +105,6 @@ public class GestionEmpleado extends JDialog {
         txtNombre.setText(empleadoEditar.getNombre());
         txtTelefono.setText(empleadoEditar.getTelefono());
         txtCorreo.setText(empleadoEditar.getCorreo());
-        txtUsuario.setText(empleadoEditar.getUsuario());
-        txtUsuario.setEnabled(false);
-        txtContrasena.setText(empleadoEditar.getContrasenia());
     }
 
     private void initListeners() {
@@ -125,37 +117,34 @@ public class GestionEmpleado extends JDialog {
         String nombre = txtNombre.getText().trim();
         String telefono = txtTelefono.getText().trim();
         String correo = txtCorreo.getText().trim();
-        String usuario = txtUsuario.getText().trim();
-        String contrasena = new String(txtContrasena.getPassword()).trim();
+
+        if (cedula.isEmpty() || nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "⚠ Cédula y nombre son obligatorios ⚠",
+                    "Campos Incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         Administrador admin = empresa.getAdministrador();
         boolean exito;
 
         if (empleadoEditar == null) {
-            exito = admin.contratarEmpleado(
-                    empresa.getListaEmpleados(),
-                    cedula, nombre, telefono, correo, usuario, contrasena
-            );
+            Empleado nuevoEmp = new Empleado(cedula, nombre, LocalDate.now(), telefono, correo, "", "");
+            exito = admin.contratarEmpleado(empresa.getListaEmpleados(), nuevoEmp);
         } else {
             exito = admin.editarEmpleado(empleadoEditar, nombre, telefono, correo);
         }
 
         if (exito) {
-            String mensaje;
-            if (empleadoEditar == null) {
-                mensaje = "¡Recepcionista registrado exitosamente!";
-            } else {
-                mensaje = "¡Datos actualizados correctamente!";
-            }
-
             JOptionPane.showMessageDialog(this,
-                    mensaje,
+                    (empleadoEditar == null ? "¡Empleado contratado exitosamente!" : "¡Datos actualizados!"),
                     "Éxito",
                     JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this,
-                    "⚠ No se pudo realizar la operación ⚠",
+                    "⚠ No se pudo registrar. La cédula ya existe ⚠",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
