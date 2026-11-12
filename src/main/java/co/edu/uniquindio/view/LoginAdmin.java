@@ -19,7 +19,7 @@ public class LoginAdmin extends JDialog {
     private Empresa empresa;
 
     public LoginAdmin(JFrame parent, Empresa empresa) {
-        super(parent, "Login Administrador", true); // true = modal
+        super(parent, "Login Administrador", true);
         this.empresa = empresa;
 
         setContentPane(mainPanel);

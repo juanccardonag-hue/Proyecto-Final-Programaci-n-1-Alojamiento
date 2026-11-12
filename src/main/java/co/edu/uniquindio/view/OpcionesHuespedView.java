@@ -3,6 +3,9 @@ package co.edu.uniquindio.view;
 import co.edu.uniquindio.Empresa;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class OpcionesHuespedView extends JDialog {
     private JPanel contentPane;
@@ -16,29 +19,69 @@ public class OpcionesHuespedView extends JDialog {
         super(parent, "Portal del Huésped", true);
         this.empresa = empresa;
 
-        setContentPane(contentPane);
-        setSize(400, 300);
+        if (contentPane != null) {
+            contentPane.setOpaque(false);
+            contentPane.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
+            setContentPane(contentPane);
+        }
+
+        aplicarEstilos();
+        initListeners();
+
+        setSize(480, 360);
         setResizable(false);
         setLocationRelativeTo(parent);
-
-        initListeners();
     }
+
+    private void aplicarEstilos() {
+        configurarBoton(iniciarSesiónButton, "Iniciar Sesión");
+        configurarBoton(registrarseButton, "Registrarse");
+        configurarBoton(volverButton, "Volver");
+    }
+
+    private void configurarBoton(JButton boton, String titulo) {
+        if (boton == null) return;
+        boton.setText(titulo);
+        boton.setFocusPainted(false);
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 15);
+        boton.setFont(fuenteNormal);
+        boton.setForeground(new Color(0x2C3E50));
+
+        boton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                boton.setFont(fuenteZoom);
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                boton.setFont(fuenteNormal);
+            }
+        });
+    }
+
     private void initListeners() {
-        // 1. Botón para ir al Login
-        iniciarSesiónButton.addActionListener(e -> {
-            dispose(); // Cierra esta ventana de opciones
-            LoginHuesped login = new LoginHuesped((JFrame) getParent(), empresa);
-            login.setVisible(true);
-        });
+        if (iniciarSesiónButton != null) {
+            iniciarSesiónButton.addActionListener(e -> {
+                dispose();
+                LoginHuesped login = new LoginHuesped((JFrame) getParent(), empresa);
+                login.setVisible(true);
+            });
+        }
 
-        // 2. Botón para ir al Formulario de Registro
-        registrarseButton.addActionListener(e -> {
-            dispose(); // Cierra esta ventana de opciones
-            RegistroHuespedView registro = new RegistroHuespedView((JFrame) getParent(), empresa);
-            registro.setVisible(true);
-        });
+        if (registrarseButton != null) {
+            registrarseButton.addActionListener(e -> {
+                dispose();
+                RegistroHuespedView registro = new RegistroHuespedView((JFrame) getParent(), empresa);
+                registro.setVisible(true);
+            });
+        }
 
-        // 3. Botón Volver
-        volverButton.addActionListener(e -> dispose());
+        if (volverButton != null) {
+            volverButton.addActionListener(e -> dispose());
+        }
     }
 }

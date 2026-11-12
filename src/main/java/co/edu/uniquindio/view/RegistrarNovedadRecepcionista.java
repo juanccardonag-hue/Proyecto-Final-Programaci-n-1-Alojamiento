@@ -26,9 +26,11 @@ public class RegistrarNovedadRecepcionista extends JDialog {
             setContentPane(contentPane);
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         }
+
         cargarApartamentos();
         aplicarEstilos();
         initListeners();
+
         setSize(500, 340);
         setResizable(false);
         setLocationRelativeTo(parent);
@@ -45,13 +47,8 @@ public class RegistrarNovedadRecepcionista extends JDialog {
 
     private void aplicarEstilos() {
         aplicarBordeRedondo(textDescripcionNovedad);
-
-        icons();
-    }
-
-    public void icons() {
-        configurarBoton(buttonOK, "", "Registrar Novedad");
-        configurarBoton(buttonCancel, "", "Volver al Menú");
+        configurarBotonSencillo(buttonOK, "Registrar Novedad");
+        configurarBotonSencillo(buttonCancel, "Volver al Menú");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {
@@ -72,57 +69,25 @@ public class RegistrarNovedadRecepcionista extends JDialog {
         ));
     }
 
-    private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
+    private void configurarBotonSencillo(JButton boton, String texto) {
         if (boton == null) return;
+        if (texto != null && !texto.isEmpty()) boton.setText(texto);
 
-        int tamNormalIcono = 32;
-        int tamZoomIcono = 40;
-
-        Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 14);
-        Font fuenteZoom   = new Font("Segoe UI", Font.BOLD, 16);
-
-        boton.setText(titulo);
+        Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
+        Font fuenteHover = new Font("Segoe UI", Font.BOLD, 14);
         boton.setFont(fuenteNormal);
         boton.setForeground(new Color(0x2C3E50));
-        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
-        boton.setMargin(new Insets(5, 10, 5, 10));
-
-        Image imgBase = null;
-        if (rutaIcono != null && !rutaIcono.trim().isEmpty()) {
-            try {
-                java.net.URL resource = getClass().getResource(rutaIcono);
-                if (resource != null) {
-                    ImageIcon iconOriginal = new ImageIcon(resource);
-                    imgBase = iconOriginal.getImage();
-                    boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
-                }
-            } catch (Exception e) {
-                System.err.println("No se encontró la imagen: " + rutaIcono);
-            }
-        }
-
-        final Image imagenOriginal = imgBase;
 
         boton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                boton.setFont(fuenteZoom);
-                if (imagenOriginal != null) {
-                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoomIcono, tamZoomIcono, Image.SCALE_SMOOTH)));
-                }
+                boton.setFont(fuenteHover);
                 boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                boton.revalidate();
-                boton.repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 boton.setFont(fuenteNormal);
-                if (imagenOriginal != null) {
-                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
-                }
-                boton.revalidate();
-                boton.repaint();
             }
         });
     }
@@ -145,8 +110,8 @@ public class RegistrarNovedadRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "Ingresa la descripción de la novedad o daño reportado.", "Campo Requerido ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String nombreAutor = (recepcionistaActual != null) ? recepcionistaActual.getNombre() : "Recepcionista";
 
+        String nombreAutor = (recepcionistaActual != null) ? recepcionistaActual.getNombre() : "Recepcionista";
         aptoSeleccionado.registrarNovedad(descripcion, nombreAutor);
 
         JOptionPane.showMessageDialog(this,

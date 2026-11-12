@@ -2,6 +2,7 @@ package co.edu.uniquindio.view;
 
 import co.edu.uniquindio.Empleado;
 import co.edu.uniquindio.Empresa;
+import co.edu.uniquindio.Recepcionista;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +45,6 @@ public class MenuRecepcionista extends JDialog {
     }
 
     private void asignarIconosABotones() {
-        // Carga y asignación de imágenes desde la carpeta resources
         configurarBotonConIcono(btnDirecto, "/registro.png");
         configurarBotonConIcono(btnExterno, "/reserva-Externa.png");
         configurarBotonConIcono(btnConfirmacion, "/reserva.png");
@@ -69,71 +69,74 @@ public class MenuRecepcionista extends JDialog {
                 btn.setVerticalTextPosition(SwingConstants.BOTTOM);
             }
         } catch (Exception ignored) {
-            // Si la imagen no se encuentra, el botón conserva su texto normal
         }
     }
 
     private void initListeners() {
+        Recepcionista recep = (recepcionistaActual instanceof Recepcionista)
+                ? (Recepcionista) recepcionistaActual
+                : null;
+
         // 1. Reservas Canal Directo
         if (btnDirecto != null) {
             btnDirecto.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 1: Registro de Reserva Directa", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new ReservaDirectaRecepcionista(this, empresa, recep).setVisible(true);
             });
         }
 
         // 2. Reservas Canal Externo
         if (btnExterno != null) {
             btnExterno.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 2: Recepción de Reserva Externa", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new ReservaExternaRecepcionista(this, empresa).setVisible(true);
             });
         }
 
         // 3. Confirmación de Reservas
         if (btnConfirmacion != null) {
             btnConfirmacion.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 3: Confirmación de Reservas Pendientes", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new ConfirmarReservaRecepcionista(this, empresa).setVisible(true);
             });
         }
 
         // 4. Check-In
         if (btnCheckIn != null) {
             btnCheckIn.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 4: Registro de Check-In", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new CheckInRecepcionista(this, empresa).setVisible(true);
             });
         }
 
         // 5. Check-Out
         if (btnCheckOut != null) {
             btnCheckOut.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 5: Registro de Check-Out", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new CheckOutRecepcionista(this, empresa).setVisible(true);
             });
         }
 
         // 6. Registro de Pagos y Cargos
         if (btnPagos != null) {
             btnPagos.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 6: Pagos y Cargos al Folio", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new FolioPagosRecepcionista(this, empresa).setVisible(true);
             });
         }
 
         // 7. Cambio Estado Apartamentos
         if (btnCambioEstado != null) {
             btnCambioEstado.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 7: Cambio de Estado Operativo de Aptos", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new ControlOperativoRecepcionista(this, empresa).setVisible(true);
             });
         }
 
         // 8. Novedades
         if (btnNovedades != null) {
             btnNovedades.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 8: Registrar Novedades en Apto", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new RegistrarNovedadRecepcionista(this, empresa, recep).setVisible(true);
             });
         }
 
         // 9. No-Show
         if (btnNoShow != null) {
             btnNoShow.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Módulo 9: Declarar No-Show", "Recepcionista", JOptionPane.INFORMATION_MESSAGE);
+                new DeclararNoShowRecepcionista(this, empresa).setVisible(true);
             });
         }
 

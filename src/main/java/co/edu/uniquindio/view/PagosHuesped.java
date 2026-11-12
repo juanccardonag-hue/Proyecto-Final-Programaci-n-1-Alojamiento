@@ -84,14 +84,15 @@ public class PagosHuesped extends JDialog {
             double abono30Minimo = total * 0.30;
 
             if (lblSaldoPendiente != null) {
-                lblSaldoPendiente.setText(String.format("$ %,.2f", saldo <= 0 ? 0.0 : saldo));
+                // Se castea a (long) para mostrar como número entero con separadores de miles
+                lblSaldoPendiente.setText(String.format("$ %,d", (long) Math.max(0, saldo)));
             }
             if (lblAbonoMinimo != null) {
-                lblAbonoMinimo.setText(String.format("$ %,.2f", abono30Minimo));
+                lblAbonoMinimo.setText(String.format("$ %,d", (long) abono30Minimo));
             }
         } else {
-            if (lblSaldoPendiente != null) lblSaldoPendiente.setText("$ 0.00");
-            if (lblAbonoMinimo != null) lblAbonoMinimo.setText("$ 0.00");
+            if (lblSaldoPendiente != null) lblSaldoPendiente.setText("$ 0");
+            if (lblAbonoMinimo != null) lblAbonoMinimo.setText("$ 0");
         }
     }
 
@@ -157,16 +158,16 @@ public class PagosHuesped extends JDialog {
                 } else {
                     double faltaPara30 = abonoRequerido30 - totalAbonado;
                     mensajeEstado = "\n\n⚠ Recuerda que para confirmar tu reserva debes completar el 30% ($" +
-                            String.format("%,.2f", abonoRequerido30) + "). Te restan $" +
-                            String.format("%,.2f", faltaPara30) + " dentro de las 24 horas.";
+                            String.format("%,d", (long) abonoRequerido30) + "). Te restan $" +
+                            String.format("%,d", (long) faltaPara30) + " dentro de las 24 horas.";
                 }
 
                 JOptionPane.showMessageDialog(this,
                         "¡Abono registrado exitosamente! 💳\n\n" +
-                                "• Reserva: " + reservaSeleccionada.getCodigoReserva() + "\n" +
+                                "• Reserva: " + reservaSeleccionada.getCodigoFolio() + "\n" +
                                 "• Monto Abonado: $" + String.format("%,d", monto) + "\n" +
                                 "• Medio de Pago: " + medio + "\n" +
-                                "• Nuevo Saldo Pendiente: $" + String.format("%,d", reservaSeleccionada.getSaldoFolio()) +
+                                "• Nuevo Saldo Pendiente: $" + String.format("%,d", (long) reservaSeleccionada.getSaldoFolio()) +
                                 mensajeEstado,
                         "Pago Procesado",
                         JOptionPane.INFORMATION_MESSAGE);

@@ -71,7 +71,12 @@ public class UI extends JFrame {
     private void estilizarBoton(JButton btn, String rutaIcono, String texto) {
         if (btn == null) return;
 
-        // 1. Cargar e instalar el ícono desde resources
+        if (huespedBtn != null && btn != huespedBtn) {
+            btn.setBackground(huespedBtn.getBackground());
+            btn.setBorder(huespedBtn.getBorder());
+            btn.setContentAreaFilled(true);
+            btn.setOpaque(true);
+        }
         if (rutaIcono != null && !rutaIcono.isEmpty()) {
             java.net.URL imgURL = getClass().getResource(rutaIcono);
             if (imgURL != null) {
@@ -83,19 +88,18 @@ public class UI extends JFrame {
             }
         }
 
-        // 2. Asignar el texto y ubicarlo debajo del ícono
         btn.setText("<html><center><b>" + texto + "</b></center></html>");
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setFocusPainted(false);
 
-        // 3. Configurar fuentes para el efecto zoom
+        // Configurar fuentes para el efecto zoom
         Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
         Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
 
         btn.setFont(fuenteNormal);
 
-        // 4. Efecto zoom al pasar el mouse
+        //Efecto zoom al pasar el mouse
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
