@@ -44,7 +44,7 @@ public class ConsultasHuesped extends JDialog {
         tableModel = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Bloquear edición directa
+                return false;
             }
         };
         if (tablaReservas != null) {

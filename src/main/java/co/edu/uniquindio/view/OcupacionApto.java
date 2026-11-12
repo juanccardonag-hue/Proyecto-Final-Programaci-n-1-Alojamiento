@@ -108,7 +108,7 @@ public class OcupacionApto extends JDialog {
 
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "⚠ Formato de fecha inválido. Usa AAAA-MM-DD (ej: 2026-06-01) ⚠",
+                    "⚠ Formato de fecha inválido. Usa AAAA-MM-DD  ⚠",
                     "Error de Formato",
                     JOptionPane.ERROR_MESSAGE);
         }

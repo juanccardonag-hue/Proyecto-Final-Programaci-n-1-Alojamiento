@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class ReservaDirectaRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -152,6 +153,7 @@ public class ReservaDirectaRecepcionista extends JDialog {
         }
         return null;
     }
+
     private void procesarReserva() {
         if (huespedSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Selecciona o registra un huésped primero.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
@@ -175,44 +177,58 @@ public class ReservaDirectaRecepcionista extends JDialog {
             }
         }
 
+        LocalDate entrada;
+        LocalDate salida;
         try {
-            LocalDate entrada = LocalDate.parse(txtFechaEntrada.getText().trim());
-            LocalDate salida = LocalDate.parse(txtFechaSalida.getText().trim());
+            entrada = LocalDate.parse(txtFechaEntrada.getText().trim());
+            salida = LocalDate.parse(txtFechaSalida.getText().trim());
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Debe ser AAAA-MM-DD .", "Error de Formato ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (!entrada.isBefore(salida)) {
-                JOptionPane.showMessageDialog(this, "La fecha de entrada debe ser anterior a la de salida.", "Error de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (!entrada.isBefore(salida)) {
+            JOptionPane.showMessageDialog(this, "La fecha de entrada debe ser anterior a la de salida.", "Error de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (apto != null && apto.estaBloqueadoRango(entrada, salida)) {
-                JOptionPane.showMessageDialog(this, "El apartamento está fuera de servicio o bloqueado en ese período.", "Apartamento No Disponible ⚠", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (apto != null && apto.estaBloqueadoRango(entrada, salida)) {
+            JOptionPane.showMessageDialog(this, "El apartamento está fuera de servicio o bloqueado en ese período.", "Apartamento No Disponible ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (empresa.getListaReservas() != null) {
-                for (Reserva reser : empresa.getListaReservas()) {
-                    if (reser.getApartamento() != null && reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
-                        if (reser.cruceCon(entrada, salida)) {
-                            JOptionPane.showMessageDialog(this, "El apartamento ya cuenta con una reserva en esas fechas.", "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
+        if (empresa.getListaReservas() != null) {
+            for (Reserva reser : empresa.getListaReservas()) {
+                if (reser.getApartamento() != null && reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
+                    if (reser.cruceCon(entrada, salida)) {
+                        JOptionPane.showMessageDialog(this, "El apartamento ya cuenta con una reserva en esas fechas.", "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                 }
             }
+        }
+
+        try {
             String idFolio = "FOL-" + (empresa.getListaReservas().size() + 1);
-            Reserva reserva = new Reserva(idFolio, entrada, salida, Canal.DIRECTA, huespedSeleccionado, apto, recepcionistaActual, null);
-            reserva.liquidarEstancia(empresa.getListaTemporadas());
+            Reserva reserva = new Reserva(idFolio, entrada, salida, Canal.DIRECTA, huespedSeleccionado, apto, recepcionistaActual, "");
+
+            if (empresa.getListaTemporadas() != null) {
+                reserva.liquidarEstancia(empresa.getListaTemporadas());
+            }
 
             huespedSeleccionado.agregarReservaHistorial(reserva);
             empresa.getListaReservas().add(reserva);
 
             JOptionPane.showMessageDialog(this,
-                    "¡Reserva directa registrada exitosamente!\nFolio: " + idFolio + "\nValor Total: $" + reserva.getValorTotal(),
-                    "Éxito 🎉", JOptionPane.INFORMATION_MESSAGE);
+                    "¡Reserva directa registrada exitosamente!\nFolio: " + idFolio + "\nValor Total: $" + String.format("%,d", (long) reserva.getValorTotal()),
+                    "Éxito ", JOptionPane.INFORMATION_MESSAGE);
             dispose();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Debe ser AAAA-MM-DD.", "Error de Formato ⚠", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al procesar la reserva: " + ex.getMessage(),
+                    "Error Interno ", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -32,7 +32,7 @@ public class DisponibilidadAptoHuesped extends JDialog {
         setContentPane(contentPane);
         configurarTabla();
 
-        pack(); // Ajusta la ventana respetando el layout definido en el .form
+        pack();
         setResizable(false);
         setLocationRelativeTo(parent);
 
@@ -44,7 +44,7 @@ public class DisponibilidadAptoHuesped extends JDialog {
         tableModel = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Desactivar la edición directa de celdas
+                return false;
             }
         };
         if (tablaApartamentos != null) {
@@ -120,7 +120,7 @@ public class DisponibilidadAptoHuesped extends JDialog {
 
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Ingresa las fechas en formato YYYY-MM-DD (ej: 2026-12-01).",
+                    "Ingresa las fechas en formato YYYY-MM-DD .",
                     "Formato Incorrecto ⚠",
                     JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException ex) {

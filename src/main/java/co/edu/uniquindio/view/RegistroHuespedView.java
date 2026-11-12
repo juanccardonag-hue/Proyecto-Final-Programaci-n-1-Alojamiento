@@ -129,7 +129,7 @@ public class RegistroHuespedView extends JDialog {
             fechaNacimiento = LocalDate.parse(fechaStr);
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Usa el formato AAAA-MM-DD (Ejemplo: 2000-05-15).",
+                    "Formato de fecha inválido. Usa el formato AAAA-MM-DD .",
                     "Fecha inválida ⚠",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -140,14 +140,14 @@ public class RegistroHuespedView extends JDialog {
                 if (h.getCedula().equalsIgnoreCase(cedula)) {
                     JOptionPane.showMessageDialog(this,
                             "Ya existe un usuario registrado con la cédula " + cedula,
-                            "Cédula duplicada ❌",
+                            "Cédula duplicada ",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 if (h.getCorreo().equalsIgnoreCase(correo)) {
                     JOptionPane.showMessageDialog(this,
                             "Ya existe un usuario registrado con el correo " + correo,
-                            "Correo duplicado ❌",
+                            "Correo duplicado ",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -158,7 +158,7 @@ public class RegistroHuespedView extends JDialog {
 
         JOptionPane.showMessageDialog(this,
                 "¡Registro exitoso! Por favor inicia sesión con tu usuario.",
-                "Registro Exitoso 🎉",
+                "Registro Exitoso ",
                 JOptionPane.INFORMATION_MESSAGE);
 
         dispose();

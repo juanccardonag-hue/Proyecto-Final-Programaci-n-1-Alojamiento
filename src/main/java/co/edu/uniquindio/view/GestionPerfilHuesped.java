@@ -36,13 +36,11 @@ public class GestionPerfilHuesped extends JDialog {
 
     private void cargarDatosHuesped() {
         if (huesped != null) {
-            // Cédula en solo lectura
             inputCedula.setText(huesped.getCedula() != null ? huesped.getCedula() : "");
             inputCedula.setEditable(false);
             inputCedula.setFocusable(false);
             inputCedula.setBackground(new Color(240, 240, 240));
 
-            // Datos modificables
             inputNombre.setText(huesped.getNombre() != null ? huesped.getNombre() : "");
             inputFechaNacimiento.setText(huesped.getFechaNacimiento() != null ? huesped.getFechaNacimiento().toString() : "");
             inputTelefono.setText(huesped.getTelefono() != null ? huesped.getTelefono() : "");
@@ -79,7 +77,7 @@ public class GestionPerfilHuesped extends JDialog {
         }
 
         JOptionPane.showMessageDialog(this,
-                "¡Perfil actualizado con éxito! ✨",
+                "¡Perfil actualizado con éxito! ",
                 "Éxito",
                 JOptionPane.INFORMATION_MESSAGE);
 

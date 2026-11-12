@@ -189,16 +189,16 @@ public class ReservaPortalHuesped extends JDialog {
             java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
             int confirmacion = JOptionPane.showConfirmDialog(this,
-                    "--- PRE-RESERVA Y RESUMEN FINANCIERO ---\n\n" +
+                    " PRE-RESERVA Y RESUMEN FINANCIERO \n\n" +
                             "• Titular: " + huespedActual.getNombre() + "\n" +
                             "• Apartamento: " + aptoSeleccionado.getNombre() + "\n" +
                             "• Fechas: " + inicio + " al " + fin + "\n" +
                             "• Ocupantes Registrados: " + ocupantes.size() + "\n\n" +
-                            "💵 COSTO TOTAL ESTANCIA: $" + String.format("%,d", totalEstancia) + "\n" +
-                            "💳 ABONO MÍNIMO (30%): $" + String.format("%,.2f", abonoMinimo30) + "\n\n" +
+                            " COSTO TOTAL ESTANCIA: $" + String.format("%,d", totalEstancia) + "\n" +
+                            " ABONO MÍNIMO (30%): $" + String.format("%,.2f", abonoMinimo30) + "\n\n" +
                             "⚠ INFORMACIÓN IMPORTANTE:\n" +
                             "Para CONFIRMAR su reserva debe realizar el abono mínimo del 30% antes de:\n" +
-                            "⏰ " + limitePago.format(dtf) + " (Plazo máximo: 24 horas).\n\n" +
+                            limitePago.format(dtf) + " (Plazo máximo: 24 horas).\n\n" +
                             "¿Desea crear la solicitud de reserva?",
                     "Confirmación de Reserva",
                     JOptionPane.YES_NO_OPTION,
@@ -209,7 +209,7 @@ public class ReservaPortalHuesped extends JDialog {
                 huespedActual.agregarReservaHistorial(nuevaReserva);
 
                 JOptionPane.showMessageDialog(this,
-                        "¡Solicitud de Reserva Registrada! 🎉\n\n" +
+                        "¡Solicitud de Reserva Registrada! \n\n" +
                                 "Código de Reserva: " + codigoReserva + "\n" +
                                 "Total Estancia: $" + String.format("%,d", totalEstancia) + "\n" +
                                 "Monto a Pagar (30%): $" + String.format("%,.2f", abonoMinimo30) + "\n\n" +
@@ -220,7 +220,7 @@ public class ReservaPortalHuesped extends JDialog {
                 dispose();
             }
         } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Ingresa las fechas en formato YYYY-MM-DD (ej: 2026-12-01).", "Formato Incorrecto ⚠", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa las fechas en formato YYYY-MM-DD .", "Formato Incorrecto ⚠", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Ingresa un número válido para las personas.", "Valor Incorrecto ⚠", JOptionPane.ERROR_MESSAGE);
         }

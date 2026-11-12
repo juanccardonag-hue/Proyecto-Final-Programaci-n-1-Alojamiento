@@ -7,6 +7,9 @@ import co.edu.uniquindio.MedioPago;
 import co.edu.uniquindio.Reserva;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -29,6 +32,7 @@ public class PagosHuesped extends JDialog {
         this.huespedActual = huespedActual;
 
         if (contentPane != null) {
+            contentPane.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
             setContentPane(contentPane);
         }
 
@@ -36,14 +40,64 @@ public class PagosHuesped extends JDialog {
             getRootPane().setDefaultButton(buttonOK);
         }
 
+        aplicarEstilos();
         cargarMediosPago();
         cargarReservasHuesped();
 
         pack();
+        setMinimumSize(new Dimension(500, 420));
         setResizable(false);
         setLocationRelativeTo(parent);
 
         initListeners();
+    }
+
+    private void aplicarEstilos() {
+        aplicarBordeRedondo(inputMonto);
+        configurarBoton(buttonOK, "Registrar Pago");
+        configurarBoton(buttonCancel, "Volver al Menú");
+    }
+
+    private void aplicarBordeRedondo(JTextField campo) {
+        if (campo == null) return;
+        campo.setOpaque(false);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.AbstractBorder() {
+                    @Override
+                    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(Color.LIGHT_GRAY);
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
+                        g2.dispose();
+                    }
+                },
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
+    }
+
+    private void configurarBoton(JButton boton, String titulo) {
+        if (boton == null) return;
+        boton.setText(titulo);
+        boton.setFocusPainted(false);
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 13);
+        Font fuenteHover = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        boton.setFont(fuenteNormal);
+        boton.setForeground(new Color(0x2C3E50));
+
+        boton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                boton.setFont(fuenteHover);
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                boton.setFont(fuenteNormal);
+            }
+        });
     }
 
     private void cargarMediosPago() {
@@ -59,15 +113,29 @@ public class PagosHuesped extends JDialog {
         if (comboReservas != null && huespedActual != null && huespedActual.getMisReservas() != null) {
             comboReservas.removeAllItems();
             for (Reserva r : huespedActual.getMisReservas()) {
-                if (r.estaActiva()) {
+                if (r.estaActiva() && r.getSaldoFolio() > 0) {
                     comboReservas.addItem(r);
                 }
             }
 
+            comboReservas.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (value instanceof Reserva) {
+                        Reserva r = (Reserva) value;
+                        String apto = (r.getApartamento() != null) ? r.getApartamento().getNombre() : "Sin Apto";
+                        setText(r.getCodigoFolio() + " - " + apto + " (" + r.getEstado() + ")");
+                    }
+                    return this;
+                }
+            });
+
             if (comboReservas.getItemCount() == 0) {
+                actualizarValoresReserva();
                 JOptionPane.showMessageDialog(this,
-                        "No tienes reservas pendientes de pago.",
-                        "Sin Reservas Activas",
+                        "No tienes reservas con saldo pendiente de pago.",
+                        "Al Día",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 actualizarValoresReserva();
@@ -78,17 +146,21 @@ public class PagosHuesped extends JDialog {
     private void actualizarValoresReserva() {
         Reserva seleccionada = (Reserva) comboReservas.getSelectedItem();
         if (seleccionada != null) {
-            long total = seleccionada.getValorTotal();
-            double abonado = seleccionada.getTotalAbonado();
-            double saldo = total - abonado;
-            double abono30Minimo = total * 0.30;
+            long totalEstancia = (long) seleccionada.getValorTotal();
+            long abonado = (long) seleccionada.getTotalAbonado();
+            long saldoPendiente = Math.max(0, (long) seleccionada.getSaldoFolio());
+            long abono30Minimo = Math.round(totalEstancia * 0.30);
+            long restantePara30 = Math.max(0, abono30Minimo - abonado);
 
             if (lblSaldoPendiente != null) {
-                // Se castea a (long) para mostrar como número entero con separadores de miles
-                lblSaldoPendiente.setText(String.format("$ %,d", (long) Math.max(0, saldo)));
+                lblSaldoPendiente.setText(String.format("$ %,d", saldoPendiente));
             }
             if (lblAbonoMinimo != null) {
-                lblAbonoMinimo.setText(String.format("$ %,d", (long) abono30Minimo));
+                if (restantePara30 == 0) {
+                    lblAbonoMinimo.setText("$ 0 (30% cubierto)");
+                } else {
+                    lblAbonoMinimo.setText(String.format("$ %,d", restantePara30));
+                }
             }
         } else {
             if (lblSaldoPendiente != null) lblSaldoPendiente.setText("$ 0");
@@ -136,6 +208,8 @@ public class PagosHuesped extends JDialog {
 
         try {
             long monto = Long.parseLong(montoStr);
+            long saldoActual = (long) reservaSeleccionada.getSaldoFolio();
+
             if (monto <= 0) {
                 JOptionPane.showMessageDialog(this,
                         "El monto a abonar debe ser mayor a cero.",
@@ -144,30 +218,41 @@ public class PagosHuesped extends JDialog {
                 return;
             }
 
+            if (monto > saldoActual) {
+                JOptionPane.showMessageDialog(this,
+                        "El monto ingresado ($" + String.format("%,d", monto) +
+                                ") supera el saldo pendiente de la reserva ($" + String.format("%,d", saldoActual) + ").",
+                        "Monto Excedido ⚠",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             boolean abonoExitoso = reservaSeleccionada.registrarAbono(monto, medio);
 
             if (abonoExitoso) {
-                double totalAbonado = reservaSeleccionada.getTotalAbonado();
-                double abonoRequerido30 = reservaSeleccionada.getValorTotal() * 0.30;
+                long totalAbonado = (long) reservaSeleccionada.getTotalAbonado();
+                long abonoRequerido30 = Math.round(reservaSeleccionada.getValorTotal() * 0.30);
 
                 String mensajeEstado = "";
-                if (totalAbonado >= abonoRequerido30) {
-                    reservaSeleccionada.setEstado(EstadoReserva.CONFIRMADA);
-                    mensajeEstado = "\n\n🎉 ¡Felicidades! Has cumplido con el 30% mínimo de anticipo.\n" +
+                if (reservaSeleccionada.getEstado() == EstadoReserva.PENDIENTE && totalAbonado >= abonoRequerido30) {
+                    reservaSeleccionada.cambiarEstado(EstadoReserva.CONFIRMADA);
+                    mensajeEstado = "\n\n Has cumplido con el 30% mínimo de anticipo.\n" +
                             "Tu reserva ha cambiado a estado: CONFIRMADA.";
-                } else {
-                    double faltaPara30 = abonoRequerido30 - totalAbonado;
+                } else if (reservaSeleccionada.getEstado() == EstadoReserva.PENDIENTE) {
+                    long faltaPara30 = Math.max(0, abonoRequerido30 - totalAbonado);
                     mensajeEstado = "\n\n⚠ Recuerda que para confirmar tu reserva debes completar el 30% ($" +
-                            String.format("%,d", (long) abonoRequerido30) + "). Te restan $" +
-                            String.format("%,d", (long) faltaPara30) + " dentro de las 24 horas.";
+                            String.format("%,d", abonoRequerido30) + "). Te restan $" +
+                            String.format("%,d", faltaPara30) + " dentro de las 24 horas.";
                 }
 
+                long nuevoSaldo = Math.max(0, (long) reservaSeleccionada.getSaldoFolio());
+
                 JOptionPane.showMessageDialog(this,
-                        "¡Abono registrado exitosamente! 💳\n\n" +
+                        "¡Abono registrado exitosamente! \n\n" +
                                 "• Reserva: " + reservaSeleccionada.getCodigoFolio() + "\n" +
                                 "• Monto Abonado: $" + String.format("%,d", monto) + "\n" +
                                 "• Medio de Pago: " + medio + "\n" +
-                                "• Nuevo Saldo Pendiente: $" + String.format("%,d", (long) reservaSeleccionada.getSaldoFolio()) +
+                                "• Nuevo Saldo Pendiente: $" + String.format("%,d", nuevoSaldo) +
                                 mensajeEstado,
                         "Pago Procesado",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -182,7 +267,7 @@ public class PagosHuesped extends JDialog {
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Ingresa un número entero válido para el monto del abono.",
+                    "Ingresa un número entero válido para el monto del abono (sin puntos ni comas).",
                     "Formato Inválido ⚠",
                     JOptionPane.ERROR_MESSAGE);
         }

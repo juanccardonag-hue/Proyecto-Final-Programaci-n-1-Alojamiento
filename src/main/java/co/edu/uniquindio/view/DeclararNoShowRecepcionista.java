@@ -157,7 +157,7 @@ public class DeclararNoShowRecepcionista extends JDialog {
 
         if (exito) {
             JOptionPane.showMessageDialog(this,
-                    "¡La reserva " + cod + " ha sido declarada como NO-SHOW exitosamente! 🚫",
+                    "¡La reserva " + cod + " ha sido declarada como NO-SHOW exitosamente! ",
                     "No-Show Confirmado", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {

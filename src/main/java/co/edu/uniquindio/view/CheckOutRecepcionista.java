@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 public class CheckOutRecepcionista extends JDialog {
     private JPanel contentPane;
-    private JTextField textCodigoReserva; // Sincronizado con el .form
+    private JTextField textCodigoReserva;
     private JButton btnBuscar;
     private JTextArea textDetalle;
     private JButton buttonOK;
@@ -120,7 +120,6 @@ public class CheckOutRecepcionista extends JDialog {
             saldoPendienteCalculado = totalCargosGenerales - totalPagado;
 
             StringBuilder sb = new StringBuilder();
-            sb.append("--------------------------------------------------\n");
             sb.append(" Folio: ").append(reservaSeleccionada.getCodigoFolio()).append("\n");
             sb.append(" Estado Actual: ").append(reservaSeleccionada.getEstado()).append("\n");
             sb.append(" Titular: ").append(reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A").append("\n");
@@ -130,11 +129,10 @@ public class CheckOutRecepcionista extends JDialog {
             sb.append(" Saldo Pendiente: $").append(Math.max(0, saldoPendienteCalculado)).append("\n");
 
             if (saldoPendienteCalculado <= 0) {
-                sb.append(" Estado Cuenta: PAZ Y SALVO ✅\n");
+                sb.append(" Estado Cuenta: PAZ Y SALVO \n");
             } else {
-                sb.append(" Estado Cuenta: SALDO PENDIENTE ❌ (Requiere pago)\n");
+                sb.append(" Estado Cuenta: SALDO PENDIENTE  (Requiere pago)\n");
             }
-            sb.append("--------------------------------------------------");
 
             textDetalle.setText(sb.toString());
 
@@ -173,7 +171,7 @@ public class CheckOutRecepcionista extends JDialog {
             }
 
             JOptionPane.showMessageDialog(this,
-                    "¡Check-Out realizado exitosamente! 🎉\nLa reserva ha sido FINALIZADA y el apartamento pasa a PENDIENTE DE PREPARACIÓN.",
+                    "¡Check-Out realizado exitosamente! \nLa reserva ha sido FINALIZADA y el apartamento pasa a PENDIENTE DE PREPARACIÓN.",
                     "Check-Out Completo", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {

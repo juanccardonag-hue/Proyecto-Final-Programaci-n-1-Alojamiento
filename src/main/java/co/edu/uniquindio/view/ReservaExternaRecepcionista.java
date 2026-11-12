@@ -225,7 +225,7 @@ public class ReservaExternaRecepcionista extends JDialog {
 
             JOptionPane.showMessageDialog(this,
                     "¡Reserva externa registrada exitosamente!\nFolio: " + idFolio + "\nCódigo Externo: " + codExt + "\nValor Total: $" + reserva.getValorTotal(),
-                    "Éxito 🎉", JOptionPane.INFORMATION_MESSAGE);
+                    "Éxito ", JOptionPane.INFORMATION_MESSAGE);
             dispose();
 
         } catch (Exception ex) {

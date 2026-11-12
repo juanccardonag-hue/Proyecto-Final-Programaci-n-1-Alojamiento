@@ -115,7 +115,7 @@ public class RegistrarNovedadRecepcionista extends JDialog {
         aptoSeleccionado.registrarNovedad(descripcion, nombreAutor);
 
         JOptionPane.showMessageDialog(this,
-                "¡Novedad registrada con éxito en el apartamento " + aptoSeleccionado.getCodigo() + "! 📝",
+                "¡Novedad registrada con éxito en el apartamento " + aptoSeleccionado.getCodigo() ,
                 "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
 
         dispose();

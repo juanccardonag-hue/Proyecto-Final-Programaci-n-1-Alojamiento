@@ -111,7 +111,6 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             double anticipoRequerido = reservaEncontrada.getValorTotal() * 0.30;
 
             StringBuilder sb = new StringBuilder();
-            sb.append("--------------------------------------------------\n");
             sb.append(" Folio: ").append(reservaEncontrada.getCodigoFolio()).append("\n");
             sb.append(" Canal: ").append(reservaEncontrada.getCanal()).append("\n");
             sb.append(" Estado Actual: ").append(reservaEncontrada.getEstado()).append("\n");
@@ -123,12 +122,11 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             if (reservaEncontrada.getCanal() == Canal.PORTAL) {
                 sb.append(" Anticipo 30% Requerido: $").append(anticipoRequerido).append("\n");
                 if (totalPagado >= anticipoRequerido) {
-                    sb.append(" Estado Abono: CUMPLIDO ✅\n");
+                    sb.append(" Estado Abono: CUMPLIDO \n");
                 } else {
-                    sb.append(" Estado Abono: PENDIENTE ❌ (Falta abonar)\n");
+                    sb.append(" Estado Abono: PENDIENTE  (Falta abonar)\n");
                 }
             }
-            sb.append("--------------------------------------------------");
 
             txtDetalleReserva.setText(sb.toString());
         } else {
@@ -160,7 +158,7 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             }
         }
         if (reservaEncontrada.cambiarEstado(EstadoReserva.CONFIRMADA)) {
-            JOptionPane.showMessageDialog(this, "¡Reserva " + reservaEncontrada.getCodigoFolio() + " confirmada exitosamente! 🎉", "Éxito 🎉", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "¡Reserva " + reservaEncontrada.getCodigoFolio() + " confirmada exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo cambiar el estado de la reserva. Estado actual: " + reservaEncontrada.getEstado(), "Error ⚠", JOptionPane.ERROR_MESSAGE);

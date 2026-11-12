@@ -12,7 +12,7 @@ import java.awt.event.MouseEvent;
 public class LoginRecepcionista extends JDialog {
     private JPanel contentPane;
     private JTextField inputUsuario;
-    private JTextField inputContrasena;
+    JPasswordField txtContrasena;
     private JButton buttonSesion;
     private JButton buttonVolver;
 
@@ -41,9 +41,9 @@ public class LoginRecepcionista extends JDialog {
             inputUsuario.setPreferredSize(tamanoInput);
             aplicarBordeRedondo(inputUsuario);
         }
-        if (inputContrasena != null) {
-            inputContrasena.setPreferredSize(tamanoInput);
-            aplicarBordeRedondo(inputContrasena);
+        if (txtContrasena != null) {
+            txtContrasena.setPreferredSize(tamanoInput);
+            aplicarBordeRedondo(txtContrasena);
         }
 
         configurarBoton(buttonSesion, "Ingresar");
@@ -96,7 +96,7 @@ public class LoginRecepcionista extends JDialog {
 
     private void iniciarSesion() {
         String usuario = inputUsuario.getText().trim();
-        String contrasena = inputContrasena.getText().trim();
+        String contrasena = txtContrasena.getText().trim();
 
         if (usuario.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -124,7 +124,7 @@ public class LoginRecepcionista extends JDialog {
         if (recepcionistaEncontrado != null) {
             JOptionPane.showMessageDialog(this,
                     "¡Bienvenido/a, " + recepcionistaEncontrado.getNombre() + "!",
-                    "Acceso Concedido 🎉",
+                    "Acceso Concedido ",
                     JOptionPane.INFORMATION_MESSAGE);
 
             dispose();
@@ -134,11 +134,11 @@ public class LoginRecepcionista extends JDialog {
         } else {
             JOptionPane.showMessageDialog(this,
                     "Usuario o contraseña incorrectos.",
-                    "Error de Autenticación ❌",
+                    "Error de Autenticación ",
                     JOptionPane.ERROR_MESSAGE);
 
-            inputContrasena.setText("");
-            inputContrasena.requestFocus();
+            txtContrasena.setText("");
+            txtContrasena.requestFocus();
         }
     }
 }

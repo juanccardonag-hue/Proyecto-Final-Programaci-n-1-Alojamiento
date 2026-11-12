@@ -13,40 +13,47 @@ public class EditarRecepcionista extends JDialog {
     private JTextField textNombre;
     private JTextField textCorreo;
     private JButton btnGuardar;
+    private JPanel mainPanel;
+    private JTextField textTelefono;
+    private JButton btnCancelar;
 
     private Empresa empresa;
     private Empleado empleadoEncontrado;
-    private JPanel mainPanel;
-    private JTextField textTelefono;
-    private JTextField textUsuario;
-    private JPasswordField txtContrasena;
-    private JButton btnCancelar;
 
     public EditarRecepcionista(JDialog parent, Empresa empresa) {
         super(parent, "Editar Recepcionista", true);
         this.empresa = empresa;
 
-        setContentPane(mainPanel);
-        setSize(850, 650);
-        setResizable(false);
-        setLocationRelativeTo(parent);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+        if (mainPanel != null) {
+            setContentPane(mainPanel);
+            mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        }
 
         aplicarBordeRedondo(textCedula);
         aplicarBordeRedondo(textNombre);
         aplicarBordeRedondo(textCorreo);
         aplicarBordeRedondo(textTelefono);
-        aplicarBordeRedondo(textUsuario);
-        aplicarBordeRedondo(txtContrasena);
 
         icons();
         initListeners();
+
+        setSize(680, 480);
+        setResizable(false);
+        setLocationRelativeTo(parent);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     private void initListeners() {
         btnBuscar.addActionListener(e -> {
             String cedula = textCedula.getText().trim();
+            if (cedula.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠ Ingresa una cédula para buscar ⚠",
+                        "Campo vacío",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             Empleado emp = empresa.getAdministrador().buscarEmpleado(empresa.getListaEmpleados(), cedula);
 
             if (emp != null) {
@@ -54,16 +61,16 @@ public class EditarRecepcionista extends JDialog {
                 textNombre.setText(emp.getNombre());
                 textTelefono.setText(emp.getTelefono());
                 textCorreo.setText(emp.getCorreo());
-                textUsuario.setText(emp.getUsuario());
-                txtContrasena.setText(emp.getContrasenia());
             } else {
                 this.empleadoEncontrado = null;
+                limpiarCampos();
                 JOptionPane.showMessageDialog(this,
                         "⚠ No se encontró ningún recepcionista con la cédula ingresada ⚠",
                         "No encontrado",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
+
         btnGuardar.addActionListener(e -> {
             if (empleadoEncontrado == null) {
                 JOptionPane.showMessageDialog(this,
@@ -73,11 +80,23 @@ public class EditarRecepcionista extends JDialog {
                 return;
             }
 
+            String nombre = textNombre.getText().trim();
+            String telefono = textTelefono.getText().trim();
+            String correo = textCorreo.getText().trim();
+
+            if (nombre.isEmpty() || telefono.isEmpty() || correo.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠ Todos los campos personales son obligatorios ⚠",
+                        "Campos incompletos",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             boolean exito = empresa.getAdministrador().editarEmpleado(
                     empleadoEncontrado,
-                    textNombre.getText().trim(),
-                    textTelefono.getText().trim(),
-                    textCorreo.getText().trim()
+                    nombre,
+                    telefono,
+                    correo
             );
 
             if (exito) {
@@ -87,12 +106,20 @@ public class EditarRecepcionista extends JDialog {
                 JOptionPane.showMessageDialog(this, "⚠ No se pudo realizar la actualización ⚠", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
         btnCancelar.addActionListener(e -> dispose());
     }
+
+    private void limpiarCampos() {
+        textNombre.setText("");
+        textTelefono.setText("");
+        textCorreo.setText("");
+    }
+
     public void icons() {
         configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
-        configurarBoton(btnCancelar,"","Cancelar");
-        configurarBoton(btnGuardar, "","Guardar");
+        configurarBoton(btnCancelar, "", "Cancelar");
+        configurarBoton(btnGuardar, "", "Guardar");
     }
 
     private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
@@ -102,7 +129,7 @@ public class EditarRecepcionista extends JDialog {
         int tamZoomIcono = 40;
 
         Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
-        Font fuenteZoom   = new Font("Vensim Sans Mono", Font.BOLD, 17);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
 
         boton.setText(titulo);
         boton.setFont(fuenteNormal);
@@ -133,17 +160,14 @@ public class EditarRecepcionista extends JDialog {
                 }
 
                 boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
                 boton.revalidate();
                 boton.repaint();
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                // 1. Restaura el texto
                 boton.setFont(fuenteNormal);
 
-                // 2. Restaura el ícono
                 if (imagenOriginal != null) {
                     boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
                 }
@@ -153,15 +177,17 @@ public class EditarRecepcionista extends JDialog {
             }
         });
     }
-    void aplicarBordeRedondo(JTextField campo) {
+
+    private void aplicarBordeRedondo(JTextField campo) {
+        if (campo == null) return;
         campo.setOpaque(false);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 new javax.swing.border.AbstractBorder() {
                     @Override
-                    public void paintBorder(java.awt.Component c, java.awt.Graphics g, int x, int y, int width, int height) {
-                        java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
-                        g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                        g2.setColor(java.awt.Color.LIGHT_GRAY);
+                    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(Color.LIGHT_GRAY);
                         g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
                         g2.dispose();
                     }

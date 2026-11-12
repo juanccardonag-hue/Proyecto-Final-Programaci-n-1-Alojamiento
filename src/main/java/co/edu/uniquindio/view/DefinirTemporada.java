@@ -151,11 +151,11 @@ public class DefinirTemporada extends JDialog{
                         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                         g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(java.awt.Color.LIGHT_GRAY);
-                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15); // 15 es el nivel de curvatura
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10) // Margen interno del texto
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
 }

@@ -23,7 +23,7 @@ public class UI extends JFrame {
 
         if (mainPanel != null) {
             mainPanel.setOpaque(true);
-            mainPanel.setBackground(new Color(240, 244, 248)); // #F0F4F8
+            mainPanel.setBackground(new Color(240, 244, 248));
             setContentPane(mainPanel);
         }
 

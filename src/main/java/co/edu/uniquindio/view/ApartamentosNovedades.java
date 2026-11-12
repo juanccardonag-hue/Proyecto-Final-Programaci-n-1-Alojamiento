@@ -1,9 +1,7 @@
 package co.edu.uniquindio.view;
-
 import co.edu.uniquindio.Administrador;
 import co.edu.uniquindio.Apartamento;
 import co.edu.uniquindio.Empresa;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,7 +10,6 @@ public class ApartamentosNovedades extends JDialog {
     private JLabel lblResultado;
     private JButton btnConsultar;
     private JButton btnCerrar;
-
     private Empresa empresa;
 
     public ApartamentosNovedades(JDialog parent, Empresa empresa) {
@@ -31,11 +28,10 @@ public class ApartamentosNovedades extends JDialog {
 
         configurarBoton(btnConsultar, "Consultar");
         configurarBoton(btnCerrar, "Cerrar");
-
         initListeners();
     }
-
     private void initListeners() {
+
         if (btnConsultar != null) {
             btnConsultar.addActionListener(e -> consultar());
         }
@@ -43,11 +39,10 @@ public class ApartamentosNovedades extends JDialog {
             btnCerrar.addActionListener(e -> dispose());
         }
     }
-
     private void consultar() {
+
         Administrador admin = empresa.getAdministrador();
         Apartamento apto = admin.obtenerApartamentoNovedades(empresa.getListaApartamentos());
-
         if (apto == null) {
             lblResultado.setText("<html><div style='text-align: center;'>" +
                     "<b>No hay apartamentos o novedades registradas.</b></div></html>");
@@ -66,8 +61,8 @@ public class ApartamentosNovedades extends JDialog {
     }
 
     private void configurarBoton(JButton boton, String titulo) {
-        if (boton == null) return;
 
+        if (boton == null) return;
         if (titulo != null && !titulo.isEmpty()) {
             boton.setText(titulo);
         }
@@ -76,12 +71,13 @@ public class ApartamentosNovedades extends JDialog {
         Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
 
         boton.setFont(fuenteNormal);
-
         boton.addMouseListener(new java.awt.event.MouseAdapter() {
+
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
                 boton.setFont(fuenteZoom);
                 boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
             }
 
             @Override

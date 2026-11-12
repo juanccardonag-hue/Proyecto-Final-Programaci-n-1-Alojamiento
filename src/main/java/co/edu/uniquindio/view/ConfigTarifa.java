@@ -161,7 +161,7 @@ public class ConfigTarifa extends JDialog{
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10) // Margen interno del texto
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
 }

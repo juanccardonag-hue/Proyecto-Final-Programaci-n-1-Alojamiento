@@ -28,10 +28,19 @@ public class CotizarEstanciaHuesped extends JDialog {
         this.empresa = empresa;
         this.huespedActual = huespedActual;
 
-        setContentPane(contentPane);
+        if (contentPane != null) {
+            contentPane.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
+            setContentPane(contentPane);
+        }
+
         cargarComboApartamentos();
 
+        if (inputPersonas != null) {
+            inputPersonas.setModel(new SpinnerNumberModel(1, 1, 20, 1));
+        }
+
         pack();
+        setMinimumSize(new Dimension(480, 360));
         setResizable(false);
         setLocationRelativeTo(parent);
 
@@ -44,12 +53,27 @@ public class CotizarEstanciaHuesped extends JDialog {
             for (Apartamento apto : empresa.getListaApartamentos()) {
                 comboBox1.addItem(apto);
             }
+
+            // Muestra código, nombre y tarifa en lugar de co.edu.uniquindio.Apartamento@...
+            comboBox1.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (value instanceof Apartamento) {
+                        Apartamento a = (Apartamento) value;
+                        setText(a.getCodigo() + " - " + a.getNombre() + " ($" + String.format("%,d", (long) a.getTarifaPersonaNoche()) + "/noche)");
+                    }
+                    return this;
+                }
+            });
         }
     }
+
     private void initListeners() {
         buttonOK.addActionListener(e -> calcularCotizacion());
         buttonCancel.addActionListener(e -> dispose());
     }
+
     private void calcularCotizacion() {
         Apartamento aptoSeleccionado = (Apartamento) comboBox1.getSelectedItem();
         String inicioStr = inputFechaInicio.getText().trim();
@@ -95,6 +119,7 @@ public class CotizarEstanciaHuesped extends JDialog {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
             if (fin.isBefore(inicio) || fin.isEqual(inicio)) {
                 JOptionPane.showMessageDialog(this,
                         "La fecha final debe ser posterior a la fecha de inicio.",
@@ -103,7 +128,6 @@ public class CotizarEstanciaHuesped extends JDialog {
                 return;
             }
 
-            // 1. Evaluación de Edad del Titular (< 6 años exonerado)
             int pagantes = 0;
             int exonerados = 0;
 
@@ -118,7 +142,6 @@ public class CotizarEstanciaHuesped extends JDialog {
                 pagantes++;
             }
 
-            // 2. Evaluación de Acompañantes (si hay más de 1 persona en el Spinner)
             int numAcompanantes = personasTotal - 1;
             for (int i = 1; i <= numAcompanantes; i++) {
                 String fNacStr = JOptionPane.showInputDialog(this,
@@ -136,32 +159,30 @@ public class CotizarEstanciaHuesped extends JDialog {
                             exonerados++;
                         }
                     } catch (DateTimeParseException ex) {
-                        pagantes++; // Adulto por defecto si el formato es inválido
+                        pagantes++;
                     }
                 } else {
-                    pagantes++; // Adulto por defecto si omite entrada
+                    pagantes++;
                 }
             }
-
-            // 3. Cálculo de Noches y Total Financiero
             long noches = ChronoUnit.DAYS.between(inicio, fin);
-            double costoTotal = aptoSeleccionado.getTarifaPersonaNoche() * pagantes * noches;
+            long tarifaBase = (long) aptoSeleccionado.getTarifaPersonaNoche();
+            long costoTotal = tarifaBase * pagantes * noches;
 
             String fechaNacTitular = (huespedActual != null && huespedActual.getFechaNacimiento() != null)
                     ? huespedActual.getFechaNacimiento().toString()
                     : "No registrada";
 
-            // Resumen detallado con desglose de pagantes/exonerados
             JOptionPane.showMessageDialog(this,
-                    "--- Resumen de Cotización 💰 ---\n\n" +
+                    "-°°° Resumen de Cotización  °°°\n\n" +
                             "• Titular: " + (huespedActual != null ? huespedActual.getNombre() : "Huésped") + " (F. Nac: " + fechaNacTitular + ")\n" +
                             "• Apartamento: " + aptoSeleccionado.getNombre() + "\n" +
                             "• Duración: " + noches + " noche(s)\n" +
                             "• Personas Totales: " + personasTotal + "\n" +
                             "   - Pagantes (≥6 años): " + pagantes + "\n" +
                             "   - Exonerados (<6 años): " + exonerados + "\n" +
-                            "• Tarifa base persona/noche: $" + String.format("%,.2f", aptoSeleccionado.getTarifaPersonaNoche()) + "\n\n" +
-                            "TOTAL ESTIMADO: $" + String.format("%,.2f", costoTotal),
+                            "• Tarifa base persona/noche: $" + String.format("%,d", tarifaBase) + "\n\n" +
+                            "TOTAL ESTIMADO: $" + String.format("%,d", costoTotal),
                     "Cotización de Reserva",
                     JOptionPane.INFORMATION_MESSAGE);
 

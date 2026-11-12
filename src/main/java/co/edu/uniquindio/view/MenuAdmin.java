@@ -39,7 +39,6 @@ public class MenuAdmin extends JDialog {
     private void initListeners() {
         Administrador admin = empresa.getAdministrador();
 
-        //gestión
         btnEmpleados.addActionListener(e -> {
             MenuGestionEmpleado menuEmp = new MenuGestionEmpleado(this, empresa);
             menuEmp.setVisible(true);

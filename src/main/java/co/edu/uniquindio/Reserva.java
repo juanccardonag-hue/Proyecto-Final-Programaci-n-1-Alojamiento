@@ -246,4 +246,10 @@ public class Reserva {
     public Folio getFolio() { return folio; }
     public List<Ocupante> getOcupantes() { return ocupantes; }
     public List<DetalleNocheReserva> getDetallesReserva() { return detallesReserva; }
+    @Override
+    public String toString() {
+        String nombreHuesped = (titular != null) ? titular.getNombre() : "Sin titular";
+        String codApto = (apartamento != null) ? apartamento.getCodigo() : "S/A";
+        return codigoFolio + " | " + nombreHuesped + " (" + codApto + ")";
+    }
 }

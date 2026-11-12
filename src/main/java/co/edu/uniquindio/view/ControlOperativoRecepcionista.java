@@ -170,7 +170,7 @@ public class ControlOperativoRecepcionista extends JDialog {
         }
         aptoSeleccionado.cambiarEstado(nuevoEstado, motivo);
         JOptionPane.showMessageDialog(this,
-                "¡Estado del apartamento " + aptoSeleccionado.getCodigo() + " actualizado correctamente a: " + nuevoEstado + "! 🎉",
+                "¡Estado del apartamento " + aptoSeleccionado.getCodigo() + " actualizado correctamente a: " + nuevoEstado + "!",
                 "Operación Exitosa", JOptionPane.INFORMATION_MESSAGE);
 
         dispose();

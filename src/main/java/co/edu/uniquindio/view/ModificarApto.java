@@ -87,7 +87,7 @@ public class ModificarApto extends JDialog {
 
                 boolean exito = empresa.getAdministrador().modificarApartamento(
                         apartamentoEncontrado,
-                        apartamentoEncontrado.getNombre(), // Mantiene el nombre actual del apartamento
+                        apartamentoEncontrado.getNombre(),
                         dorm,
                         cap,
                         caracteristicas,
@@ -167,10 +167,7 @@ public class ModificarApto extends JDialog {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                // 1. Restaura el texto
                 boton.setFont(fuenteNormal);
-
-                // 2. Restaura el ícono
                 if (imagenOriginal != null) {
                     boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
                 }

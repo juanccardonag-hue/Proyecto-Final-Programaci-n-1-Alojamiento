@@ -81,8 +81,7 @@ public class FolioPagosRecepcionista extends JDialog {
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
     }
 
     private void configurarBotonSencillo(JButton boton, String texto) {
@@ -103,8 +102,7 @@ public class FolioPagosRecepcionista extends JDialog {
             @Override
             public void mouseExited(MouseEvent e) {
                 boton.setFont(fuenteNormal);
-            }
-        });
+            }});
     }
 
     private void initListeners() {
@@ -146,7 +144,7 @@ public class FolioPagosRecepcionista extends JDialog {
         String titular = (reservaSeleccionada.getTitular() != null) ? reservaSeleccionada.getTitular().getNombre() : "N/A";
 
         textEstadoCuenta.setText("");
-        textEstadoCuenta.append("=================== ESTADO DE CUENTA ===================\n");
+        textEstadoCuenta.append("°°°°°°°°°ESTADO DE CUENTA °°°°°°°°°°°\n");
         textEstadoCuenta.append(" Folio Reserva : " + reservaSeleccionada.getCodigoFolio() + "\n");
         textEstadoCuenta.append(" Titular       : " + titular + "\n");
         textEstadoCuenta.append(" Estado Reserva: " + reservaSeleccionada.getEstado() + "\n");
@@ -205,7 +203,7 @@ public class FolioPagosRecepcionista extends JDialog {
             boolean exitoso = reservaSeleccionada.registrarAbono(monto, medio);
 
             if (exitoso) {
-                JOptionPane.showMessageDialog(this, "¡Pago de $" + String.format("%,d", monto) + " registrado exitosamente! 🎉\nSaldo actual: $" + String.format("%,.0f", reservaSeleccionada.getSaldoFolio()), "Pago Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "¡Pago de $" + String.format("%,d", monto) + " registrado exitosamente! \nSaldo actual: $" + String.format("%,.0f", reservaSeleccionada.getSaldoFolio()), "Pago Exitoso", JOptionPane.INFORMATION_MESSAGE);
                 textMontoPago.setText("");
                 actualizarVistaEstadoCuenta();
             } else {

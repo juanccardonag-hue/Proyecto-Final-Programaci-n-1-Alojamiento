@@ -48,11 +48,10 @@ public class LoginAdmin extends JDialog {
         textUsuario.setPreferredSize(tamanoInput);
         textContrasenia.setPreferredSize(tamanoInput);
 
-        // Colores de fondo para el efecto Hover
+        // Colores de fondo
         Color fondoNormal = new Color(245, 245, 245);
         Color fondoHover  = new Color(230, 210, 245);
 
-        //Colores de texto para el efecto Hover
         Color textoNormal = new Color(100, 40, 120);
         Color textoHover  = new Color(60, 20, 80);
 
@@ -113,11 +112,10 @@ public class LoginAdmin extends JDialog {
                         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                         g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(java.awt.Color.LIGHT_GRAY);
-                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15); // 15 es el nivel de curvatura
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
                         g2.dispose();
                     }
                 },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10) // Margen interno del texto
-        ));
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
     }
 }
