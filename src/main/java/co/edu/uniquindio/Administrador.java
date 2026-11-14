@@ -16,7 +16,7 @@ public class Administrador extends Empleado {
         this.contrasenia = contrasenia;
     }
 
-    // --- Seguridad y Autenticación ---
+    // Seguridad y Autenticación
     public boolean autenticar(String usuarioIngresado, String contrasenaIngresada) {
         if (usuarioIngresado == null || contrasenaIngresada == null) {
             return false;
@@ -25,7 +25,7 @@ public class Administrador extends Empleado {
                 && this.contrasenia.equals(contrasenaIngresada.trim());
     }
 
-    // --- Control de Acceso y Credenciales ---
+    // Control de Acceso y Credenciales
     public boolean cambiarCredenciales(String nuevoUsuario, String nuevaClave) {
         boolean actualizado = false;
         if (nuevoUsuario != null && !nuevoUsuario.trim().isEmpty()) {

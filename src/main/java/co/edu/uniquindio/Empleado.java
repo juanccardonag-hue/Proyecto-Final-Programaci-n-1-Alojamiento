@@ -3,8 +3,8 @@ package co.edu.uniquindio;
 import java.time.LocalDate;
 
 public class Empleado extends Persona {
-    private String usuario;
-    private String contrasenia;
+    protected String usuario;
+    protected String contrasenia;
 
     public Empleado(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
         super(cedula, nombre, fechaNacimiento, telefono, correo);

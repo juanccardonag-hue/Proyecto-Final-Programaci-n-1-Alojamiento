@@ -10,7 +10,7 @@ public class Recepcionista extends Empleado {
         super(cedula, nombre, fechaNacimiento, telefono, correo, usuario, contrasenia);
     }
 
-    // --- Login ---
+    // Login
     public static Recepcionista loginRecepcionista(List<Recepcionista> listaRecepcionistas) {
         String usuarioInput = JOptionPane.showInputDialog("Ingresa tu usuario de recepcionista:");
         if (usuarioInput == null || usuarioInput.trim().isEmpty()) return null;
@@ -208,7 +208,7 @@ public class Recepcionista extends Empleado {
         }
     }
 
-    // --- Check-In y Check-Out ---
+    // Check-In y Check-Out
     public void realizarCheckIn(List<Reserva> listaReservas) {
         String codigo = JOptionPane.showInputDialog("Ingresa el código/folio para Check-In:");
         if (codigo == null || codigo.trim().isEmpty()) return;

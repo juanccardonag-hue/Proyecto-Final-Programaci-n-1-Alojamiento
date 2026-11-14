@@ -26,7 +26,6 @@ public class Empresa {
         this.listaTemporadas = new ArrayList<>();
         this.listaReservas = new ArrayList<>();
 
-        // Administrador de prueba
         this.administrador = new Administrador("41911188", "Jhon Mendez", LocalDate.of(1967, 11, 13), "3219393229", "mendezj@hotel.com", "adminPrincipal", "jhon-123");
     }
 
@@ -153,9 +152,6 @@ public class Empresa {
     }
 
     public void abrirMenuAdmin (){
-        /*if (!administrador.loginAdmin()) {
-            return;
-        }*/
         int opcionAdmin;
         do {
             String menuAdmin = "⏔⏔⏔ ꒰ Menú administrador/a ꒱ ⏔⏔⏔ \n\n" +
