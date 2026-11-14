@@ -104,7 +104,7 @@
         </constraints>
         <properties>
           <font name=".AppleSystemUIFont" size="16" style="0"/>
-          <text value="Recargo:"/>
+          <text value="Recargo (Ejemplo: 0.30 para el 30%):"/>
         </properties>
       </component>
     </children>

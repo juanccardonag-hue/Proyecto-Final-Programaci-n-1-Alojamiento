@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class ReservaExternaRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -18,6 +19,7 @@ public class ReservaExternaRecepcionista extends JDialog {
     private JComboBox<String> comboApartamentos;
     private JTextField txtFechaEntrada;
     private JTextField textFechaSalida;
+    private JSpinner numeroPersonas;
     private JButton btnConfirmar;
     private JButton btnVolver;
 
@@ -35,7 +37,7 @@ public class ReservaExternaRecepcionista extends JDialog {
         aplicarEstilos();
         cargarApartamentos();
         initListeners();
-        setSize(520, 560);
+        setSize(520, 620);
         setResizable(false);
         setLocationRelativeTo(parent);
     }
@@ -45,6 +47,11 @@ public class ReservaExternaRecepcionista extends JDialog {
         aplicarBordeRedondo(textCedulaHuesped);
         aplicarBordeRedondo(txtFechaEntrada);
         aplicarBordeRedondo(textFechaSalida);
+
+        if (numeroPersonas != null) {
+            numeroPersonas.setModel(new SpinnerNumberModel(0, 0, 20, 1));
+        }
+
         configurarBoton(btnBuscarHuesped, "Buscar");
         configurarBoton(btnConfirmar, "Confirmar Reserva");
         configurarBoton(btnVolver, "Volver al Menú");
@@ -99,11 +106,13 @@ public class ReservaExternaRecepcionista extends JDialog {
             }
         }
     }
+
     private void initListeners() {
         if (btnBuscarHuesped != null) btnBuscarHuesped.addActionListener(e -> buscarOAgregarHuesped());
         if (btnConfirmar != null) btnConfirmar.addActionListener(e -> procesarReservaExterna());
         if (btnVolver != null) btnVolver.addActionListener(e -> dispose());
     }
+
     private void buscarOAgregarHuesped() {
         String cedula = textCedulaHuesped.getText().trim();
         if (cedula.isEmpty()) {
@@ -175,8 +184,14 @@ public class ReservaExternaRecepcionista extends JDialog {
             return;
         }
 
+        int totalPersonas = (numeroPersonas != null) ? (Integer) numeroPersonas.getValue() : 0;
+        if (totalPersonas <= 0) {
+            JOptionPane.showMessageDialog(this, "El número de personas debe ser al menos 1 (incluyendo al titular).", "Cantidad Inválida ⚠", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String itemApto = (String) comboApartamentos.getSelectedItem();
-        String codApto = itemApto.split(" - ")[0].trim();
+        String codApto = itemApto.split("-")[0].trim();
 
         Apartamento apto = null;
         if (empresa.getListaApartamentos() != null) {
@@ -188,35 +203,83 @@ public class ReservaExternaRecepcionista extends JDialog {
             }
         }
 
+        if (apto == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró el apartamento seleccionado.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (totalPersonas > apto.getCapaMaxPersona()) {
+            JOptionPane.showMessageDialog(this,
+                    "El apartamento seleccionado tiene una capacidad máxima de " + apto.getCapaMaxPersona() + " personas.",
+                    "Capacidad Excedida ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        LocalDate entrada;
+        LocalDate salida;
         try {
-            LocalDate entrada = LocalDate.parse(txtFechaEntrada.getText().trim());
-            LocalDate salida = LocalDate.parse(textFechaSalida.getText().trim());
+            entrada = LocalDate.parse(txtFechaEntrada.getText().trim());
+            salida = LocalDate.parse(textFechaSalida.getText().trim());
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Debe ser AAAA-MM-DD.", "Error de Formato ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (!entrada.isBefore(salida)) {
-                JOptionPane.showMessageDialog(this, "La fecha de entrada debe ser anterior a la de salida.", "Error de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (!entrada.isBefore(salida)) {
+            JOptionPane.showMessageDialog(this, "La fecha de entrada debe ser anterior a la de salida.", "Error de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (apto != null && apto.estaBloqueadoRango(entrada, salida)) {
-                JOptionPane.showMessageDialog(this, "El apartamento está fuera de servicio o bloqueado en ese período.", "Apartamento No Disponible ⚠", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (apto.estaBloqueadoRango(entrada, salida)) {
+            JOptionPane.showMessageDialog(this, "El apartamento está fuera de servicio o bloqueado en ese período.", "Apartamento No Disponible ⚠", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (empresa.getListaReservas() != null) {
-                for (Reserva reser : empresa.getListaReservas()) {
-                    if (reser.getApartamento() != null && reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
-                        if (reser.cruceCon(entrada, salida)) {
-                            JOptionPane.showMessageDialog(this, "La reserva externa (" + codExt + ") se cruza en fechas con la reserva existente " + reser.getCodigoFolio(), "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
+        if (empresa.getListaReservas() != null) {
+            for (Reserva reser : empresa.getListaReservas()) {
+                if (reser.getApartamento() != null && reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
+                    if (reser.cruceCon(entrada, salida)) {
+                        JOptionPane.showMessageDialog(this, "La reserva externa (" + codExt + ") se cruza en fechas con la reserva existente " + reser.getCodigoFolio(), "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                 }
             }
+        }
 
+        try {
             int numReserva = (empresa.getListaReservas() != null) ? empresa.getListaReservas().size() + 1 : 1;
             String idFolio = "FOL-EXT-" + numReserva;
             Reserva reserva = new Reserva(idFolio, entrada, salida, Canal.EXTERNA, huespedSeleccionado, apto, null, codExt);
-            reserva.liquidarEstancia(empresa.getListaTemporadas());
+
+            LocalDate fNacTitular = (huespedSeleccionado.getFechaNacimiento() != null)
+                    ? huespedSeleccionado.getFechaNacimiento()
+                    : LocalDate.of(2000, 1, 1);
+            reserva.agregarOcupante(new Ocupante(huespedSeleccionado.getNombre(), fNacTitular));
+
+            // Si hay más de 1 persona, pedir solo la fecha de nacimiento
+            if (totalPersonas > 1) {
+                for (int i = 1; i < totalPersonas; i++) {
+                    LocalDate fNacAcomp = null;
+                    while (fNacAcomp == null) {
+                        String fNacStr = JOptionPane.showInputDialog(this,
+                                "Ingresa la fecha de nacimiento del acompañante #" + i + " (AAAA-MM-DD):",
+                                "Fecha de Nacimiento Acompañante " + i + "/" + (totalPersonas - 1),
+                                JOptionPane.QUESTION_MESSAGE);
+
+                        if (fNacStr == null) return;
+                        try {
+                            fNacAcomp = LocalDate.parse(fNacStr.trim());
+                        } catch (DateTimeParseException ex) {
+                            JOptionPane.showMessageDialog(this, "Formato inválido. Debe ser AAAA-MM-DD (ej: 2019-04-10).", "Error de Fecha ⚠", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    reserva.agregarOcupante(new Ocupante("Acompañante " + i, fNacAcomp));
+                }
+            }
+
+            if (empresa.getListaTemporadas() != null) {
+                reserva.liquidarEstancia(empresa.getListaTemporadas());
+            }
 
             huespedSeleccionado.agregarReservaHistorial(reserva);
             if (empresa.getListaReservas() != null) {
@@ -224,12 +287,19 @@ public class ReservaExternaRecepcionista extends JDialog {
             }
 
             JOptionPane.showMessageDialog(this,
-                    "¡Reserva externa registrada exitosamente!\nFolio: " + idFolio + "\nCódigo Externo: " + codExt + "\nValor Total: $" + reserva.getValorTotal(),
+                    "¡Reserva externa registrada exitosamente!\n" +
+                            "• Folio: " + idFolio + "\n" +
+                            "• Código Externo: " + codExt + "\n" +
+                            "• Personas totales: " + totalPersonas + " (Pagantes: " + reserva.contarOcupantesPagantes() + ")\n" +
+                            "• Valor Total: $" + String.format("%,d", reserva.getValorTotal()),
                     "Éxito ", JOptionPane.INFORMATION_MESSAGE);
             dispose();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Debe ser AAAA-MM-DD.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al procesar la reserva: " + ex.getMessage(),
+                    "Error Interno ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
