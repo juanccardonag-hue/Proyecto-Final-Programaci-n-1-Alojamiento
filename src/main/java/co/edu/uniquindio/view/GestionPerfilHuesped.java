@@ -5,6 +5,7 @@ import co.edu.uniquindio.Huesped;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
 public class GestionPerfilHuesped extends JDialog {
     private JPanel contentPane;
@@ -56,31 +57,37 @@ public class GestionPerfilHuesped extends JDialog {
 
     private void actualizarPerfil() {
         String nombre = inputNombre.getText().trim();
-        String fechaNac = inputFechaNacimiento.getText().trim();
+        String fechaNacStr = inputFechaNacimiento.getText().trim();
         String telefono = inputTelefono.getText().trim();
         String correo = inputCorreo.getText().trim();
         String contrasena = inputContrasena.getText().trim();
 
-        if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+        if (nombre.isEmpty() || fechaNacStr.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Los campos Nombre, Correo y Contraseña son obligatorios.",
+                    "Los campos Nombre, Fecha de Nacimiento, Correo y Contraseña son obligatorios.",
                     "Campos requeridos ⚠",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (huesped != null) {
-            huesped.setNombre(nombre);
-            huesped.setCorreo(correo);
-            huesped.setContrasena(contrasena);
-            huesped.setTelefono(telefono);
+        try {
+            LocalDate fechaNacimiento = LocalDate.parse(fechaNacStr);
+
+            if (huesped != null) {
+                huesped.actualizarPerfil(nombre, fechaNacimiento, telefono, correo, contrasena);
+            }
+
+            JOptionPane.showMessageDialog(this,
+                    "¡Perfil actualizado con éxito!",
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Formato de fecha inválido. Debe ser AAAA-MM-DD (ej: 1998-05-20).",
+                    "Error de Fecha ⚠",
+                    JOptionPane.ERROR_MESSAGE);
         }
-
-        JOptionPane.showMessageDialog(this,
-                "¡Perfil actualizado con éxito! ",
-                "Éxito",
-                JOptionPane.INFORMATION_MESSAGE);
-
-        dispose();
     }
 }

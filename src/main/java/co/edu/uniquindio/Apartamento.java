@@ -73,6 +73,17 @@ public class Apartamento {
         }
         return false;
     }
+    public String cambiarEstadoManual(EstadoOperativo nuevoEstado, String motivo) {
+        if (nuevoEstado == null) {
+            return "Debes seleccionar un estado operativo válido.";
+        }
+        if (nuevoEstado == EstadoOperativo.OCUPADO && this.estadoOperativo != EstadoOperativo.OCUPADO) {
+            return "El estado OCUPADO solo se establece automáticamente al realizar el Check-In de un grupo.";
+        }
+        cambiarEstado(nuevoEstado, motivo);
+        return "OK";
+    }
+
     public int getCapacidadMaxima() { return this.capaMaxPersona; }
     public long getPrecioBaja() { return precioBaja; }
     public long getPrecioAlta() { return precioAlta; }

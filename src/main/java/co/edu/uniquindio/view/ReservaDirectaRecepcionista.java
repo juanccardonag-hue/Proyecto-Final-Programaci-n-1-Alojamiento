@@ -8,6 +8,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservaDirectaRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -99,7 +101,7 @@ public class ReservaDirectaRecepcionista extends JDialog {
     private void cargarApartamentos() {
         if (comboApartamentos == null) return;
         comboApartamentos.removeAllItems();
-        if (empresa.getListaApartamentos() != null) {
+        if (empresa != null && empresa.getListaApartamentos() != null) {
             for (Apartamento apto : empresa.getListaApartamentos()) {
                 comboApartamentos.addItem(apto.getCodigo() + " - " + apto.getNombre());
             }
@@ -119,7 +121,10 @@ public class ReservaDirectaRecepcionista extends JDialog {
             return;
         }
 
-        huespedSeleccionado = buscarHuespedPorCedula(cedula);
+        huespedSeleccionado = Recepcionista.buscarHuespedPorCedula(
+                empresa != null ? empresa.getListaHuespedes() : null,
+                cedula
+        );
 
         if (huespedSeleccionado != null) {
             lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre());
@@ -133,7 +138,10 @@ public class ReservaDirectaRecepcionista extends JDialog {
                 RegistroHuespedView ventanaRegistro = new RegistroHuespedView(null, empresa);
                 ventanaRegistro.setVisible(true);
 
-                huespedSeleccionado = buscarHuespedPorCedula(cedula);
+                huespedSeleccionado = Recepcionista.buscarHuespedPorCedula(
+                        empresa != null ? empresa.getListaHuespedes() : null,
+                        cedula
+                );
                 if (huespedSeleccionado != null) {
                     lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre() + " (Registrado)");
                     lblInfoHuesped.setForeground(new Color(0, 128, 0));
@@ -148,17 +156,6 @@ public class ReservaDirectaRecepcionista extends JDialog {
         }
     }
 
-    private Huesped buscarHuespedPorCedula(String cedula) {
-        if (empresa.getListaHuespedes() != null) {
-            for (Huesped h : empresa.getListaHuespedes()) {
-                if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedula)) {
-                    return h;
-                }
-            }
-        }
-        return null;
-    }
-
     private void procesarReserva() {
         if (huespedSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Selecciona o registra un huésped primero.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
@@ -169,7 +166,6 @@ public class ReservaDirectaRecepcionista extends JDialog {
             return;
         }
 
-        // Validar número de personas
         int totalPersonas = (numeroPersonas != null) ? (Integer) numeroPersonas.getValue() : 0;
         if (totalPersonas <= 0) {
             JOptionPane.showMessageDialog(this, "El número de personas debe ser al menos 1 (incluyendo al titular).", "Cantidad Inválida ⚠", JOptionPane.WARNING_MESSAGE);
@@ -178,16 +174,10 @@ public class ReservaDirectaRecepcionista extends JDialog {
 
         String itemApto = (String) comboApartamentos.getSelectedItem();
         String codApto = itemApto.split("-")[0].trim();
-
-        Apartamento apto = null;
-        if (empresa.getListaApartamentos() != null) {
-            for (Apartamento a : empresa.getListaApartamentos()) {
-                if (a.getCodigo().equalsIgnoreCase(codApto)) {
-                    apto = a;
-                    break;
-                }
-            }
-        }
+        Apartamento apto = Recepcionista.buscarApartamentoPorCodigo(
+                empresa != null ? empresa.getListaApartamentos() : null,
+                codApto
+        );
 
         if (apto == null) {
             JOptionPane.showMessageDialog(this, "No se encontró el apartamento seleccionado.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
@@ -220,69 +210,49 @@ public class ReservaDirectaRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "El apartamento está fuera de servicio o bloqueado en ese período.", "Apartamento No Disponible ⚠", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        List<Ocupante> ocupantes = new ArrayList<>();
+        LocalDate fNacTitular = (huespedSeleccionado.getFechaNacimiento() != null)
+                ? huespedSeleccionado.getFechaNacimiento()
+                : LocalDate.of(2000, 1, 1);
+        ocupantes.add(new Ocupante(huespedSeleccionado.getNombre(), fNacTitular));
 
-        if (empresa.getListaReservas() != null) {
-            for (Reserva reser : empresa.getListaReservas()) {
-                if (reser.getApartamento() != null && reser.getApartamento().getCodigo().equalsIgnoreCase(codApto) && reser.estaActiva()) {
-                    if (reser.cruceCon(entrada, salida)) {
-                        JOptionPane.showMessageDialog(this, "El apartamento ya cuenta con una reserva en esas fechas.", "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
-                        return;
+        if (totalPersonas > 1) {
+            for (int i = 1; i < totalPersonas; i++) {
+                LocalDate fNacAcomp = null;
+                while (fNacAcomp == null) {
+                    String fNacStr = JOptionPane.showInputDialog(this,
+                            "Ingresa la fecha de nacimiento del acompañante #" + i + " (AAAA-MM-DD):\n",
+                            "Fecha de Nacimiento Acompañante " + i + "/" + (totalPersonas - 1),
+                            JOptionPane.QUESTION_MESSAGE);
+
+                    if (fNacStr == null) return;
+                    try {
+                        fNacAcomp = LocalDate.parse(fNacStr.trim());
+                    } catch (DateTimeParseException ex) {
+                        JOptionPane.showMessageDialog(this, "Formato inválido. Debe ser AAAA-MM-DD (ej: 2019-04-10).", "Error de Fecha ⚠", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                ocupantes.add(new Ocupante("Acompañante " + i, fNacAcomp));
             }
         }
+        Reserva reserva = (recepcionistaActual != null)
+                ? recepcionistaActual.registrarReservaDirecta(
+                huespedSeleccionado, apto, entrada, salida, ocupantes,
+                empresa.getListaReservas(), empresa.getListaTemporadas())
+                : null;
 
-        try {
-            String idFolio = "FOL-" + (empresa.getListaReservas().size() + 1);
-            Reserva reserva = new Reserva(idFolio, entrada, salida, Canal.DIRECTA, huespedSeleccionado, apto, recepcionistaActual, "");
-
-            // Registrar al titular
-            LocalDate fNacTitular = (huespedSeleccionado.getFechaNacimiento() != null)
-                    ? huespedSeleccionado.getFechaNacimiento()
-                    : LocalDate.of(2000, 1, 1);
-            reserva.agregarOcupante(new Ocupante(huespedSeleccionado.getNombre(), fNacTitular));
-
-            // Si hay más de 1 persona, pedir solo la fecha de nacimiento
-            if (totalPersonas > 1) {
-                for (int i = 1; i < totalPersonas; i++) {
-                    LocalDate fNacAcomp = null;
-                    while (fNacAcomp == null) {
-                        String fNacStr = JOptionPane.showInputDialog(this,
-                                "Ingresa la fecha de nacimiento del acompañante #" + i + " (AAAA-MM-DD):\n",
-                                "Fecha de Nacimiento Acompañante " + i + "/" + (totalPersonas - 1),
-                                JOptionPane.QUESTION_MESSAGE);
-
-                        if (fNacStr == null) return;
-                        try {
-                            fNacAcomp = LocalDate.parse(fNacStr.trim());
-                        } catch (DateTimeParseException ex) {
-                            JOptionPane.showMessageDialog(this, "Formato inválido. Debe ser AAAA-MM-DD (ej: 2019-04-10).", "Error de Fecha ⚠", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    reserva.agregarOcupante(new Ocupante("Acompañante " + i, fNacAcomp));
-                }
-            }
-
-            if (empresa.getListaTemporadas() != null) {
-                reserva.liquidarEstancia(empresa.getListaTemporadas());
-            }
-
-            huespedSeleccionado.agregarReservaHistorial(reserva);
-            empresa.getListaReservas().add(reserva);
-
+        if (reserva != null) {
             JOptionPane.showMessageDialog(this,
                     "¡Reserva directa registrada exitosamente!\n" +
-                            "• Folio: " + idFolio + "\n" +
+                            "• Folio: " + reserva.getCodigoFolio() + "\n" +
                             "• Personas totales: " + totalPersonas + " (Pagantes: " + reserva.contarOcupantesPagantes() + ")\n" +
                             "• Valor Total: $" + String.format("%,d", reserva.getValorTotal()),
-                    "Éxito ", JOptionPane.INFORMATION_MESSAGE);
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
             dispose();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } else {
             JOptionPane.showMessageDialog(this,
-                    "Error al procesar la reserva: " + ex.getMessage(),
-                    "Error Interno ⚠", JOptionPane.ERROR_MESSAGE);
+                    "El apartamento ya cuenta con una reserva activa en ese rango de fechas o los datos no son válidos.",
+                    "Cruce de Fechas ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

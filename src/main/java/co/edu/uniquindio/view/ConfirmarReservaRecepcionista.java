@@ -27,6 +27,11 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             setContentPane(contentPane);
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
         }
+
+        if (btnBuscarReserva != null) {
+            getRootPane().setDefaultButton(btnBuscarReserva);
+        }
+
         aplicarEstilos();
         initListeners();
         setSize(580, 500);
@@ -46,6 +51,7 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             txtDetalleReserva.setMargin(new Insets(10, 10, 10, 10));
         }
     }
+
     private void aplicarBordeRedondo(JTextField campo) {
         if (campo == null) return;
         campo.setOpaque(false);
@@ -63,6 +69,7 @@ public class ConfirmarReservaRecepcionista extends JDialog {
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
     }
+
     private void configurarBoton(JButton boton, String titulo) {
         if (boton == null) return;
         if (titulo != null && !titulo.isEmpty()) boton.setText(titulo);
@@ -84,11 +91,13 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             }
         });
     }
+
     private void initListeners() {
         if (btnBuscarReserva != null) btnBuscarReserva.addActionListener(e -> buscarReserva());
         if (buttonOK != null) buttonOK.addActionListener(e -> procesarConfirmacion());
         if (buttonCancel != null) buttonCancel.addActionListener(e -> dispose());
     }
+
     private void buscarReserva() {
         String cod = inputCodigoReserva.getText().trim();
         if (cod.isEmpty()) {
@@ -96,39 +105,32 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             return;
         }
 
-        reservaEncontrada = null;
-        if (empresa.getListaReservas() != null) {
-            for (Reserva r : empresa.getListaReservas()) {
-                if (r.getCodigoFolio() != null && r.getCodigoFolio().equalsIgnoreCase(cod)) {
-                    reservaEncontrada = r;
-                    break;
-                }
-            }
-        }
+        reservaEncontrada = Recepcionista.buscarReservaPorFolio(
+                empresa != null ? empresa.getListaReservas() : null,
+                cod
+        );
 
         if (reservaEncontrada != null) {
-            double totalPagado = (reservaEncontrada.getFolio() != null) ? reservaEncontrada.getFolio().calcularTotalPagos() : 0.0;
-            double anticipoRequerido = reservaEncontrada.getValorTotal() * 0.30;
+            long totalPagado = (long) reservaEncontrada.getTotalAbonado();
+            long faltaPara30 = reservaEncontrada.calcularRestanteAnticipo30();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(" Folio: ").append(reservaEncontrada.getCodigoFolio()).append("\n");
-            sb.append(" Canal: ").append(reservaEncontrada.getCanal()).append("\n");
-            sb.append(" Estado Actual: ").append(reservaEncontrada.getEstado()).append("\n");
-            sb.append(" Titular: ").append(reservaEncontrada.getTitular() != null ? reservaEncontrada.getTitular().getNombre() : "N/A").append("\n");
-            sb.append(" Fechas: ").append(reservaEncontrada.getFechaEntrada()).append("  ->  ").append(reservaEncontrada.getFechaSalida()).append("\n");
-            sb.append(" Valor Total: $").append(reservaEncontrada.getValorTotal()).append("\n");
-            sb.append(" Total Abonado: $").append(totalPagado).append("\n");
+            String detalle = " Folio: " + reservaEncontrada.getCodigoFolio() + "\n" +
+                    " Canal: " + reservaEncontrada.getCanal() + "\n" +
+                    " Estado Actual: " + reservaEncontrada.getEstado() + "\n" +
+                    " Titular: " + (reservaEncontrada.getTitular() != null ? reservaEncontrada.getTitular().getNombre() : "N/A") + "\n" +
+                    " Fechas: " + reservaEncontrada.getFechaEntrada() + "  ->  " + reservaEncontrada.getFechaSalida() + "\n" +
+                    " Valor Total: $" + String.format("%,d", reservaEncontrada.getValorTotal()) + "\n" +
+                    " Total Abonado: $" + String.format("%,d", totalPagado) + "\n";
 
             if (reservaEncontrada.getCanal() == Canal.PORTAL) {
-                sb.append(" Anticipo 30% Requerido: $").append(anticipoRequerido).append("\n");
-                if (totalPagado >= anticipoRequerido) {
-                    sb.append(" Estado Abono: CUMPLIDO \n");
+                if (faltaPara30 == 0) {
+                    detalle += " Estado Abono 30%: CUMPLIDO\n";
                 } else {
-                    sb.append(" Estado Abono: PENDIENTE  (Falta abonar)\n");
+                    detalle += " Estado Abono 30%: PENDIENTE (Restan $" + String.format("%,d", faltaPara30) + ")\n";
                 }
             }
 
-            txtDetalleReserva.setText(sb.toString());
+            txtDetalleReserva.setText(detalle);
         } else {
             txtDetalleReserva.setText("");
             JOptionPane.showMessageDialog(this, "No se encontró ninguna reserva con el código: " + cod, "Reserva No Encontrada ⚠", JOptionPane.ERROR_MESSAGE);
@@ -140,28 +142,17 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "Consulta y selecciona una reserva válida primero.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        String resultado = reservaEncontrada.confirmar();
 
-        if (reservaEncontrada.getEstado() == EstadoReserva.CONFIRMADA) {
-            JOptionPane.showMessageDialog(this, "Esta reserva ya se encuentra CONFIRMADA previamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        if (reservaEncontrada.getCanal() == Canal.PORTAL) {
-            double anticipoRequerido = reservaEncontrada.getValorTotal() * 0.30;
-            double totalPagado = (reservaEncontrada.getFolio() != null) ? reservaEncontrada.getFolio().calcularTotalPagos() : 0.0;
-
-            if (totalPagado < anticipoRequerido) {
-                JOptionPane.showMessageDialog(this,
-                        "⚠ No se puede confirmar la reserva de Canal PORTAL.\nRequiere pago anticipado del 30% ($" + anticipoRequerido + ").\nTotal abonado actual: $" + totalPagado,
-                        "Anticipo Insuficiente ⚠", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-        if (reservaEncontrada.cambiarEstado(EstadoReserva.CONFIRMADA)) {
-            JOptionPane.showMessageDialog(this, "¡Reserva " + reservaEncontrada.getCodigoFolio() + " confirmada exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        if ("OK".equals(resultado)) {
+            JOptionPane.showMessageDialog(this,
+                    "¡Reserva " + reservaEncontrada.getCodigoFolio() + " confirmada exitosamente!",
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo cambiar el estado de la reserva. Estado actual: " + reservaEncontrada.getEstado(), "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "⚠ " + resultado,
+                    "Confirmación No Permitida ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

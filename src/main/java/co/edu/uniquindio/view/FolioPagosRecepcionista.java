@@ -32,6 +32,10 @@ public class FolioPagosRecepcionista extends JDialog {
             contentPane.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         }
 
+        if (btnBuscar != null) {
+            getRootPane().setDefaultButton(btnBuscar);
+        }
+
         cargarComboMediosPago();
         aplicarEstilos();
         initListeners();
@@ -102,7 +106,8 @@ public class FolioPagosRecepcionista extends JDialog {
             @Override
             public void mouseExited(MouseEvent e) {
                 boton.setFont(fuenteNormal);
-            }});
+            }
+        });
     }
 
     private void initListeners() {
@@ -119,15 +124,10 @@ public class FolioPagosRecepcionista extends JDialog {
             return;
         }
 
-        reservaSeleccionada = null;
-        if (empresa.getListaReservas() != null) {
-            for (Reserva r : empresa.getListaReservas()) {
-                if (r.getCodigoFolio() != null && r.getCodigoFolio().equalsIgnoreCase(cod)) {
-                    reservaSeleccionada = r;
-                    break;
-                }
-            }
-        }
+        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
+                empresa != null ? empresa.getListaReservas() : null,
+                cod
+        );
 
         if (reservaSeleccionada != null) {
             actualizarVistaEstadoCuenta();
@@ -143,45 +143,39 @@ public class FolioPagosRecepcionista extends JDialog {
         Folio folio = reservaSeleccionada.getFolio();
         String titular = (reservaSeleccionada.getTitular() != null) ? reservaSeleccionada.getTitular().getNombre() : "N/A";
 
-        textEstadoCuenta.setText("");
-        textEstadoCuenta.append("°°°°°°°°°ESTADO DE CUENTA °°°°°°°°°°°\n");
-        textEstadoCuenta.append(" Folio Reserva : " + reservaSeleccionada.getCodigoFolio() + "\n");
-        textEstadoCuenta.append(" Titular       : " + titular + "\n");
-        textEstadoCuenta.append(" Estado Reserva: " + reservaSeleccionada.getEstado() + "\n");
+        String reporte = "°°°°°°°°° ESTADO DE CUENTA °°°°°°°°°°°\n" +
+                " Folio Reserva : " + reservaSeleccionada.getCodigoFolio() + "\n" +
+                " Titular       : " + titular + "\n" +
+                " Estado Reserva: " + reservaSeleccionada.getEstado() + "\n" +
+                " CARGOS REGISTRADOS:\n";
 
-        textEstadoCuenta.append(" CARGOS REGISTRADOS:\n");
         if (folio != null && !folio.getListaCargo().isEmpty()) {
             for (Cargo c : folio.getListaCargo()) {
-                textEstadoCuenta.append("  • " + c.concepto() + " -> $" + String.format("%,d", c.monto()) + "\n");
+                reporte += "  • " + c.concepto() + " -> $" + String.format("%,d", c.monto()) + "\n";
             }
         } else {
-            textEstadoCuenta.append("  (No hay cargos registrados)\n");
+            reporte += "  (No hay cargos registrados)\n";
         }
 
-        textEstadoCuenta.append(" PAGOS / ABONOS REGISTRADOS:\n");
+        reporte += " PAGOS / ABONOS REGISTRADOS:\n";
         if (folio != null && !folio.getListaPago().isEmpty()) {
             for (Pago p : folio.getListaPago()) {
-                textEstadoCuenta.append("  • " + p.medioPago() + " -> $" + String.format("%,d", p.monto()) + "\n");
+                reporte += "  • " + p.medioPago() + " -> $" + String.format("%,d", p.monto()) + "\n";
             }
         } else {
-            textEstadoCuenta.append("  (No hay abonos registrados)\n");
+            reporte += "  (No hay abonos registrados)\n";
         }
 
-        textEstadoCuenta.append(" TOTAL CARGOS: $" + String.format("%,d", reservaSeleccionada.getValorTotal()) + "\n");
-        textEstadoCuenta.append(" TOTAL ABONOS: $" + String.format("%,.0f", reservaSeleccionada.getTotalAbonado()) + "\n");
-        textEstadoCuenta.append(" SALDO PEND. : $" + String.format("%,.0f", Math.max(0, reservaSeleccionada.getSaldoFolio())) + "\n");
+        reporte += " TOTAL CARGOS: $" + String.format("%,d", reservaSeleccionada.getValorTotal()) + "\n" +
+                " TOTAL ABONOS: $" + String.format("%,d", (long) reservaSeleccionada.getTotalAbonado()) + "\n" +
+                " SALDO PEND. : $" + String.format("%,d", Math.max(0, (long) reservaSeleccionada.getSaldoFolio())) + "\n";
+
+        textEstadoCuenta.setText(reporte);
     }
 
     private void efectuarPago() {
         if (reservaSeleccionada == null) {
             JOptionPane.showMessageDialog(this, "Busca primero una reserva válida.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        if (!reservaSeleccionada.estaActiva()) {
-            JOptionPane.showMessageDialog(this,
-                    "⚠ No se pueden registrar pagos a una reserva en estado " + reservaSeleccionada.getEstado() + ".",
-                    "Operación Rechazada ⚠", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -195,36 +189,28 @@ public class FolioPagosRecepcionista extends JDialog {
 
         try {
             long monto = Long.parseLong(montoStr);
-            if (monto <= 0) {
-                JOptionPane.showMessageDialog(this, "El monto del pago debe ser mayor a 0.", "Monto Inválido ⚠", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            String resultado = Recepcionista.registrarPagoFolio(reservaSeleccionada, monto, medio);
 
-            boolean exitoso = reservaSeleccionada.registrarAbono(monto, medio);
-
-            if (exitoso) {
-                JOptionPane.showMessageDialog(this, "¡Pago de $" + String.format("%,d", monto) + " registrado exitosamente! \nSaldo actual: $" + String.format("%,.0f", reservaSeleccionada.getSaldoFolio()), "Pago Exitoso", JOptionPane.INFORMATION_MESSAGE);
+            if ("OK".equals(resultado)) {
+                JOptionPane.showMessageDialog(this,
+                        "¡Pago de $" + String.format("%,d", monto) + " registrado exitosamente!\nSaldo actual: $" + String.format("%,d", Math.max(0, (long) reservaSeleccionada.getSaldoFolio())),
+                        "Pago Exitoso", JOptionPane.INFORMATION_MESSAGE);
                 textMontoPago.setText("");
                 actualizarVistaEstadoCuenta();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo procesar el pago.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "⚠ " + resultado, "Operación No Permitida ⚠", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Ingresa un valor entero válido para el monto.", "Error de Formato ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void efectuarCargo() {
         if (reservaSeleccionada == null) {
             JOptionPane.showMessageDialog(this, "Busca primero una reserva válida.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (!reservaSeleccionada.estaActiva()) {
-            JOptionPane.showMessageDialog(this,
-                    "⚠ No se pueden agregar cargos a una reserva en estado " + reservaSeleccionada.getEstado() + ".",
-                    "Operación Rechazada ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         String concepto = textConceptoCargo.getText().trim();
         String montoStr = textMontoCargo.getText().trim();
 
@@ -232,20 +218,20 @@ public class FolioPagosRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "Ingresa el concepto y monto del cargo.", "Campos Vacíos ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
         try {
             long monto = Long.parseLong(montoStr);
-            if (monto <= 0) {
-                JOptionPane.showMessageDialog(this, "El monto del cargo debe ser mayor a 0.", "Monto Inválido ⚠", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            if (reservaSeleccionada.getFolio() != null) {
-                reservaSeleccionada.getFolio().agregarCargo(concepto, monto);
-                JOptionPane.showMessageDialog(this, "¡Cargo '" + concepto + "' por $" + String.format("%,d", monto) + " agregado al folio! 🛒\nNuevo Valor Total: $" + String.format("%,d", reservaSeleccionada.getValorTotal()), "Cargo Registrado", JOptionPane.INFORMATION_MESSAGE);
+            String resultado = Recepcionista.registrarCargoAdicionalFolio(reservaSeleccionada, concepto, monto);
+
+            if ("OK".equals(resultado)) {
+                JOptionPane.showMessageDialog(this,
+                        "¡Cargo '" + concepto + "' por $" + String.format("%,d", monto) + " agregado al folio!\nNuevo Valor Total: $" + String.format("%,d", reservaSeleccionada.getValorTotal()),
+                        "Cargo Registrado", JOptionPane.INFORMATION_MESSAGE);
                 textConceptoCargo.setText("");
                 textMontoCargo.setText("");
                 actualizarVistaEstadoCuenta();
             } else {
-                JOptionPane.showMessageDialog(this, "La reserva no tiene un Folio asociado.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "⚠ " + resultado, "Operación No Permitida ⚠", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Ingresa un valor entero válido para el monto.", "Error de Formato ⚠", JOptionPane.ERROR_MESSAGE);

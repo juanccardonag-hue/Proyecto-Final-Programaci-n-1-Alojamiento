@@ -1,11 +1,11 @@
 package co.edu.uniquindio.view;
 
 import co.edu.uniquindio.Empresa;
-import co.edu.uniquindio.EstadoReserva;
 import co.edu.uniquindio.Huesped;
 import co.edu.uniquindio.Reserva;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
@@ -33,10 +33,10 @@ public class CancelarReservaHuesped extends JDialog {
             getRootPane().setDefaultButton(buttonOK);
         }
 
-        // Inicializar etiquetas vacías en $ 0.00 en lugar de "Label"
         if (lblTotalAbonado != null) lblTotalAbonado.setText("$ 0.00");
         if (lblDevolucion != null) lblDevolucion.setText("$ 0.00");
 
+        configurarComboReservas();
         cargarReservasCancelables();
 
         pack();
@@ -46,11 +46,27 @@ public class CancelarReservaHuesped extends JDialog {
         initListeners();
     }
 
+    private void configurarComboReservas() {
+        if (comboReservas != null) {
+            comboReservas.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (value instanceof Reserva) {
+                        Reserva r = (Reserva) value;
+                        String codApto = (r.getApartamento() != null) ? r.getApartamento().getCodigo() : "N/A";
+                        setText(r.getCodigoReserva() + " - Apto " + codApto + " (" + r.getFechaEntrada() + " a " + r.getFechaSalida() + ")");
+                    }
+                    return this;
+                }
+            });
+        }
+    }
+
     private void cargarReservasCancelables() {
         if (comboReservas != null && huespedActual != null && huespedActual.getMisReservas() != null) {
             comboReservas.removeAllItems();
             for (Reserva r : huespedActual.getMisReservas()) {
-                // Se pueden cancelar reservas en estado PENDIENTE o CONFIRMADA
                 if (r.estaActiva()) {
                     comboReservas.addItem(r);
                 }
@@ -71,7 +87,6 @@ public class CancelarReservaHuesped extends JDialog {
         Reserva seleccionada = (Reserva) comboReservas.getSelectedItem();
         if (seleccionada != null) {
             double totalAbonado = seleccionada.getTotalAbonado();
-
             double devolucion = seleccionada.calcularDevolucionCancelacion(LocalDate.now());
 
             if (lblTotalAbonado != null) {
@@ -127,17 +142,23 @@ public class CancelarReservaHuesped extends JDialog {
                 JOptionPane.WARNING_MESSAGE);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
-            // Se actualiza el estado a CANCELADA en el backend
-            reservaSeleccionada.setEstado(EstadoReserva.CANCELADA);
+            // Delega la cancelación al modelo (Huesped)
+            boolean cancelada = huespedActual.cancelarReserva(reservaSeleccionada.getCodigoReserva());
 
-            JOptionPane.showMessageDialog(this,
-                    "¡Reserva Cancelada Exitosamente! ❌\n\n" +
-                            "• Código: " + reservaSeleccionada.getCodigoReserva() + "\n" +
-                            "• Devolución Procesada: $" + String.format("%,.2f", devolucion),
-                    "Cancelación Completada",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            dispose();
+            if (cancelada) {
+                JOptionPane.showMessageDialog(this,
+                        "¡Reserva Cancelada Exitosamente! \n\n" +
+                                "• Código: " + reservaSeleccionada.getCodigoReserva() + "\n" +
+                                "• Devolución Procesada: $" + String.format("%,.2f", devolucion),
+                        "Cancelación Completada",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo cancelar la reserva en su estado actual.",
+                        "Operación No Permitida ⚠",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

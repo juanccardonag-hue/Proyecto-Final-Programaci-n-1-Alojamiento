@@ -28,6 +28,10 @@ public class CheckInRecepcionista extends JDialog {
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
         }
 
+        if (btnBuscar != null) {
+            getRootPane().setDefaultButton(btnBuscar);
+        }
+
         aplicarEstilos();
         initListeners();
 
@@ -103,31 +107,25 @@ public class CheckInRecepcionista extends JDialog {
             return;
         }
 
-        reservaSeleccionada = null;
-        if (empresa.getListaReservas() != null) {
-            for (Reserva r : empresa.getListaReservas()) {
-                if (r.getCodigoFolio() != null && r.getCodigoFolio().equalsIgnoreCase(cod)) {
-                    reservaSeleccionada = r;
-                    break;
-                }
-            }
-        }
+        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
+                empresa != null ? empresa.getListaReservas() : null,
+                cod
+        );
 
         if (reservaSeleccionada != null) {
             LocalDate hoy = LocalDate.now();
             LocalDate entrada = reservaSeleccionada.getFechaEntrada();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(" Folio: ").append(reservaSeleccionada.getCodigoFolio()).append("\n");
-            sb.append(" Canal: ").append(reservaSeleccionada.getCanal()).append("\n");
-            sb.append(" Estado Actual: ").append(reservaSeleccionada.getEstado()).append("\n");
-            sb.append(" Titular: ").append(reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A").append("\n");
-            sb.append(" Cédula: ").append(reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getCedula() : "N/A").append("\n");
-            sb.append(" Apartamento: ").append(reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A").append("\n");
-            sb.append(" Fechas: ").append(entrada).append("  ->  ").append(reservaSeleccionada.getFechaSalida()).append("\n");
-            sb.append(" Fecha Actual (Hoy): ").append(hoy).append("\n");
+                String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
+                        " Canal: " + reservaSeleccionada.getCanal() + "\n" +
+                        " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
+                        " Titular: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A") + "\n" +
+                        " Cédula: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getCedula() : "N/A") + "\n" +
+                        " Apartamento: " + (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A") + "\n" +
+                        " Fechas: " + entrada + "  ->  " + reservaSeleccionada.getFechaSalida() + "\n" +
+                        " Fecha Actual (Hoy): " + hoy + "\n";
 
-            textDetalle.setText(sb.toString());
+                textDetalle.setText(detalle);
 
             if (reservaSeleccionada.getEstado() != EstadoReserva.CONFIRMADA) {
                 JOptionPane.showMessageDialog(this,
@@ -150,54 +148,18 @@ public class CheckInRecepcionista extends JDialog {
             return;
         }
 
-        if (reservaSeleccionada.getEstado() != EstadoReserva.CONFIRMADA) {
-            JOptionPane.showMessageDialog(this, "Solo se puede realizar Check-In a reservas en estado CONFIRMADA.", "Operación Denegada ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        String resultado = reservaSeleccionada.procesarCheckIn();
 
-        LocalDate hoy = LocalDate.now();
-        LocalDate entrada = reservaSeleccionada.getFechaEntrada();
-        LocalDate salida = reservaSeleccionada.getFechaSalida();
-
-        if (entrada != null && hoy.isBefore(entrada)) {
+        if ("OK".equals(resultado)) {
             JOptionPane.showMessageDialog(this,
-                    "No se puede realizar el Check-In porque aún no es la fecha de entrada.\n" +
-                            "• Fecha de entrada: " + entrada + "\n" +
-                            "• Fecha actual: " + hoy,
-                    "Fecha No Válida para Check-In ", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (salida != null && !hoy.isBefore(salida)) {
-            JOptionPane.showMessageDialog(this,
-                    "No se puede realizar el Check-In porque la fecha de salida (" + salida + ") ya llegó o expiró.",
-                    "Reserva Vencida ", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (reservaSeleccionada.getApartamento() != null &&
-                reservaSeleccionada.getApartamento().getEstadoOperativo() != EstadoOperativo.PREPARADO) {
-            JOptionPane.showMessageDialog(this,
-                    "⚠ El apartamento aún no está en estado PREPARADO (Estado actual: " +
-                            reservaSeleccionada.getApartamento().getEstadoOperativo() + ").",
-                    "Check-In Bloqueado ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        boolean cambioExitoso = reservaSeleccionada.cambiarEstado(EstadoReserva.EN_CURSO);
-
-        if (cambioExitoso) {
-            if (reservaSeleccionada.getApartamento() != null) {
-                reservaSeleccionada.getApartamento().cambiarEstado(EstadoOperativo.OCUPADO, null);
-            }
-
-            JOptionPane.showMessageDialog(this,
-                    "¡Check-In completado exitosamente! \nAcceso habilitado para el apartamento: " +
+                    "¡Check-In completado exitosamente!\nAcceso habilitado para el apartamento: " +
                             (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : ""),
                     "Check-In Finalizado", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el estado de la reserva.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "⚠ " + resultado,
+                    "Check-In No Permitido ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

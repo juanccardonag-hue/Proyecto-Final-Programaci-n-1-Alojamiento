@@ -1,6 +1,5 @@
 package co.edu.uniquindio.view;
 
-import co.edu.uniquindio.Empleado;
 import co.edu.uniquindio.Empresa;
 import co.edu.uniquindio.Recepcionista;
 
@@ -25,6 +24,10 @@ public class LoginRecepcionista extends JDialog {
         if (contentPane != null) {
             contentPane.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
             setContentPane(contentPane);
+        }
+
+        if (buttonSesion != null) {
+            getRootPane().setDefaultButton(buttonSesion);
         }
 
         aplicarEstilos();
@@ -73,6 +76,7 @@ public class LoginRecepcionista extends JDialog {
     }
 
     private void aplicarBordeRedondo(JTextField campo) {
+        if (campo == null) return;
         campo.setOpaque(false);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 new javax.swing.border.AbstractBorder() {
@@ -96,7 +100,7 @@ public class LoginRecepcionista extends JDialog {
 
     private void iniciarSesion() {
         String usuario = inputUsuario.getText().trim();
-        String contrasena = txtContrasena.getText().trim();
+        String contrasena = new String(txtContrasena.getPassword()).trim();
 
         if (usuario.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -106,35 +110,26 @@ public class LoginRecepcionista extends JDialog {
             return;
         }
 
-        Recepcionista recepcionistaEncontrado = null;
-
-        if (empresa.getListaRecepcionistas() != null) {
-            for (Recepcionista r : empresa.getListaRecepcionistas()) {
-                boolean coincideUsuario = (r.getUsuario() != null && r.getUsuario().equalsIgnoreCase(usuario))
-                        || (r.getCedula() != null && r.getCedula().equalsIgnoreCase(usuario))
-                        || (r.getCorreo() != null && r.getCorreo().equalsIgnoreCase(usuario));
-
-                if (coincideUsuario && r.getContrasenia() != null && r.getContrasenia().equals(contrasena)) {
-                    recepcionistaEncontrado = r;
-                    break;
-                }
-            }
-        }
+        Recepcionista recepcionistaEncontrado = Recepcionista.autenticarRecepcionista(
+                empresa != null ? empresa.getListaRecepcionistas() : null,
+                usuario,
+                contrasena
+        );
 
         if (recepcionistaEncontrado != null) {
             JOptionPane.showMessageDialog(this,
                     "¡Bienvenido/a, " + recepcionistaEncontrado.getNombre() + "!",
-                    "Acceso Concedido ",
+                    "Acceso Concedido",
                     JOptionPane.INFORMATION_MESSAGE);
 
             dispose();
 
-            MenuRecepcionista menu = new MenuRecepcionista(null, empresa, (Empleado) recepcionistaEncontrado);
+            MenuRecepcionista menu = new MenuRecepcionista(null, empresa, recepcionistaEncontrado);
             menu.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this,
                     "Usuario o contraseña incorrectos.",
-                    "Error de Autenticación ",
+                    "Error de Autenticación",
                     JOptionPane.ERROR_MESSAGE);
 
             txtContrasena.setText("");

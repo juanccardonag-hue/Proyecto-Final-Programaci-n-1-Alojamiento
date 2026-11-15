@@ -27,6 +27,10 @@ public class RegistrarNovedadRecepcionista extends JDialog {
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         }
 
+        if (buttonOK != null) {
+            getRootPane().setDefaultButton(buttonOK);
+        }
+
         cargarApartamentos();
         aplicarEstilos();
         initListeners();
@@ -101,23 +105,25 @@ public class RegistrarNovedadRecepcionista extends JDialog {
         Apartamento aptoSeleccionado = (Apartamento) comboApartamentos.getSelectedItem();
         String descripcion = textDescripcionNovedad.getText().trim();
 
-        if (aptoSeleccionado == null) {
-            JOptionPane.showMessageDialog(this, "Selecciona un apartamento válido.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
-            return;
+        String resultado;
+        if (recepcionistaActual != null) {
+            resultado = recepcionistaActual.registrarNovedadApartamento(aptoSeleccionado, descripcion);
+        } else if (aptoSeleccionado == null) {
+            resultado = "Selecciona un apartamento válido.";
+        } else if (descripcion.isEmpty()) {
+            resultado = "La descripción de la novedad es obligatoria.";
+        } else {
+            aptoSeleccionado.registrarNovedad(descripcion, "Recepcionista");
+            resultado = "OK";
         }
 
-        if (descripcion.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa la descripción de la novedad o daño reportado.", "Campo Requerido ⚠", JOptionPane.WARNING_MESSAGE);
-            return;
+        if ("OK".equals(resultado)) {
+            JOptionPane.showMessageDialog(this,
+                    "¡Novedad registrada con éxito en el apartamento " + aptoSeleccionado.getCodigo() + "!",
+                    "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "⚠ " + resultado, "Atención ⚠", JOptionPane.WARNING_MESSAGE);
         }
-
-        String nombreAutor = (recepcionistaActual != null) ? recepcionistaActual.getNombre() : "Recepcionista";
-        aptoSeleccionado.registrarNovedad(descripcion, nombreAutor);
-
-        JOptionPane.showMessageDialog(this,
-                "¡Novedad registrada con éxito en el apartamento " + aptoSeleccionado.getCodigo() ,
-                "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-
-        dispose();
     }
 }

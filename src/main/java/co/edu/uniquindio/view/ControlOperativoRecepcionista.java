@@ -26,6 +26,10 @@ public class ControlOperativoRecepcionista extends JDialog {
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         }
 
+        if (btnActualizar != null) {
+            getRootPane().setDefaultButton(btnActualizar);
+        }
+
         cargarApartamentos();
         cargarEstadosOperativos();
         aplicarEstilos();
@@ -56,7 +60,6 @@ public class ControlOperativoRecepcionista extends JDialog {
 
     private void aplicarEstilos() {
         aplicarBordeRedondo(textMotivo);
-
         icons();
     }
 
@@ -90,7 +93,7 @@ public class ControlOperativoRecepcionista extends JDialog {
         int tamZoomIcono = 40;
 
         Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 14);
-        Font fuenteZoom   = new Font("Segoe UI", Font.BOLD, 16);
+        Font fuenteZoom = new Font("Segoe UI", Font.BOLD, 16);
 
         boton.setText(titulo);
         boton.setFont(fuenteNormal);
@@ -158,21 +161,21 @@ public class ControlOperativoRecepcionista extends JDialog {
             return;
         }
 
-        if (nuevoEstado == EstadoOperativo.OCUPADO && aptoSeleccionado.getEstadoOperativo() != EstadoOperativo.OCUPADO) {
-            JOptionPane.showMessageDialog(this,
-                    "⚠ El estado OCUPADO solo se establece automáticamente al realizar el Check-In de un grupo.",
-                    "Operación Bloqueada ⚠", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
         if (motivo.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor ingresa el motivo del cambio de estado.", "Campo Requerido ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        aptoSeleccionado.cambiarEstado(nuevoEstado, motivo);
-        JOptionPane.showMessageDialog(this,
-                "¡Estado del apartamento " + aptoSeleccionado.getCodigo() + " actualizado correctamente a: " + nuevoEstado + "!",
-                "Operación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+        String resultado = aptoSeleccionado.cambiarEstadoManual(nuevoEstado, motivo);
 
-        dispose();
+        if ("OK".equals(resultado)) {
+            JOptionPane.showMessageDialog(this,
+                    "¡Estado del apartamento " + aptoSeleccionado.getCodigo() + " actualizado correctamente a: " + nuevoEstado + "!",
+                    "Operación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "⚠ " + resultado,
+                    "Operación Bloqueada ⚠", JOptionPane.WARNING_MESSAGE);
+        }
     }
 }

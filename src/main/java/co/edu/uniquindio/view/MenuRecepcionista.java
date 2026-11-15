@@ -39,7 +39,7 @@ public class MenuRecepcionista extends JDialog {
         asignarIconosABotones();
         initListeners();
 
-        pack();
+        setSize(950, 540);
         setResizable(false);
         setLocationRelativeTo(parent);
     }

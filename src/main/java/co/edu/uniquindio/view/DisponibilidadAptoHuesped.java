@@ -6,9 +6,7 @@ import co.edu.uniquindio.Huesped;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class DisponibilidadAptoHuesped extends JDialog {
@@ -32,6 +30,9 @@ public class DisponibilidadAptoHuesped extends JDialog {
         setContentPane(contentPane);
         configurarTabla();
 
+        if (inputPersonas != null) {
+            inputPersonas.setModel(new SpinnerNumberModel(1, 1, 20, 1));
+        }
         pack();
         setResizable(false);
         setLocationRelativeTo(parent);
@@ -86,7 +87,7 @@ public class DisponibilidadAptoHuesped extends JDialog {
                 return;
             }
 
-            if (fin.isBefore(inicio) || fin.isEqual(inicio)) {
+            if (!inicio.isBefore(fin)) {
                 JOptionPane.showMessageDialog(this,
                         "La fecha final debe ser posterior a la fecha de inicio.",
                         "Fechas Inválidas ⚠",
@@ -102,12 +103,24 @@ public class DisponibilidadAptoHuesped extends JDialog {
                 return;
             }
 
-            List<Apartamento> disponibles = huespedActual.consultarApartamentosDisponibles(empresa.getListaApartamentos(), empresa.getListaReservas(), inicio, fin, personas);
+            List<Apartamento> disponibles = huespedActual.consultarApartamentosDisponibles(
+                    empresa.getListaApartamentos(),
+                    empresa.getListaReservas(),
+                    inicio,
+                    fin,
+                    personas
+            );
 
             tableModel.setRowCount(0);
             if (disponibles != null) {
                 for (Apartamento apto : disponibles) {
-                    tableModel.addRow(new Object[]{apto.getCodigo(), apto.getNombre(), apto.getNumeroDormitorio(), apto.getCapaMaxPersona() + " pers.", "$" + apto.getTarifaPersonaNoche()});
+                    tableModel.addRow(new Object[]{
+                            apto.getCodigo(),
+                            apto.getNombre(),
+                            apto.getNumeroDormitorio(),
+                            apto.getCapaMaxPersona() + " pers.",
+                            "$" + String.format("%,d", (long) apto.getTarifaPersonaNoche())
+                    });
                 }
             }
 
@@ -118,15 +131,10 @@ public class DisponibilidadAptoHuesped extends JDialog {
                         JOptionPane.INFORMATION_MESSAGE);
             }
 
-        } catch (DateTimeParseException ex) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Ingresa las fechas en formato YYYY-MM-DD .",
+                    "Datos inválidos. Verifica que las fechas tengan formato AAAA-MM-DD y que el número de personas sea correcto.",
                     "Formato Incorrecto ⚠",
-                    JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Ingresa un número válido para el campo de personas.",
-                    "Valor Incorrecto ⚠",
                     JOptionPane.ERROR_MESSAGE);
         }
     }

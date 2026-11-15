@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 public class RegistroHuespedView extends JDialog {
     private JPanel contentPane;
@@ -22,14 +21,20 @@ public class RegistroHuespedView extends JDialog {
     private JButton btnCancelar;
 
     private Empresa empresa;
+    private boolean abiertoDesdeRecepcion;
 
     public RegistroHuespedView(JFrame parent, Empresa empresa) {
         super(parent, "Registro de Nuevo Huésped", true);
         this.empresa = empresa;
+        this.abiertoDesdeRecepcion = (parent == null);
 
         if (contentPane != null) {
             contentPane.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
             setContentPane(contentPane);
+        }
+
+        if (btnRegistrar != null) {
+            getRootPane().setDefaultButton(btnRegistrar);
         }
 
         aplicarEstilos();
@@ -59,7 +64,7 @@ public class RegistroHuespedView extends JDialog {
             }
         }
 
-        configurarBoton(btnRegistrar, "Registrarse");
+        configurarBoton(btnRegistrar, abiertoDesdeRecepcion ? "Registrar Huésped" : "Registrarse");
         configurarBoton(btnCancelar, "Cancelar");
     }
 
@@ -124,46 +129,43 @@ public class RegistroHuespedView extends JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
+
         LocalDate fechaNacimiento;
         try {
             fechaNacimiento = LocalDate.parse(fechaStr);
-        } catch (DateTimeParseException ex) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Usa el formato AAAA-MM-DD .",
+                    "Formato de fecha inválido. Usa el formato AAAA-MM-DD (ej: 1998-05-20).",
                     "Fecha inválida ⚠",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (empresa.getListaHuespedes() != null) {
-            for (Huesped h : empresa.getListaHuespedes()) {
-                if (h.getCedula().equalsIgnoreCase(cedula)) {
-                    JOptionPane.showMessageDialog(this,
-                            "Ya existe un usuario registrado con la cédula " + cedula,
-                            "Cédula duplicada ",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (h.getCorreo().equalsIgnoreCase(correo)) {
-                    JOptionPane.showMessageDialog(this,
-                            "Ya existe un usuario registrado con el correo " + correo,
-                            "Correo duplicado ",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+        String resultado = Huesped.registrarHuesped(
+                empresa != null ? empresa.getListaHuespedes() : null, cedula, nombre, fechaNacimiento, telefono, correo, contrasena);
+
+        if ("OK".equals(resultado)) {
+            if (abiertoDesdeRecepcion) {
+                JOptionPane.showMessageDialog(this,
+                        "¡Huésped registrado exitosamente!",
+                        "Registro Exitoso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "¡Registro exitoso! Por favor inicia sesión con tu usuario.",
+                        "Registro Exitoso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+                JFrame parentFrame = (getParent() instanceof JFrame) ? (JFrame) getParent() : null;
+                LoginHuesped login = new LoginHuesped(parentFrame, empresa);
+                login.setVisible(true);
             }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "⚠ " + resultado,
+                    "Error de Registro ⚠",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        Huesped nuevoHuesped = new Huesped(cedula, nombre, fechaNacimiento, telefono, correo, contrasena);
-        empresa.getListaHuespedes().add(nuevoHuesped);
-
-        JOptionPane.showMessageDialog(this,
-                "¡Registro exitoso! Por favor inicia sesión con tu usuario.",
-                "Registro Exitoso ",
-                JOptionPane.INFORMATION_MESSAGE);
-
-        dispose();
-
-        LoginHuesped login = new LoginHuesped((JFrame) getParent(), empresa);
-        login.setVisible(true);
     }
 }

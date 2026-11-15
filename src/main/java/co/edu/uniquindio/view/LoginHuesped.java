@@ -28,6 +28,10 @@ public class LoginHuesped extends JDialog {
             setContentPane(contentPane);
         }
 
+        if (btnIngreso != null) {
+            getRootPane().setDefaultButton(btnIngreso);
+        }
+
         aplicarEstilos();
         initListeners();
 
@@ -107,16 +111,11 @@ public class LoginHuesped extends JDialog {
             return;
         }
 
-        Huesped huespedAutenticado = null;
-        if (empresa.getListaHuespedes() != null) {
-            for (Huesped h : empresa.getListaHuespedes()) {
-                if ((h.getCedula().equalsIgnoreCase(cedula) || h.getCorreo().equalsIgnoreCase(cedula))
-                        && h.getContrasena().equals(contrasena)) {
-                    huespedAutenticado = h;
-                    break;
-                }
-            }
-        }
+        Huesped huespedAutenticado = Huesped.autenticarHuesped(
+                empresa != null ? empresa.getListaHuespedes() : null,
+                cedula,
+                contrasena
+        );
 
         if (huespedAutenticado != null) {
             JOptionPane.showMessageDialog(this,

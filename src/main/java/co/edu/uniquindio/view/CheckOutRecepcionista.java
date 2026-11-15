@@ -17,7 +17,6 @@ public class CheckOutRecepcionista extends JDialog {
 
     private Empresa empresa;
     private Reserva reservaSeleccionada;
-    private double saldoPendienteCalculado = 0.0;
 
     public CheckOutRecepcionista(JDialog parent, Empresa empresa) {
         super(parent, "Registro de Check-Out", true);
@@ -26,6 +25,10 @@ public class CheckOutRecepcionista extends JDialog {
         if (contentPane != null) {
             setContentPane(contentPane);
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
+        }
+
+        if (btnBuscar != null) {
+            getRootPane().setDefaultButton(btnBuscar);
         }
 
         aplicarEstilos();
@@ -103,38 +106,29 @@ public class CheckOutRecepcionista extends JDialog {
             return;
         }
 
-        reservaSeleccionada = null;
-        if (empresa.getListaReservas() != null) {
-            for (Reserva r : empresa.getListaReservas()) {
-                if (r.getCodigoFolio() != null && r.getCodigoFolio().equalsIgnoreCase(cod)) {
-                    reservaSeleccionada = r;
-                    break;
-                }
-            }
-        }
+        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
+                empresa != null ? empresa.getListaReservas() : null,
+                cod
+        );
 
         if (reservaSeleccionada != null) {
-            long totalPagado = (reservaSeleccionada.getFolio() != null) ? reservaSeleccionada.getFolio().calcularTotalPagos() : 0;
-            long totalConsumosOCargos = (reservaSeleccionada.getFolio() != null) ? reservaSeleccionada.getFolio().calcularTotalCargos() : 0;
-            double totalCargosGenerales = reservaSeleccionada.getValorTotal() + totalConsumosOCargos;
-            saldoPendienteCalculado = totalCargosGenerales - totalPagado;
+            long totalCargosGenerales = reservaSeleccionada.getValorTotal();
+            long totalPagado = (long) reservaSeleccionada.getTotalAbonado();
+            double saldoPendiente = reservaSeleccionada.getSaldoFolio();
+            String estadoCuenta = (saldoPendiente <= 0)
+                    ? "PAZ Y SALVO"
+                    : "SALDO PENDIENTE (Requiere pago)";
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(" Folio: ").append(reservaSeleccionada.getCodigoFolio()).append("\n");
-            sb.append(" Estado Actual: ").append(reservaSeleccionada.getEstado()).append("\n");
-            sb.append(" Titular: ").append(reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A").append("\n");
-            sb.append(" Apartamento: ").append(reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A").append("\n");
-            sb.append(" Total Cargos + Hospedaje: $").append(totalCargosGenerales).append("\n");
-            sb.append(" Total Abonado: $").append(totalPagado).append("\n");
-            sb.append(" Saldo Pendiente: $").append(Math.max(0, saldoPendienteCalculado)).append("\n");
+            String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
+                    " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
+                    " Titular: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A") + "\n" +
+                    " Apartamento: " + (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A") + "\n" +
+                    " Total Cargos + Hospedaje: $" + String.format("%,d", totalCargosGenerales) + "\n" +
+                    " Total Abonado: $" + String.format("%,d", totalPagado) + "\n" +
+                    " Saldo Pendiente: $" + String.format("%,d", Math.max(0, (long) saldoPendiente)) + "\n" +
+                    " Estado Cuenta: " + estadoCuenta + "\n";
 
-            if (saldoPendienteCalculado <= 0) {
-                sb.append(" Estado Cuenta: PAZ Y SALVO \n");
-            } else {
-                sb.append(" Estado Cuenta: SALDO PENDIENTE  (Requiere pago)\n");
-            }
-
-            textDetalle.setText(sb.toString());
+            textDetalle.setText(detalle);
 
             if (reservaSeleccionada.getEstado() != EstadoReserva.EN_CURSO) {
                 JOptionPane.showMessageDialog(this,
@@ -152,30 +146,17 @@ public class CheckOutRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "Consulta y selecciona una reserva primero.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        String resultado = reservaSeleccionada.procesarCheckOut();
 
-        if (reservaSeleccionada.getEstado() != EstadoReserva.EN_CURSO) {
-            JOptionPane.showMessageDialog(this, "Solo se puede realizar Check-Out a reservas que estén EN_CURSO.", "Operación Denegada ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (saldoPendienteCalculado > 0) {
+        if ("OK".equals(resultado)) {
             JOptionPane.showMessageDialog(this,
-                    "⚠ No se puede finalizar el Check-Out.\nLa reserva tiene un saldo pendiente de: $" + saldoPendienteCalculado + "\nPor favor diríjase al módulo de Registro de Pagos.",
-                    "Saldo Pendiente ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        boolean cambioExitoso = reservaSeleccionada.cambiarEstado(EstadoReserva.FINALIZADA);
-
-        if (cambioExitoso) {
-            if (reservaSeleccionada.getApartamento() != null) {
-                reservaSeleccionada.getApartamento().cambiarEstado(EstadoOperativo.PENDIENTE_PREPARACION, null);
-            }
-
-            JOptionPane.showMessageDialog(this,
-                    "¡Check-Out realizado exitosamente! \nLa reserva ha sido FINALIZADA y el apartamento pasa a PENDIENTE DE PREPARACIÓN.",
+                    "¡Check-Out realizado exitosamente!\nLa reserva ha sido FINALIZADA y el apartamento pasa a PENDIENTE DE PREPARACIÓN.",
                     "Check-Out Completo", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el estado de la reserva.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "⚠ " + resultado,
+                    "Check-Out No Permitido ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

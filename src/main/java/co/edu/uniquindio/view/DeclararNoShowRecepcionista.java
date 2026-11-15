@@ -24,6 +24,11 @@ public class DeclararNoShowRecepcionista extends JDialog {
             setContentPane(contentPane);
             contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         }
+
+        if (buttonOK != null) {
+            getRootPane().setDefaultButton(buttonOK);
+        }
+
         aplicarEstilos();
         initListeners();
         setSize(520, 360);
@@ -33,7 +38,6 @@ public class DeclararNoShowRecepcionista extends JDialog {
 
     private void aplicarEstilos() {
         aplicarBordeRedondo(textCodigoReserva);
-
         icons();
 
         if (textDetalleReserva != null) {
@@ -73,7 +77,7 @@ public class DeclararNoShowRecepcionista extends JDialog {
         int tamZoomIcono = 40;
 
         Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 14);
-        Font fuenteZoom   = new Font("Segoe UI", Font.BOLD, 16);
+        Font fuenteZoom = new Font("Segoe UI", Font.BOLD, 16);
 
         boton.setText(titulo);
         boton.setFont(fuenteNormal);
@@ -133,35 +137,37 @@ public class DeclararNoShowRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "Ingresa el código/folio de la reserva.", "Campo Requerido ⚠", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        Reserva reservaSeleccionada = null;
-        if (empresa.getListaReservas() != null) {
-            for (Reserva r : empresa.getListaReservas()) {
-                if (r.getCodigoFolio() != null && r.getCodigoFolio().equalsIgnoreCase(cod)) {
-                    reservaSeleccionada = r;
-                    break;
-                }
-            }
-        }
+
+        Reserva reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
+                empresa != null ? empresa.getListaReservas() : null,
+                cod
+        );
+
         if (reservaSeleccionada == null) {
+            if (textDetalleReserva != null) textDetalleReserva.setText("");
             JOptionPane.showMessageDialog(this, "⚠ No se encontró la reserva con el código: " + cod, "Error ⚠", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (reservaSeleccionada.getEstado() != EstadoReserva.CONFIRMADA) {
-            JOptionPane.showMessageDialog(this,
-                    "⚠ La reserva se encuentra en estado '" + reservaSeleccionada.getEstado() + "'. Para declarar NO-SHOW debe estar en estado CONFIRMADA.",
-                    "Estado Inválido ⚠", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (textDetalleReserva != null) {
+            String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
+                    " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
+                    " Titular: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A") + "\n" +
+                    " Apartamento: " + (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A") + "\n" +
+                    " Fechas: " + reservaSeleccionada.getFechaEntrada() + "  ->  " + reservaSeleccionada.getFechaSalida() + "\n";
+            textDetalleReserva.setText(detalle);
         }
-        boolean exito = reservaSeleccionada.cambiarEstado(EstadoReserva.NO_SHOW);
+        String resultado = reservaSeleccionada.declararNoShow();
 
-        if (exito) {
+        if ("OK".equals(resultado)) {
             JOptionPane.showMessageDialog(this,
-                    "¡La reserva " + cod + " ha sido declarada como NO-SHOW exitosamente! ",
+                    "¡La reserva " + reservaSeleccionada.getCodigoFolio() + " ha sido declarada como NO-SHOW exitosamente!",
                     "No-Show Confirmado", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el estado de la reserva.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "⚠ " + resultado,
+                    "Estado Inválido ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

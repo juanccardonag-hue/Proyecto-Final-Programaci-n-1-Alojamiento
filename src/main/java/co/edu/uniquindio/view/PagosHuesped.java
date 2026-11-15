@@ -146,11 +146,8 @@ public class PagosHuesped extends JDialog {
     private void actualizarValoresReserva() {
         Reserva seleccionada = (Reserva) comboReservas.getSelectedItem();
         if (seleccionada != null) {
-            long totalEstancia = (long) seleccionada.getValorTotal();
-            long abonado = (long) seleccionada.getTotalAbonado();
             long saldoPendiente = Math.max(0, (long) seleccionada.getSaldoFolio());
-            long abono30Minimo = Math.round(totalEstancia * 0.30);
-            long restantePara30 = Math.max(0, abono30Minimo - abonado);
+            long restantePara30 = seleccionada.calcularRestanteAnticipo30();
 
             if (lblSaldoPendiente != null) {
                 lblSaldoPendiente.setText(String.format("$ %,d", saldoPendiente));
@@ -227,28 +224,25 @@ public class PagosHuesped extends JDialog {
                 return;
             }
 
+            EstadoReserva estadoAnterior = reservaSeleccionada.getEstado();
             boolean abonoExitoso = reservaSeleccionada.registrarAbono(monto, medio);
 
             if (abonoExitoso) {
-                long totalAbonado = (long) reservaSeleccionada.getTotalAbonado();
-                long abonoRequerido30 = Math.round(reservaSeleccionada.getValorTotal() * 0.30);
+                long faltaPara30 = reservaSeleccionada.calcularRestanteAnticipo30();
 
                 String mensajeEstado = "";
-                if (reservaSeleccionada.getEstado() == EstadoReserva.PENDIENTE && totalAbonado >= abonoRequerido30) {
-                    reservaSeleccionada.cambiarEstado(EstadoReserva.CONFIRMADA);
-                    mensajeEstado = "\n\n Has cumplido con el 30% mínimo de anticipo.\n" +
+                if (estadoAnterior == EstadoReserva.PENDIENTE && reservaSeleccionada.getEstado() == EstadoReserva.CONFIRMADA) {
+                    mensajeEstado = "\n\nHas cumplido con el 30% mínimo de anticipo.\n" +
                             "Tu reserva ha cambiado a estado: CONFIRMADA.";
                 } else if (reservaSeleccionada.getEstado() == EstadoReserva.PENDIENTE) {
-                    long faltaPara30 = Math.max(0, abonoRequerido30 - totalAbonado);
-                    mensajeEstado = "\n\n⚠ Recuerda que para confirmar tu reserva debes completar el 30% ($" +
-                            String.format("%,d", abonoRequerido30) + "). Te restan $" +
+                    mensajeEstado = "\n\n⚠ Recuerda que para confirmar tu reserva debes completar el 30% mínimo. Te restan $" +
                             String.format("%,d", faltaPara30) + " dentro de las 24 horas.";
                 }
 
                 long nuevoSaldo = Math.max(0, (long) reservaSeleccionada.getSaldoFolio());
 
                 JOptionPane.showMessageDialog(this,
-                        "¡Abono registrado exitosamente! \n\n" +
+                        "¡Abono registrado exitosamente!\n\n" +
                                 "• Reserva: " + reservaSeleccionada.getCodigoFolio() + "\n" +
                                 "• Monto Abonado: $" + String.format("%,d", monto) + "\n" +
                                 "• Medio de Pago: " + medio + "\n" +
@@ -265,7 +259,7 @@ public class PagosHuesped extends JDialog {
                         JOptionPane.ERROR_MESSAGE);
             }
 
-        } catch (NumberFormatException ex) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Ingresa un número entero válido para el monto del abono (sin puntos ni comas).",
                     "Formato Inválido ⚠",

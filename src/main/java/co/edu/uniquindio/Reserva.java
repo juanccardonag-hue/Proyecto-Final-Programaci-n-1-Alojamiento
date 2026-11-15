@@ -201,9 +201,8 @@ public class Reserva {
         return Math.max(0, devolucion);
     }
 
-    // Registra un abono y confirma la reserva si alcanza o supera el 30% del total
     public boolean registrarAbono(long monto, MedioPago medioPago) {
-        if (monto > 0 && this.folio != null) {
+        if (monto > 0 && this.folio != null && estaActiva()) {
             this.folio.registrarPago(monto, medioPago);
 
             if (this.estado == EstadoReserva.PENDIENTE && getTotalAbonado() >= (getValorTotal() * 0.30)) {
@@ -213,6 +212,80 @@ public class Reserva {
         }
         return false;
     }
+    // Calcula cuánto falta para cubrir el anticipo mínimo del 30%
+    public long calcularRestanteAnticipo30() {
+        long abono30Minimo = Math.round(getValorTotal() * 0.30);
+        return Math.max(0, abono30Minimo - (long) getTotalAbonado());
+    }
+
+    public String procesarCheckIn() {
+        if (this.estado != EstadoReserva.CONFIRMADA) {
+            return "Solo se puede realizar Check-In a reservas en estado CONFIRMADA (Estado actual: " + this.estado + ").";
+        }
+        LocalDate hoy = LocalDate.now();
+        if (this.fechaEntrada != null && hoy.isBefore(this.fechaEntrada)) {
+            return "Aún no es la fecha de entrada (" + this.fechaEntrada + "). Hoy es " + hoy + ".";
+        }
+        if (this.fechaSalida != null && !hoy.isBefore(this.fechaSalida)) {
+            return "La fecha de salida (" + this.fechaSalida + ") ya llegó o expiró.";
+        }
+        if (this.apartamento != null && this.apartamento.getEstadoOperativo() != EstadoOperativo.PREPARADO) {
+            return "El apartamento aún no está PREPARADO (Estado actual: " + this.apartamento.getEstadoOperativo() + ").";
+        }
+        if (cambiarEstado(EstadoReserva.EN_CURSO)) {
+            if (this.apartamento != null) {
+                this.apartamento.cambiarEstado(EstadoOperativo.OCUPADO, null);
+            }
+            return "OK";
+        }
+        return "No se pudo actualizar el estado de la reserva.";
+    }
+
+    public String procesarCheckOut() {
+        if (this.estado != EstadoReserva.EN_CURSO) {
+            return "Solo se puede realizar Check-Out a reservas que estén EN_CURSO (Estado actual: " + this.estado + ").";
+        }
+        double saldoPendiente = getSaldoFolio();
+        if (saldoPendiente > 0) {
+            return "La reserva tiene un saldo pendiente de $" + String.format("%,d", (long) saldoPendiente) +
+                    ". Debe estar a paz y salvo antes del Check-Out.";
+        }
+        if (cambiarEstado(EstadoReserva.FINALIZADA)) {
+            if (this.apartamento != null) {
+                this.apartamento.cambiarEstado(EstadoOperativo.PENDIENTE_PREPARACION, null);
+            }
+            return "OK";
+        }
+        return "No se pudo actualizar el estado de la reserva.";
+    }
+    public String confirmar() {
+        if (this.estado == EstadoReserva.CONFIRMADA) {
+            return "Esta reserva ya se encuentra CONFIRMADA previamente.";
+        }
+        if (this.canal == Canal.PORTAL) {
+            long faltaPara30 = calcularRestanteAnticipo30();
+            if (faltaPara30 > 0) {
+                long anticipoRequerido = Math.round(getValorTotal() * 0.30);
+                return "No se puede confirmar la reserva de Canal PORTAL.\n" +
+                        "Requiere pago anticipado del 30% ($" + String.format("%,d", anticipoRequerido) + ").\n" +
+                        "Total abonado actual: $" + String.format("%,d", (long) getTotalAbonado()) + ".";
+            }
+        }
+        if (cambiarEstado(EstadoReserva.CONFIRMADA)) {
+            return "OK";
+        }
+        return "No se pudo cambiar el estado de la reserva (Estado actual: " + this.estado + ").";
+    }
+    public String declararNoShow() {
+        if (this.estado != EstadoReserva.CONFIRMADA) {
+            return "La reserva se encuentra en estado '" + this.estado + "'. Para declarar NO-SHOW debe estar en estado CONFIRMADA.";
+        }
+        if (cambiarEstado(EstadoReserva.NO_SHOW)) {
+            return "OK";
+        }
+        return "No se pudo actualizar el estado de la reserva.";
+    }
+
     // Retorna el total del Folio (estancia + cargos adicionales)
     public long getValorTotal() {
         if (this.folio != null && this.folio.calcularTotalCargos() > 0) {
