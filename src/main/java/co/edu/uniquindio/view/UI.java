@@ -53,8 +53,8 @@ public class UI extends JFrame {
 
     private void initListeners() {
         adminBtn.addActionListener(e -> {
-            LoginAdmin dialogLogin = new LoginAdmin(this, empresa);
-            dialogLogin.setVisible(true);
+            LoginAdmin loginAdmin = new LoginAdmin(this, empresa);
+            loginAdmin.setVisible(true);
         });
 
         huespedBtn.addActionListener(e -> {

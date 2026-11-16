@@ -56,11 +56,11 @@ public class MenuAdmin extends JDialog {
             politicaCancelacion.setVisible(true);
         });
         btnBloqueos.addActionListener(e -> {
-            BloqueoAptos bloqueoAptos = new BloqueoAptos(this, empresa);
-            bloqueoAptos.setVisible(true);
+            MenuBloqueos menuBloqueos = new MenuBloqueos(this, empresa);
+            menuBloqueos.setVisible(true);
         });
         btnControlAcceso.addActionListener(e -> {
-            MenuControlAcceso menuControlAcceso = new MenuControlAcceso(this, empresa);
+            MenuGestionEmpleado menuControlAcceso = new MenuGestionEmpleado(this, empresa);
             menuControlAcceso.setVisible(true);
         });
         // Reportes

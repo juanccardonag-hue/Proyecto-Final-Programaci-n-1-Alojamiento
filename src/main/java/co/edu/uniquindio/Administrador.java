@@ -196,17 +196,41 @@ public class Administrador extends Empleado {
     }
 
     // --- Bloqueo de Apartamentos ---
-    public boolean registrarBloqueo(Apartamento apto, LocalDate fechaInicio, LocalDate fechaFin, String motivo) {
-        if (apto != null && fechaInicio != null && fechaFin != null && !fechaFin.isBefore(fechaInicio)) {
-            Bloqueo nuevoBloqueo = new Bloqueo(fechaInicio, fechaFin, motivo);
-            apto.getListBloqueo().add(nuevoBloqueo);
-            return true;
+    public boolean registrarBloqueo(Apartamento apto, List<Reserva> listaReservas, LocalDate fechaInicio, LocalDate fechaFin, String motivo) {
+        if (apto == null || fechaInicio == null || fechaFin == null || motivo == null || motivo.trim().isEmpty()) {
+            return false;
         }
-        return false;
+        if (!fechaFin.isAfter(fechaInicio)) {
+            return false;
+        }
+
+        //Verificar que no se cruce con otro bloqueo existente en ese apartamento
+        if (apto.getListBloqueo() != null) {
+            for (Bloqueo b : apto.getListBloqueo()) {
+                if (fechaInicio.isBefore(b.fechaFin()) && fechaFin.isAfter(b.fechaInicio())) {
+                    return false;
+                }
+            }
+        }
+
+        // Verificar que no haya una reserva activa cruzada en esas fechas
+        if (listaReservas != null) {
+            for (Reserva r : listaReservas) {
+                if (r != null && r.getApartamento() != null
+                        && r.getApartamento().getCodigo().equalsIgnoreCase(apto.getCodigo())
+                        && r.estaActiva()
+                        && r.cruceCon(fechaInicio, fechaFin)) {
+                    return false;
+                }
+            }
+        }
+
+        Bloqueo nuevoBloqueo = new Bloqueo(fechaInicio, fechaFin, motivo.trim());
+        apto.getListBloqueo().add(nuevoBloqueo);
+        return true;
     }
 
     // --- Política de Cancelación ---
-
     public boolean configurarPoliticaCancelacion(PoliticaCancelacion nuevaPolitica) {
         if (nuevaPolitica != null) {
             this.politicaCancelacion = nuevaPolitica;

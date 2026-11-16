@@ -28,20 +28,39 @@ public class OpcionesHuespedView extends JDialog {
         aplicarEstilos();
         initListeners();
 
-        setSize(480, 360);
+        setSize(700, 550);
         setResizable(false);
         setLocationRelativeTo(parent);
     }
-
     private void aplicarEstilos() {
-        configurarBoton(iniciarSesiónButton, "Iniciar Sesión");
-        configurarBoton(registrarseButton, "Registrarse");
-        configurarBoton(volverButton, "Volver");
+        configurarBoton(iniciarSesiónButton, "/avatar.png", "Iniciar Sesión", "");
+        configurarBoton(registrarseButton, "/invitado.png", "Registrarse", "");
+        configurarBoton(volverButton, "/volver.png", "Volver", "");
     }
 
-    private void configurarBoton(JButton boton, String titulo) {
+    private void configurarBoton(JButton boton, String rutaIcono, String titulo, String subtitulo) {
         if (boton == null) return;
-        boton.setText(titulo);
+
+        if (rutaIcono != null && !rutaIcono.isEmpty()) {
+            java.net.URL imgURL = getClass().getResource(rutaIcono);
+            if (imgURL != null) {
+                ImageIcon iconoOriginal = new ImageIcon(imgURL);
+                Image imgEscalada = iconoOriginal.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+                boton.setIcon(new ImageIcon(imgEscalada));
+            } else {
+                System.err.println("⚠ No se encontró el ícono en resources: " + rutaIcono);
+            }
+        }
+
+        if (subtitulo != null && !subtitulo.isEmpty()) {
+            boton.setText("<html><center><b>" + titulo + "</b><br><font size='2' color='#7F8C8D'>" + subtitulo + "</font></center></html>");
+        } else {
+            boton.setText(titulo);
+        }
+
+        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        boton.setVerticalTextPosition(SwingConstants.CENTER);
+        boton.setIconTextGap(12);
         boton.setFocusPainted(false);
 
         Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
@@ -62,7 +81,6 @@ public class OpcionesHuespedView extends JDialog {
             }
         });
     }
-
     private void initListeners() {
         if (iniciarSesiónButton != null) {
             iniciarSesiónButton.addActionListener(e -> {
