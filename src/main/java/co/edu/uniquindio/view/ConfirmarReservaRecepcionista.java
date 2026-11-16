@@ -4,14 +4,11 @@ import co.edu.uniquindio.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class ConfirmarReservaRecepcionista extends JDialog {
     private JPanel contentPane;
     private JTextField inputCodigoReserva;
     private JButton btnBuscarReserva;
-    private JPanel lblTitulo;
     private JTextArea txtDetalleReserva;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -32,6 +29,9 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             getRootPane().setDefaultButton(btnBuscarReserva);
         }
 
+        icons();
+        aplicarBordeRedondo(inputCodigoReserva);
+
         aplicarEstilos();
         initListeners();
         setSize(580, 500);
@@ -40,10 +40,6 @@ public class ConfirmarReservaRecepcionista extends JDialog {
     }
 
     private void aplicarEstilos() {
-        aplicarBordeRedondo(inputCodigoReserva);
-        configurarBoton(btnBuscarReserva, "Consultar Estado");
-        configurarBoton(buttonOK, "Confirmar Reserva");
-        configurarBoton(buttonCancel, "Volver al Menú");
 
         if (txtDetalleReserva != null) {
             txtDetalleReserva.setEditable(false);
@@ -52,42 +48,64 @@ public class ConfirmarReservaRecepcionista extends JDialog {
         }
     }
 
-    private void aplicarBordeRedondo(JTextField campo) {
-        if (campo == null) return;
-        campo.setOpaque(false);
-        campo.setBorder(BorderFactory.createCompoundBorder(
-                new javax.swing.border.AbstractBorder() {
-                    @Override
-                    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-                        Graphics2D g2 = (Graphics2D) g.create();
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g2.setColor(Color.LIGHT_GRAY);
-                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
-                        g2.dispose();
-                    }
-                },
-                BorderFactory.createEmptyBorder(6, 10, 6, 10)
-        ));
+    public void icons() {
+        configurarBoton(btnBuscarReserva, "/Buscar.png", "Buscar");
+        configurarBoton(buttonCancel,"","Cancelar");
+        configurarBoton(buttonOK, "", "Confirmar Reserva");
     }
 
-    private void configurarBoton(JButton boton, String titulo) {
+    private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
         if (boton == null) return;
-        if (titulo != null && !titulo.isEmpty()) boton.setText(titulo);
 
-        Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
-        Font fuenteHover = new Font("Segoe UI", Font.BOLD, 15);
+        int tamNormalIcono = 32;
+        int tamZoomIcono = 40;
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom   = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setText(titulo);
         boton.setFont(fuenteNormal);
+        boton.setForeground(new Color(0x2C3E50));
+        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        boton.setMargin(new Insets(5, 10, 5, 10));
 
-        boton.addMouseListener(new MouseAdapter() {
+        Image imgBase = null;
+        if (rutaIcono != null && !rutaIcono.trim().isEmpty()) {
+            try {
+                ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
+                imgBase = iconOriginal.getImage();
+                boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+            } catch (Exception e) {
+                System.err.println("No se encontró la imagen: " + rutaIcono);
+            }
+        }
+
+        final Image imagenOriginal = imgBase;
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                boton.setFont(fuenteHover);
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoomIcono, tamZoomIcono, Image.SCALE_SMOOTH)));
+                }
+
                 boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                boton.revalidate();
+                boton.repaint();
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
+            public void mouseExited(java.awt.event.MouseEvent e) {
                 boton.setFont(fuenteNormal);
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+                }
+
+                boton.revalidate();
+                boton.repaint();
             }
         });
     }
@@ -136,7 +154,23 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "No se encontró ninguna reserva con el código: " + cod, "Reserva No Encontrada ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    private void aplicarBordeRedondo(JTextField campo) {
+        if (campo == null) return;
+        campo.setOpaque(false);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.AbstractBorder() {
+                    @Override
+                    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(Color.LIGHT_GRAY);
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
+                        g2.dispose();
+                    }
+                },
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
+    }
     private void procesarConfirmacion() {
         if (reservaEncontrada == null) {
             JOptionPane.showMessageDialog(this, "Consulta y selecciona una reserva válida primero.", "Atención ⚠", JOptionPane.WARNING_MESSAGE);
