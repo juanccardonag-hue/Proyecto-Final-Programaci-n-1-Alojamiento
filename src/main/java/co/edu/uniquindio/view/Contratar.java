@@ -137,8 +137,13 @@ public class Contratar extends JDialog {
         }
 
         if (exito) {
+            String mensajeExito = "¡Datos actualizados!";
+            if (empleadoEditar == null) {
+                mensajeExito = "¡Empleado contratado exitosamente!";
+            }
+
             JOptionPane.showMessageDialog(this,
-                    (empleadoEditar == null ? "¡Empleado contratado exitosamente!" : "¡Datos actualizados!"),
+                    mensajeExito,
                     "Éxito",
                     JOptionPane.INFORMATION_MESSAGE);
             dispose();

@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class DeclararNoShowRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -138,25 +139,40 @@ public class DeclararNoShowRecepcionista extends JDialog {
             return;
         }
 
-        Reserva reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
-                empresa != null ? empresa.getListaReservas() : null,
-                cod
-        );
+        List<Reserva> listaReservas = null;
+        if (empresa != null) {
+            listaReservas = empresa.getListaReservas();
+        }
+
+        Reserva reservaSeleccionada = Recepcionista.buscarReservaPorFolio(listaReservas, cod);
 
         if (reservaSeleccionada == null) {
-            if (textDetalleReserva != null) textDetalleReserva.setText("");
+            if (textDetalleReserva != null) {
+                textDetalleReserva.setText("");
+            }
             JOptionPane.showMessageDialog(this, "⚠ No se encontró la reserva con el código: " + cod, "Error ⚠", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (textDetalleReserva != null) {
+            String nombreTitular = "N/A";
+            if (reservaSeleccionada.getTitular() != null) {
+                nombreTitular = reservaSeleccionada.getTitular().getNombre();
+            }
+
+            String nombreApto = "N/A";
+            if (reservaSeleccionada.getApartamento() != null) {
+                nombreApto = reservaSeleccionada.getApartamento().getNombre();
+            }
+
             String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
                     " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
-                    " Titular: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A") + "\n" +
-                    " Apartamento: " + (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A") + "\n" +
+                    " Titular: " + nombreTitular + "\n" +
+                    " Apartamento: " + nombreApto + "\n" +
                     " Fechas: " + reservaSeleccionada.getFechaEntrada() + "  ->  " + reservaSeleccionada.getFechaSalida() + "\n";
             textDetalleReserva.setText(detalle);
         }
+
         String resultado = reservaSeleccionada.declararNoShow();
 
         if ("OK".equals(resultado)) {

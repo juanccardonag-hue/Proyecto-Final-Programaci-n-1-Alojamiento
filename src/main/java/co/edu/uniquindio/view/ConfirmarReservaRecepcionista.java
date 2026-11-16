@@ -4,6 +4,7 @@ import co.edu.uniquindio.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class ConfirmarReservaRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -40,7 +41,6 @@ public class ConfirmarReservaRecepcionista extends JDialog {
     }
 
     private void aplicarEstilos() {
-
         if (txtDetalleReserva != null) {
             txtDetalleReserva.setEditable(false);
             txtDetalleReserva.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -50,7 +50,7 @@ public class ConfirmarReservaRecepcionista extends JDialog {
 
     public void icons() {
         configurarBoton(btnBuscarReserva, "/Buscar.png", "Buscar");
-        configurarBoton(buttonCancel,"","Cancelar");
+        configurarBoton(buttonCancel, "", "Cancelar");
         configurarBoton(buttonOK, "", "Confirmar Reserva");
     }
 
@@ -72,9 +72,12 @@ public class ConfirmarReservaRecepcionista extends JDialog {
         Image imgBase = null;
         if (rutaIcono != null && !rutaIcono.trim().isEmpty()) {
             try {
-                ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
-                imgBase = iconOriginal.getImage();
-                boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+                java.net.URL resource = getClass().getResource(rutaIcono);
+                if (resource != null) {
+                    ImageIcon iconOriginal = new ImageIcon(resource);
+                    imgBase = iconOriginal.getImage();
+                    boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+                }
             } catch (Exception e) {
                 System.err.println("No se encontró la imagen: " + rutaIcono);
             }
@@ -111,9 +114,15 @@ public class ConfirmarReservaRecepcionista extends JDialog {
     }
 
     private void initListeners() {
-        if (btnBuscarReserva != null) btnBuscarReserva.addActionListener(e -> buscarReserva());
-        if (buttonOK != null) buttonOK.addActionListener(e -> procesarConfirmacion());
-        if (buttonCancel != null) buttonCancel.addActionListener(e -> dispose());
+        if (btnBuscarReserva != null) {
+            btnBuscarReserva.addActionListener(e -> buscarReserva());
+        }
+        if (buttonOK != null) {
+            buttonOK.addActionListener(e -> procesarConfirmacion());
+        }
+        if (buttonCancel != null) {
+            buttonCancel.addActionListener(e -> dispose());
+        }
     }
 
     private void buscarReserva() {
@@ -123,19 +132,26 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             return;
         }
 
-        reservaEncontrada = Recepcionista.buscarReservaPorFolio(
-                empresa != null ? empresa.getListaReservas() : null,
-                cod
-        );
+        List<Reserva> listaReservas = null;
+        if (empresa != null) {
+            listaReservas = empresa.getListaReservas();
+        }
+
+        reservaEncontrada = Recepcionista.buscarReservaPorFolio(listaReservas, cod);
 
         if (reservaEncontrada != null) {
             long totalPagado = (long) reservaEncontrada.getTotalAbonado();
             long faltaPara30 = reservaEncontrada.calcularRestanteAnticipo30();
 
+            String nombreTitular = "N/A";
+            if (reservaEncontrada.getTitular() != null) {
+                nombreTitular = reservaEncontrada.getTitular().getNombre();
+            }
+
             String detalle = " Folio: " + reservaEncontrada.getCodigoFolio() + "\n" +
                     " Canal: " + reservaEncontrada.getCanal() + "\n" +
                     " Estado Actual: " + reservaEncontrada.getEstado() + "\n" +
-                    " Titular: " + (reservaEncontrada.getTitular() != null ? reservaEncontrada.getTitular().getNombre() : "N/A") + "\n" +
+                    " Titular: " + nombreTitular + "\n" +
                     " Fechas: " + reservaEncontrada.getFechaEntrada() + "  ->  " + reservaEncontrada.getFechaSalida() + "\n" +
                     " Valor Total: $" + String.format("%,d", reservaEncontrada.getValorTotal()) + "\n" +
                     " Total Abonado: $" + String.format("%,d", totalPagado) + "\n";
@@ -154,6 +170,7 @@ public class ConfirmarReservaRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "No se encontró ninguna reserva con el código: " + cod, "Reserva No Encontrada ⚠", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void aplicarBordeRedondo(JTextField campo) {
         if (campo == null) return;
         campo.setOpaque(false);

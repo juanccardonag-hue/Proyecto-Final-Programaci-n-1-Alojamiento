@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Administrador extends Empleado {
-    private String usuario;
-    private String contrasenia;
     private PoliticaCancelacion politicaCancelacion = new PoliticaCancelacion(7, 2, 0.50);
 
     public Administrador(String cedula, String nombre, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
@@ -130,16 +128,7 @@ public class Administrador extends Empleado {
             return false;
         }
 
-        Recepcionista recep = new Recepcionista(
-                emp.getCedula(),
-                emp.getNombre(),
-                LocalDate.now(),
-                emp.getTelefono(),
-                emp.getCorreo(),
-                usuario.trim(),
-                contrasena.trim()
-        );
-
+        Recepcionista recep = new Recepcionista(emp.getCedula(), emp.getNombre(), LocalDate.now(), emp.getTelefono(), emp.getCorreo(), usuario.trim(), contrasena.trim());
         listaRecepcionistas.add(recep);
         return true;
     }
@@ -314,7 +303,7 @@ public class Administrador extends Empleado {
         }
 
         Apartamento aptoMasNovedades = null;
-        int maxNovedades = -1;
+           int maxNovedades = -1;
 
         for (Apartamento actual : listaApartamentos) {
             if (actual != null && actual.getListNovedad() != null) {

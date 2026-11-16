@@ -73,14 +73,17 @@ public class MenuRecepcionista extends JDialog {
     }
 
     private void initListeners() {
-        Recepcionista recep = (recepcionistaActual instanceof Recepcionista)
-                ? (Recepcionista) recepcionistaActual
-                : null;
+        Recepcionista recep = null;
+        if (recepcionistaActual instanceof Recepcionista) {
+            recep = (Recepcionista) recepcionistaActual;
+        }
+
+        final Recepcionista recepFinal = recep;
 
         // 1. Reservas Canal Directo
         if (btnDirecto != null) {
             btnDirecto.addActionListener(e -> {
-                new ReservaDirectaRecepcionista(this, empresa, recep).setVisible(true);
+                new ReservaDirectaRecepcionista(this, empresa, recepFinal).setVisible(true);
             });
         }
 
@@ -129,7 +132,7 @@ public class MenuRecepcionista extends JDialog {
         // 8. Novedades
         if (btnNovedades != null) {
             btnNovedades.addActionListener(e -> {
-                new RegistrarNovedadRecepcionista(this, empresa, recep).setVisible(true);
+                new RegistrarNovedadRecepcionista(this, empresa, recepFinal).setVisible(true);
             });
         }
 

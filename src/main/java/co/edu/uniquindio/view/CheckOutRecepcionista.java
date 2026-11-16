@@ -4,8 +4,7 @@ import co.edu.uniquindio.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class CheckOutRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -32,6 +31,7 @@ public class CheckOutRecepcionista extends JDialog {
         }
 
         aplicarEstilos();
+        icons();
         initListeners();
 
         setSize(580, 500);
@@ -69,8 +69,8 @@ public class CheckOutRecepcionista extends JDialog {
 
     public void icons() {
         configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
-        configurarBoton(buttonCancel,"","Cancelar");
-        configurarBoton(buttonOK, "","Confirmar Check-Out");
+        configurarBoton(buttonCancel, "", "Cancelar");
+        configurarBoton(buttonOK, "", "Confirmar Check-Out");
     }
 
     private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
@@ -142,23 +142,37 @@ public class CheckOutRecepcionista extends JDialog {
             return;
         }
 
-        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
-                empresa != null ? empresa.getListaReservas() : null,
-                cod
-        );
+        List<Reserva> listaReservas = null;
+        if (empresa != null) {
+            listaReservas = empresa.getListaReservas();
+        }
+
+        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(listaReservas, cod);
 
         if (reservaSeleccionada != null) {
             long totalCargosGenerales = reservaSeleccionada.getValorTotal();
             long totalPagado = (long) reservaSeleccionada.getTotalAbonado();
             double saldoPendiente = reservaSeleccionada.getSaldoFolio();
-            String estadoCuenta = (saldoPendiente <= 0)
-                    ? "PAZ Y SALVO"
-                    : "SALDO PENDIENTE (Requiere pago)";
+
+            String estadoCuenta = "SALDO PENDIENTE (Requiere pago)";
+            if (saldoPendiente <= 0) {
+                estadoCuenta = "PAZ Y SALVO";
+            }
+
+            String nombreTitular = "N/A";
+            if (reservaSeleccionada.getTitular() != null) {
+                nombreTitular = reservaSeleccionada.getTitular().getNombre();
+            }
+
+            String nombreApto = "N/A";
+            if (reservaSeleccionada.getApartamento() != null) {
+                nombreApto = reservaSeleccionada.getApartamento().getNombre();
+            }
 
             String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
                     " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
-                    " Titular: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A") + "\n" +
-                    " Apartamento: " + (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A") + "\n" +
+                    " Titular: " + nombreTitular + "\n" +
+                    " Apartamento: " + nombreApto + "\n" +
                     " Total Cargos + Hospedaje: $" + String.format("%,d", totalCargosGenerales) + "\n" +
                     " Total Abonado: $" + String.format("%,d", totalPagado) + "\n" +
                     " Saldo Pendiente: $" + String.format("%,d", Math.max(0, (long) saldoPendiente)) + "\n" +

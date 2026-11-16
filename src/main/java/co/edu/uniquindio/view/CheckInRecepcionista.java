@@ -5,6 +5,7 @@ import co.edu.uniquindio.*;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.List;
 
 public class CheckInRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -42,8 +43,8 @@ public class CheckInRecepcionista extends JDialog {
 
     public void icons() {
         configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
-        configurarBoton(buttonCancel,"","Cancelar");
-        configurarBoton(buttonOK, "","Confirmar Check-In");
+        configurarBoton(buttonCancel, "", "Cancelar");
+        configurarBoton(buttonOK, "", "Confirmar Check-In");
     }
 
     private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
@@ -133,25 +134,39 @@ public class CheckInRecepcionista extends JDialog {
             return;
         }
 
-        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
-                empresa != null ? empresa.getListaReservas() : null,
-                cod
-        );
+        List<Reserva> listaReservas = null;
+        if (empresa != null) {
+            listaReservas = empresa.getListaReservas();
+        }
+
+        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(listaReservas, cod);
 
         if (reservaSeleccionada != null) {
             LocalDate hoy = LocalDate.now();
             LocalDate entrada = reservaSeleccionada.getFechaEntrada();
 
-                String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
-                        " Canal: " + reservaSeleccionada.getCanal() + "\n" +
-                        " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
-                        " Titular: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getNombre() : "N/A") + "\n" +
-                        " Cédula: " + (reservaSeleccionada.getTitular() != null ? reservaSeleccionada.getTitular().getCedula() : "N/A") + "\n" +
-                        " Apartamento: " + (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : "N/A") + "\n" +
-                        " Fechas: " + entrada + "  ->  " + reservaSeleccionada.getFechaSalida() + "\n" +
-                        " Fecha Actual (Hoy): " + hoy + "\n";
+            String nombreTitular = "N/A";
+            String cedulaTitular = "N/A";
+            if (reservaSeleccionada.getTitular() != null) {
+                nombreTitular = reservaSeleccionada.getTitular().getNombre();
+                cedulaTitular = reservaSeleccionada.getTitular().getCedula();
+            }
 
-                textDetalle.setText(detalle);
+            String nombreApto = "N/A";
+            if (reservaSeleccionada.getApartamento() != null) {
+                nombreApto = reservaSeleccionada.getApartamento().getNombre();
+            }
+
+            String detalle = " Folio: " + reservaSeleccionada.getCodigoFolio() + "\n" +
+                    " Canal: " + reservaSeleccionada.getCanal() + "\n" +
+                    " Estado Actual: " + reservaSeleccionada.getEstado() + "\n" +
+                    " Titular: " + nombreTitular + "\n" +
+                    " Cédula: " + cedulaTitular + "\n" +
+                    " Apartamento: " + nombreApto + "\n" +
+                    " Fechas: " + entrada + "  ->  " + reservaSeleccionada.getFechaSalida() + "\n" +
+                    " Fecha Actual (Hoy): " + hoy + "\n";
+
+            textDetalle.setText(detalle);
 
             if (reservaSeleccionada.getEstado() != EstadoReserva.CONFIRMADA) {
                 JOptionPane.showMessageDialog(this,
@@ -177,9 +192,13 @@ public class CheckInRecepcionista extends JDialog {
         String resultado = reservaSeleccionada.procesarCheckIn();
 
         if ("OK".equals(resultado)) {
+            String nombreApto = "";
+            if (reservaSeleccionada.getApartamento() != null) {
+                nombreApto = reservaSeleccionada.getApartamento().getNombre();
+            }
+
             JOptionPane.showMessageDialog(this,
-                    "¡Check-In completado exitosamente!\nAcceso habilitado para el apartamento: " +
-                            (reservaSeleccionada.getApartamento() != null ? reservaSeleccionada.getApartamento().getNombre() : ""),
+                    "¡Check-In completado exitosamente!\nAcceso habilitado para el apartamento: " + nombreApto,
                     "Check-In Finalizado", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {

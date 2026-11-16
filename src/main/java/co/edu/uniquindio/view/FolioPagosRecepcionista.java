@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class FolioPagosRecepcionista extends JDialog {
     private JPanel contentPane;
@@ -90,7 +91,9 @@ public class FolioPagosRecepcionista extends JDialog {
 
     private void configurarBotonSencillo(JButton boton, String texto) {
         if (boton == null) return;
-        if (texto != null && !texto.isEmpty()) boton.setText(texto);
+        if (texto != null && !texto.isEmpty()) {
+            boton.setText(texto);
+        }
 
         Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
         Font fuenteHover = new Font("Segoe UI", Font.BOLD, 14);
@@ -124,10 +127,12 @@ public class FolioPagosRecepcionista extends JDialog {
             return;
         }
 
-        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(
-                empresa != null ? empresa.getListaReservas() : null,
-                cod
-        );
+        List<Reserva> listaReservas = null;
+        if (empresa != null) {
+            listaReservas = empresa.getListaReservas();
+        }
+
+        reservaSeleccionada = Recepcionista.buscarReservaPorFolio(listaReservas, cod);
 
         if (reservaSeleccionada != null) {
             actualizarVistaEstadoCuenta();
@@ -141,7 +146,10 @@ public class FolioPagosRecepcionista extends JDialog {
         if (reservaSeleccionada == null || textEstadoCuenta == null) return;
 
         Folio folio = reservaSeleccionada.getFolio();
-        String titular = (reservaSeleccionada.getTitular() != null) ? reservaSeleccionada.getTitular().getNombre() : "N/A";
+        String titular = "N/A";
+        if (reservaSeleccionada.getTitular() != null) {
+            titular = reservaSeleccionada.getTitular().getNombre();
+        }
 
         String reporte = "°°°°°°°°° ESTADO DE CUENTA °°°°°°°°°°°\n" +
                 " Folio Reserva : " + reservaSeleccionada.getCodigoFolio() + "\n" +
