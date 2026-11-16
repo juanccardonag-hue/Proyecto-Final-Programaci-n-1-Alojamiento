@@ -17,6 +17,7 @@ public class CancelarReservaHuesped extends JDialog {
     private JLabel lblDevolucion;
     private JButton buttonOK;
     private JButton buttonCancel;
+
     private Empresa empresa;
     private Huesped huespedActual;
 
@@ -38,6 +39,9 @@ public class CancelarReservaHuesped extends JDialog {
 
         configurarComboReservas();
         cargarReservasCancelables();
+
+        configurarBoton(buttonCancel, "Cancelar");
+        configurarBoton(buttonOK, "Confirmar");
 
         pack();
         setResizable(false);
@@ -61,6 +65,31 @@ public class CancelarReservaHuesped extends JDialog {
                 }
             });
         }
+    }
+    private void configurarBoton(JButton boton, String titulo) {
+        if (boton == null) return;
+
+        if (titulo != null && !titulo.isEmpty()) {
+            boton.setText(titulo);
+        }
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setFont(fuenteNormal);
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteNormal);
+            }
+        });
     }
 
     private void cargarReservasCancelables() {

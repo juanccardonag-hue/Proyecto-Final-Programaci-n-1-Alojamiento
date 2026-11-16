@@ -38,18 +38,15 @@ public class DeclararNoShowRecepcionista extends JDialog {
 
     private void aplicarEstilos() {
         aplicarBordeRedondo(textCodigoReserva);
-        icons();
+
+        configurarBoton(buttonOK, "", "Declarar No-Show");
+        configurarBoton(buttonCancel, "", "Cancelar");
 
         if (textDetalleReserva != null) {
             textDetalleReserva.setEditable(false);
             textDetalleReserva.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             textDetalleReserva.setMargin(new Insets(8, 8, 8, 8));
         }
-    }
-
-    public void icons() {
-        configurarBoton(buttonOK, "", "Declarar No-Show");
-        configurarBoton(buttonCancel, "", "Volver al Menú");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {

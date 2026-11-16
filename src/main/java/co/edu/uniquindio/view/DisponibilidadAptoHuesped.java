@@ -6,6 +6,7 @@ import co.edu.uniquindio.Huesped;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -38,6 +39,57 @@ public class DisponibilidadAptoHuesped extends JDialog {
         setLocationRelativeTo(parent);
 
         initListeners();
+
+        configurarBoton(buttonCancel,"","Cancelar");
+
+        aplicarBordeRedondo(inputFechaFinal);
+        aplicarBordeRedondo(inputFechaInicio);
+    }
+    public void icons() {
+        configurarBoton(buttonOK, "/buscar.png", "Buscar dispo");
+    }
+
+    private void configurarBoton(JButton boton,String rutaIcono, String titulo) {
+        if (boton == null) return;
+
+        if (titulo != null && !titulo.isEmpty()) {
+            boton.setText(titulo);
+        }
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setFont(fuenteNormal);
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteNormal);
+            }
+        });
+    }
+
+    private void aplicarBordeRedondo(JTextField campo) {
+        campo.setOpaque(false);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.AbstractBorder() {
+                    @Override
+                    public void paintBorder(java.awt.Component c, java.awt.Graphics g, int x, int y, int width, int height) {
+                        java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+                        g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(java.awt.Color.LIGHT_GRAY);
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
+                        g2.dispose();
+                    }
+                },
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
     }
 
     private void configurarTabla() {

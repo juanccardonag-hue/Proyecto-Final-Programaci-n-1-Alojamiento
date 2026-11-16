@@ -92,8 +92,8 @@ public class ControlOperativoRecepcionista extends JDialog {
         int tamNormalIcono = 32;
         int tamZoomIcono = 40;
 
-        Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 14);
-        Font fuenteZoom = new Font("Segoe UI", Font.BOLD, 16);
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 16);
 
         boton.setText(titulo);
         boton.setFont(fuenteNormal);

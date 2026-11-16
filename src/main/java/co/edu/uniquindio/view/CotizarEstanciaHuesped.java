@@ -23,7 +23,7 @@ public class CotizarEstanciaHuesped extends JDialog {
     private Huesped huespedActual;
 
     public CotizarEstanciaHuesped(JDialog parent, Empresa empresa, Huesped huespedActual) {
-        super(parent, "Cotizar Estancia - Aparta-Suites UQ", true);
+        super(parent, "Cotizar reserva", true);
         this.empresa = empresa;
         this.huespedActual = huespedActual;
 
@@ -44,6 +44,12 @@ public class CotizarEstanciaHuesped extends JDialog {
         setLocationRelativeTo(parent);
 
         initListeners();
+
+        configurarBoton(buttonCancel, "Cancelar");
+        configurarBoton(buttonOK, "Calcular");
+
+        aplicarBordeRedondo(inputFechaFinal);
+        aplicarBordeRedondo(inputFechaInicio);
     }
 
     private void cargarComboApartamentos() {
@@ -65,6 +71,48 @@ public class CotizarEstanciaHuesped extends JDialog {
                 }
             });
         }
+    }
+    private void configurarBoton(JButton boton, String titulo) {
+        if (boton == null) return;
+
+        if (titulo != null && !titulo.isEmpty()) {
+            boton.setText(titulo);
+        }
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setFont(fuenteNormal);
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteNormal);
+            }
+        });
+    }
+
+    private void aplicarBordeRedondo(JTextField campo) {
+        campo.setOpaque(false);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.AbstractBorder() {
+                    @Override
+                    public void paintBorder(java.awt.Component c, java.awt.Graphics g, int x, int y, int width, int height) {
+                        java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+                        g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(java.awt.Color.LIGHT_GRAY);
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
+                        g2.dispose();
+                    }
+                },
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
     }
 
     private void initListeners() {
