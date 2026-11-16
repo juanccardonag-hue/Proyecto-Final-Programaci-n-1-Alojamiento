@@ -32,7 +32,7 @@ public class CheckInRecepcionista extends JDialog {
             getRootPane().setDefaultButton(btnBuscar);
         }
 
-        aplicarEstilos();
+        icons();
         initListeners();
 
         setSize(580, 500);
@@ -40,18 +40,66 @@ public class CheckInRecepcionista extends JDialog {
         setLocationRelativeTo(parent);
     }
 
-    private void aplicarEstilos() {
-        aplicarBordeRedondo(txtCodigoReserva);
+    public void icons() {
+        configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
+        configurarBoton(buttonCancel,"","Cancelar");
+        configurarBoton(buttonOK, "","Confirmar Check-In");
+    }
 
-        configurarBoton(btnBuscar, "Buscar");
-        configurarBoton(buttonOK, "Confirmar Check-In");
-        configurarBoton(buttonCancel, "Volver al Menú");
+    private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
+        if (boton == null) return;
 
-        if (textDetalle != null) {
-            textDetalle.setEditable(false);
-            textDetalle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            textDetalle.setMargin(new Insets(10, 10, 10, 10));
+        int tamNormalIcono = 32;
+        int tamZoomIcono = 40;
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom   = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setText(titulo);
+        boton.setFont(fuenteNormal);
+        boton.setForeground(new Color(0x2C3E50));
+        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        boton.setMargin(new Insets(5, 10, 5, 10));
+
+        Image imgBase = null;
+        if (rutaIcono != null && !rutaIcono.trim().isEmpty()) {
+            try {
+                ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
+                imgBase = iconOriginal.getImage();
+                boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+            } catch (Exception e) {
+                System.err.println("No se encontró la imagen: " + rutaIcono);
+            }
         }
+
+        final Image imagenOriginal = imgBase;
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoomIcono, tamZoomIcono, Image.SCALE_SMOOTH)));
+                }
+
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                boton.revalidate();
+                boton.repaint();
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteNormal);
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+                }
+
+                boton.revalidate();
+                boton.repaint();
+            }
+        });
     }
 
     private void aplicarBordeRedondo(JTextField campo) {

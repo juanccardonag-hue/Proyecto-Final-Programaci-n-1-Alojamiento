@@ -33,8 +33,8 @@ public class MenuTemporadas extends JDialog{
         formDefinir.setVisible(true);
     });
         btnTarifa.addActionListener(e -> {
-        ModificarApto formEditar = new ModificarApto(this, empresa);
-        formEditar.setVisible(true);
+        ConfigTarifa formTarifa = new ConfigTarifa(this, empresa);
+        formTarifa.setVisible(true);
     });
     }
 
