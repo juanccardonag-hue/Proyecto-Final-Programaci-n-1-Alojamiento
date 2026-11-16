@@ -2,12 +2,9 @@ package co.edu.uniquindio.view;
 
 import co.edu.uniquindio.Administrador;
 import co.edu.uniquindio.Empresa;
-import co.edu.uniquindio.TipoTemporada;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class LoginAdmin extends JDialog {
     private JPanel mainPanel;
@@ -26,6 +23,10 @@ public class LoginAdmin extends JDialog {
         setSize(700, 550);
         setResizable(false);
         setLocationRelativeTo(parent);
+
+        if (btnIngreso != null) {
+            getRootPane().setDefaultButton(btnIngreso);
+        }
 
         estailarComponentes();
 

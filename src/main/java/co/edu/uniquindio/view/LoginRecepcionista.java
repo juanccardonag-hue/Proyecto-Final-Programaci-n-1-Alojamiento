@@ -14,6 +14,7 @@ public class LoginRecepcionista extends JDialog {
     JPasswordField txtContrasena;
     private JButton buttonSesion;
     private JButton buttonVolver;
+    private JLabel lblFoto;
 
     private Empresa empresa;
 
@@ -33,7 +34,13 @@ public class LoginRecepcionista extends JDialog {
         aplicarEstilos();
         initListeners();
 
-        setSize(580, 420);
+        ImageIcon iconOriginal = new ImageIcon(getClass().getResource("/avatar.png"));
+        Image imgEscalada = iconOriginal.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+
+        lblFoto.setIcon(new ImageIcon(imgEscalada));
+        lblFoto.setHorizontalAlignment(SwingConstants.CENTER);
+
+        setSize(700, 550);
         setResizable(false);
         setLocationRelativeTo(parent);
     }

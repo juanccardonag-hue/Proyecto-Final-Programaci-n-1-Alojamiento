@@ -5,16 +5,16 @@ import co.edu.uniquindio.Empresa;
 import javax.swing.*;
 import java.awt.*;
 
-public class MenuControlAcceso extends JDialog{
+public class MenuBloqueos extends JDialog{
     private JPanel mainPanel;
     private JButton btnVolver;
-    private JButton btnRegistarRecepcionista;
     private JButton btnCambiar;
+    private JButton btnBloqueo;
 
     private Empresa empresa;
 
-    public MenuControlAcceso (JDialog parent, Empresa empresa){
-        super(parent, "Menu gestión conntrol acceso", true);
+    public MenuBloqueos(JDialog parent, Empresa empresa){
+        super(parent, "Menu gestión control bloqueos", true);
         this.empresa = empresa;
 
         setContentPane(mainPanel);
@@ -29,22 +29,22 @@ public class MenuControlAcceso extends JDialog{
     private void initListeners() {
         btnVolver.addActionListener(e -> dispose());
         btnCambiar.addActionListener(e -> {
-            CambiarCredenciales formCambiar = new CambiarCredenciales(this, empresa);
-            formCambiar.setVisible(true);
+            CambioEstado formCambio = new CambioEstado(this, empresa);
+            formCambio.setVisible(true);
         });
 
-        btnRegistarRecepcionista.addActionListener(e -> {
-            RegistrarRecepcionista formRegistrar = new RegistrarRecepcionista(this, empresa);
-            formRegistrar.setVisible(true);
+        btnBloqueo.addActionListener(e -> {
+            BloqueoAptos formBloqueo = new BloqueoAptos(this, empresa);
+            formBloqueo.setVisible(true);
         });
 
     }
     public void icons() {
-        configurarBoton(btnRegistarRecepcionista, "/recepcionista.png",
-                "Registrar Recpecionista");
+        configurarBoton(btnBloqueo, "/bloqueoFecha.png",
+                "Bloquear fechas");
 
-        configurarBoton(btnCambiar, "/cambiar.png",
-                "Cambiar mis credenciales ");
+        configurarBoton(btnCambiar, "/mantenimiento.png",
+                "Cambiar estado apto ");
 
         configurarBoton(btnVolver, "/volver.png",
                 "Volver");

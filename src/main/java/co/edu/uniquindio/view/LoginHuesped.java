@@ -14,6 +14,7 @@ public class LoginHuesped extends JDialog {
     private JTextField inputCedula;
     private JPasswordField inputPassword;
     private JButton buttonCancel;
+    private JLabel lblFoto;
 
     private Empresa empresa;
     private JFrame parentFrame;
@@ -35,9 +36,16 @@ public class LoginHuesped extends JDialog {
         aplicarEstilos();
         initListeners();
 
-        setSize(520, 400);
+        setSize(700, 550);
         setResizable(false);
         setLocationRelativeTo(parent);
+
+        ImageIcon iconOriginal = new ImageIcon(getClass().getResource("/avatar.png"));
+
+        Image imgEscalada = iconOriginal.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+
+        lblFoto.setIcon(new ImageIcon(imgEscalada));
+        lblFoto.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void aplicarEstilos() {
