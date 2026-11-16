@@ -65,7 +65,7 @@ public class ControlOperativoRecepcionista extends JDialog {
 
     public void icons() {
         configurarBoton(btnActualizar, "", "Actualizar Estado");
-        configurarBoton(btnVolver, "", "Volver al Menú");
+        configurarBoton(btnVolver, "", "Cancelar");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {

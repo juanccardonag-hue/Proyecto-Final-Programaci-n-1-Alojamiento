@@ -4,8 +4,6 @@ import co.edu.uniquindio.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 
 public class CheckInRecepcionista extends JDialog {
@@ -31,6 +29,8 @@ public class CheckInRecepcionista extends JDialog {
         if (btnBuscar != null) {
             getRootPane().setDefaultButton(btnBuscar);
         }
+
+        aplicarBordeRedondo(txtCodigoReserva);
 
         icons();
         initListeners();
@@ -118,28 +118,6 @@ public class CheckInRecepcionista extends JDialog {
                 },
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
-    }
-
-    private void configurarBoton(JButton boton, String titulo) {
-        if (boton == null) return;
-        if (titulo != null && !titulo.isEmpty()) boton.setText(titulo);
-
-        Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
-        Font fuenteHover = new Font("Segoe UI", Font.BOLD, 14);
-        boton.setFont(fuenteNormal);
-
-        boton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                boton.setFont(fuenteHover);
-                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                boton.setFont(fuenteNormal);
-            }
-        });
     }
 
     private void initListeners() {
