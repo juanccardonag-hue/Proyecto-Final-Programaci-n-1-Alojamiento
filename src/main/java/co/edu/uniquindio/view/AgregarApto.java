@@ -15,7 +15,6 @@ public class AgregarApto extends JDialog {
     private JTextField textTarifa;
     private JButton btnAgregar;
     private JButton btnCancelar;
-    private JLabel tittle;
 
     private Empresa empresa;
     private Apartamento apartamentoAgregar;
