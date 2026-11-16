@@ -15,7 +15,7 @@
         <properties>
           <font name=".AppleSystemUIFont" size="20" style="1"/>
           <foreground color="-16746570"/>
-          <text value="Iniciar Sesión como Recepcionista"/>
+          <text value="Selecciona la opcion a gestionar "/>
         </properties>
       </component>
       <component id="f4367" class="javax.swing.JButton" binding="btnCambiar">

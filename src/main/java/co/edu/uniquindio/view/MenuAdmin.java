@@ -60,7 +60,7 @@ public class MenuAdmin extends JDialog {
             menuBloqueos.setVisible(true);
         });
         btnControlAcceso.addActionListener(e -> {
-            MenuGestionEmpleado menuControlAcceso = new MenuGestionEmpleado(this, empresa);
+            MenuControlAcceso menuControlAcceso = new MenuControlAcceso(this, empresa);
             menuControlAcceso.setVisible(true);
         });
         // Reportes

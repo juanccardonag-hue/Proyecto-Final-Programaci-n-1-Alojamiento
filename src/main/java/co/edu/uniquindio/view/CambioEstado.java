@@ -18,7 +18,7 @@ public class CambioEstado extends JDialog {
     private Apartamento apartamentoEncontrado;
 
     public CambioEstado(JDialog parent, Empresa empresa) {
-        super(parent, "Eliminar Apartamento", true);
+        super(parent, "Cambiar estado de un Apartamento", true);
         this.empresa = empresa;
 
         setContentPane(mainPanel);

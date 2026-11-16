@@ -15,7 +15,7 @@
         <properties>
           <font name=".AppleSystemUIFont" size="20" style="1"/>
           <foreground color="-16746570"/>
-          <text value="Bloquar apartamentos"/>
+          <text value="Cambiar el estado de un apartamento "/>
         </properties>
       </component>
       <component id="5847d" class="javax.swing.JLabel">
@@ -24,7 +24,7 @@
         </constraints>
         <properties>
           <font name=".AppleSystemUIFont" size="16" style="0"/>
-          <text value="Ingresa el codigo del apartamento a eliminar:"/>
+          <text value="Ingresa el codigo del apartamento a cambiar:"/>
         </properties>
       </component>
       <component id="a181a" class="javax.swing.JTextField" binding="textCodigo">
