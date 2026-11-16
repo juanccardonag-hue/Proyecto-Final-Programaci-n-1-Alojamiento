@@ -102,7 +102,7 @@ public class Recepcionista extends Empleado {
         return reserva;
     }
 
-    // --- Confirmación de Reserva ---
+    // Confirmación de Reserva
     public String confirmarReserva(Reserva reserva) {
         if (reserva == null) {
             return "Reserva no válida.";
@@ -110,7 +110,7 @@ public class Recepcionista extends Empleado {
         return reserva.confirmar();
     }
 
-    // --- Check-In y Check-Out ---
+    // Check-In y Check-Out
     public String realizarCheckIn(Reserva reserva) {
         if (reserva == null) {
             return "Reserva no válida.";
@@ -162,7 +162,7 @@ public class Recepcionista extends Empleado {
         return "OK";
     }
 
-    // --- Control Operativo y Novedades de Apartamentos ---
+    // Control Operativo y Novedades de Apartamentos
     public String cambiarEstadoApartamento(Apartamento apto, EstadoOperativo nuevoEstado, String motivo) {
         if (apto == null) {
             return "Apartamento no válido.";

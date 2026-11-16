@@ -120,11 +120,14 @@ public class PagosHuesped extends JDialog {
 
             comboReservas.setRenderer(new DefaultListCellRenderer() {
                 @Override
-                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     if (value instanceof Reserva) {
                         Reserva r = (Reserva) value;
-                        String apto = (r.getApartamento() != null) ? r.getApartamento().getNombre() : "Sin Apto";
+                        String apto = "Sin Apto";
+                        if (r.getApartamento() != null) {
+                            apto = r.getApartamento().getNombre();
+                        }
                         setText(r.getCodigoFolio() + " - " + apto + " (" + r.getEstado() + ")");
                     }
                     return this;
@@ -232,7 +235,7 @@ public class PagosHuesped extends JDialog {
 
                 String mensajeEstado = "";
                 if (estadoAnterior == EstadoReserva.PENDIENTE && reservaSeleccionada.getEstado() == EstadoReserva.CONFIRMADA) {
-                    mensajeEstado = "\n\nHas cumplido con el 30% mínimo de anticipo.\n" +
+                    mensajeEstado = "\nHas cumplido con el 30% mínimo de anticipo.\n" +
                             "Tu reserva ha cambiado a estado: CONFIRMADA.";
                 } else if (reservaSeleccionada.getEstado() == EstadoReserva.PENDIENTE) {
                     mensajeEstado = "\n\n⚠ Recuerda que para confirmar tu reserva debes completar el 30% mínimo. Te restan $" +

@@ -79,7 +79,9 @@ public class ReservaExternaRecepcionista extends JDialog {
 
     private void configurarBoton(JButton boton, String titulo) {
         if (boton == null) return;
-        if (titulo != null && !titulo.isEmpty()) boton.setText(titulo);
+        if (titulo != null && !titulo.isEmpty()) {
+            boton.setText(titulo);
+        }
 
         Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
         Font fuenteHover = new Font("Segoe UI", Font.BOLD, 15);
@@ -110,9 +112,15 @@ public class ReservaExternaRecepcionista extends JDialog {
     }
 
     private void initListeners() {
-        if (btnBuscarHuesped != null) btnBuscarHuesped.addActionListener(e -> buscarOAgregarHuesped());
-        if (btnConfirmar != null) btnConfirmar.addActionListener(e -> procesarReservaExterna());
-        if (btnVolver != null) btnVolver.addActionListener(e -> dispose());
+        if (btnBuscarHuesped != null) {
+            btnBuscarHuesped.addActionListener(e -> buscarOAgregarHuesped());
+        }
+        if (btnConfirmar != null) {
+            btnConfirmar.addActionListener(e -> procesarReservaExterna());
+        }
+        if (btnVolver != null) {
+            btnVolver.addActionListener(e -> dispose());
+        }
     }
 
     private void buscarOAgregarHuesped() {
@@ -122,10 +130,12 @@ public class ReservaExternaRecepcionista extends JDialog {
             return;
         }
 
-        huespedSeleccionado = Recepcionista.buscarHuespedPorCedula(
-                empresa != null ? empresa.getListaHuespedes() : null,
-                cedula
-        );
+        List<Huesped> listaHuespedes = null;
+        if (empresa != null) {
+            listaHuespedes = empresa.getListaHuespedes();
+        }
+
+        huespedSeleccionado = Recepcionista.buscarHuespedPorCedula(listaHuespedes, cedula);
 
         if (huespedSeleccionado != null) {
             lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre());
@@ -139,10 +149,12 @@ public class ReservaExternaRecepcionista extends JDialog {
                 RegistroHuespedView ventanaRegistro = new RegistroHuespedView(null, empresa);
                 ventanaRegistro.setVisible(true);
 
-                huespedSeleccionado = Recepcionista.buscarHuespedPorCedula(
-                        empresa != null ? empresa.getListaHuespedes() : null,
-                        cedula
-                );
+                List<Huesped> listaActualizada = null;
+                if (empresa != null) {
+                    listaActualizada = empresa.getListaHuespedes();
+                }
+
+                huespedSeleccionado = Recepcionista.buscarHuespedPorCedula(listaActualizada, cedula);
                 if (huespedSeleccionado != null) {
                     lblInfoHuesped.setText("Huésped: " + huespedSeleccionado.getNombre() + " (Registrado)");
                     lblInfoHuesped.setForeground(new Color(0, 128, 0));
@@ -174,7 +186,11 @@ public class ReservaExternaRecepcionista extends JDialog {
             return;
         }
 
-        int totalPersonas = (numeroPersonas != null) ? (Integer) numeroPersonas.getValue() : 0;
+        int totalPersonas = 0;
+        if (numeroPersonas != null && numeroPersonas.getValue() != null) {
+            totalPersonas = (Integer) numeroPersonas.getValue();
+        }
+
         if (totalPersonas <= 0) {
             JOptionPane.showMessageDialog(this, "El número de personas debe ser al menos 1 (incluyendo al titular).", "Cantidad Inválida ⚠", JOptionPane.WARNING_MESSAGE);
             return;
@@ -182,10 +198,13 @@ public class ReservaExternaRecepcionista extends JDialog {
 
         String itemApto = (String) comboApartamentos.getSelectedItem();
         String codApto = itemApto.split("-")[0].trim();
-        Apartamento apto = Recepcionista.buscarApartamentoPorCodigo(
-                empresa != null ? empresa.getListaApartamentos() : null,
-                codApto
-        );
+
+        List<Apartamento> listaApartamentos = null;
+        if (empresa != null) {
+            listaApartamentos = empresa.getListaApartamentos();
+        }
+
+        Apartamento apto = Recepcionista.buscarApartamentoPorCodigo(listaApartamentos, codApto);
 
         if (apto == null) {
             JOptionPane.showMessageDialog(this, "No se encontró el apartamento seleccionado.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
@@ -218,10 +237,12 @@ public class ReservaExternaRecepcionista extends JDialog {
             JOptionPane.showMessageDialog(this, "El apartamento está fuera de servicio o bloqueado en ese período.", "Apartamento No Disponible ⚠", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         List<Ocupante> ocupantes = new ArrayList<>();
-        LocalDate fNacTitular = (huespedSeleccionado.getFechaNacimiento() != null)
-                ? huespedSeleccionado.getFechaNacimiento()
-                : LocalDate.of(2000, 1, 1);
+        LocalDate fNacTitular = LocalDate.of(2000, 1, 1);
+        if (huespedSeleccionado.getFechaNacimiento() != null) {
+            fNacTitular = huespedSeleccionado.getFechaNacimiento();
+        }
         ocupantes.add(new Ocupante(huespedSeleccionado.getNombre(), fNacTitular));
 
         if (totalPersonas > 1) {
@@ -233,7 +254,9 @@ public class ReservaExternaRecepcionista extends JDialog {
                             "Fecha de Nacimiento Acompañante " + i + "/" + (totalPersonas - 1),
                             JOptionPane.QUESTION_MESSAGE);
 
-                    if (fNacStr == null) return;
+                    if (fNacStr == null) {
+                        return;
+                    }
                     try {
                         fNacAcomp = LocalDate.parse(fNacStr.trim());
                     } catch (DateTimeParseException ex) {
@@ -244,9 +267,16 @@ public class ReservaExternaRecepcionista extends JDialog {
             }
         }
 
+        List<Reserva> listaReservas = null;
+        List<Temporada> listaTemporadas = null;
+        if (empresa != null) {
+            listaReservas = empresa.getListaReservas();
+            listaTemporadas = empresa.getListaTemporadas();
+        }
+
         Reserva reserva = Recepcionista.registrarReservaExterna(
                 codExt, huespedSeleccionado, apto, entrada, salida, ocupantes,
-                null, empresa.getListaReservas(), empresa.getListaTemporadas()
+                null, listaReservas, listaTemporadas
         );
 
         if (reserva != null) {

@@ -66,16 +66,19 @@ public class ConsultasHuesped extends JDialog {
                 long total = r.getValorTotal();
                 double saldo = total - abonado;
 
-                tableModel.addRow(new Object[]{
-                        r.getCodigoReserva(),
-                        r.getApartamento() != null ? r.getApartamento().getNombre() : "N/A",
-                        r.getCanal(),
-                        r.getFechaEntrada(),
-                        r.getFechaSalida(),
-                        r.getEstado(),
+                if (saldo <= 0) {
+                    saldo = 0.0;
+                }
+
+                String nombreApartamento = "N/A";
+                if (r.getApartamento() != null) {
+                    nombreApartamento = r.getApartamento().getNombre();
+                }
+
+                tableModel.addRow(new Object[]{r.getCodigoReserva(), nombreApartamento, r.getCanal(), r.getFechaEntrada(), r.getFechaSalida(), r.getEstado(),
                         "$" + String.format("%,d", total),
                         "$" + String.format("%,.2f", abonado),
-                        "$" + String.format("%,.2f", saldo <= 0 ? 0.0 : saldo)
+                        "$" + String.format("%,.2f", saldo)
                 });
             }
 

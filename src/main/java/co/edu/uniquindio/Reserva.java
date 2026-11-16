@@ -321,8 +321,14 @@ public class Reserva {
     public List<DetalleNocheReserva> getDetallesReserva() { return detallesReserva; }
     @Override
     public String toString() {
-        String nombreHuesped = (titular != null) ? titular.getNombre() : "Sin titular";
-        String codApto = (apartamento != null) ? apartamento.getCodigo() : "S/A";
+        String nombreHuesped = "Sin titular";
+        if (titular != null) {
+            nombreHuesped = titular.getNombre();
+        }
+        String codApto = "S/A";
+        if (apartamento != null) {
+            codApto = apartamento.getCodigo();
+        }
         return codigoFolio + " | " + nombreHuesped + " (" + codApto + ")";
     }
 }

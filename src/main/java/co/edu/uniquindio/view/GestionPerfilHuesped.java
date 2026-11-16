@@ -26,7 +26,9 @@ public class GestionPerfilHuesped extends JDialog {
         this.empresa = empresa;
         this.huesped = huesped;
 
-        setContentPane(contentPane);
+        if (contentPane != null) {
+            setContentPane(contentPane);
+        }
         pack();
         setResizable(false);
         setLocationRelativeTo(parent);
@@ -37,22 +39,54 @@ public class GestionPerfilHuesped extends JDialog {
 
     private void cargarDatosHuesped() {
         if (huesped != null) {
-            inputCedula.setText(huesped.getCedula() != null ? huesped.getCedula() : "");
+            String cedula = "";
+            if (huesped.getCedula() != null) {
+                cedula = huesped.getCedula();
+            }
+            inputCedula.setText(cedula);
             inputCedula.setEditable(false);
             inputCedula.setFocusable(false);
             inputCedula.setBackground(new Color(240, 240, 240));
 
-            inputNombre.setText(huesped.getNombre() != null ? huesped.getNombre() : "");
-            inputFechaNacimiento.setText(huesped.getFechaNacimiento() != null ? huesped.getFechaNacimiento().toString() : "");
-            inputTelefono.setText(huesped.getTelefono() != null ? huesped.getTelefono() : "");
-            inputCorreo.setText(huesped.getCorreo() != null ? huesped.getCorreo() : "");
-            inputContrasena.setText(huesped.getContrasena() != null ? huesped.getContrasena() : "");
+            String nombre = "";
+            if (huesped.getNombre() != null) {
+                nombre = huesped.getNombre();
+            }
+            inputNombre.setText(nombre);
+
+            String fechaNac = "";
+            if (huesped.getFechaNacimiento() != null) {
+                fechaNac = huesped.getFechaNacimiento().toString();
+            }
+            inputFechaNacimiento.setText(fechaNac);
+
+            String telefono = "";
+            if (huesped.getTelefono() != null) {
+                telefono = huesped.getTelefono();
+            }
+            inputTelefono.setText(telefono);
+
+            String correo = "";
+            if (huesped.getCorreo() != null) {
+                correo = huesped.getCorreo();
+            }
+            inputCorreo.setText(correo);
+
+            String contrasena = "";
+            if (huesped.getContrasena() != null) {
+                contrasena = huesped.getContrasena();
+            }
+            inputContrasena.setText(contrasena);
         }
     }
 
     private void initListeners() {
-        btnActualizar.addActionListener(e -> actualizarPerfil());
-        btnCancelar.addActionListener(e -> dispose());
+        if (btnActualizar != null) {
+            btnActualizar.addActionListener(e -> actualizarPerfil());
+        }
+        if (btnCancelar != null) {
+            btnCancelar.addActionListener(e -> dispose());
+        }
     }
 
     private void actualizarPerfil() {

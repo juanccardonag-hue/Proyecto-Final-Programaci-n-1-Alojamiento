@@ -19,7 +19,9 @@ public class Huesped extends Persona {
 
     public static void registrarHuespedMenu(List<Huesped> listaHuespedes) {
         String cedula = JOptionPane.showInputDialog("Ingresa tu número de cédula:");
-        if (cedula == null || cedula.trim().isEmpty()) return;
+        if (cedula == null || cedula.trim().isEmpty()) {
+            return;
+        }
 
         for (Huesped h : listaHuespedes) {
             if (h.getCedula() != null && h.getCedula().equalsIgnoreCase(cedula.trim())) {
@@ -27,18 +29,29 @@ public class Huesped extends Persona {
                 return;
             }
         }
-
         String nombre = JOptionPane.showInputDialog("Ingresa tu nombre completo:");
         String fNacStr = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):");
         String telefono = JOptionPane.showInputDialog("Ingresa tu teléfono:");
         String correo = JOptionPane.showInputDialog("Ingresa tu correo electrónico:");
         String clave = JOptionPane.showInputDialog("Crea una contraseña:");
 
-        if (nombre == null || fNacStr == null || clave == null || fNacStr.trim().isEmpty()) return;
+        if (nombre == null || fNacStr == null || clave == null || fNacStr.trim().isEmpty()) {
+            return;
+        }
 
         try {
             LocalDate fNac = LocalDate.parse(fNacStr.trim());
-            Huesped nuevoHuesped = new Huesped(cedula.trim(), nombre.trim(), fNac, telefono != null ? telefono.trim() : "", correo != null ? correo.trim() : "", clave.trim());
+
+            String telLimpio = "";
+            if (telefono != null) {
+                telLimpio = telefono.trim();
+            }
+
+            String correoLimpio = "";
+            if (correo != null) {
+                correoLimpio = correo.trim();
+            }
+            Huesped nuevoHuesped = new Huesped(cedula.trim(), nombre.trim(), fNac, telLimpio, correoLimpio, clave.trim());
             listaHuespedes.add(nuevoHuesped);
             JOptionPane.showMessageDialog(null, "¡Registro completado exitosamente! Ya puedes iniciar sesión.");
         } catch (Exception e) {
@@ -127,11 +140,21 @@ public class Huesped extends Persona {
         String nuevoTel = JOptionPane.showInputDialog("Nuevo teléfono:", getTelefono());
         String nuevoCorreo = JOptionPane.showInputDialog("Nuevo correo electrónico:", getCorreo());
 
-        if (nuevoNombre == null || nuevaFechaStr == null || nuevaFechaStr.trim().isEmpty()) return;
-
+        if (nuevoNombre == null || nuevaFechaStr == null || nuevaFechaStr.trim().isEmpty()) {
+            return;
+        }
         try {
             LocalDate nuevaFecha = LocalDate.parse(nuevaFechaStr.trim());
-            actualizarPerfil(nuevoNombre.trim(), nuevaFecha, nuevoTel != null ? nuevoTel.trim() : "", nuevoCorreo != null ? nuevoCorreo.trim() : "");
+
+            String telLimpio = "";
+            if (nuevoTel != null) {
+                telLimpio = nuevoTel.trim();
+            }
+            String correoLimpio = "";
+            if (nuevoCorreo != null) {
+                correoLimpio = nuevoCorreo.trim();
+            }
+            actualizarPerfil(nuevoNombre.trim(), nuevaFecha, telLimpio, correoLimpio);
             JOptionPane.showMessageDialog(null, "¡Perfil actualizado exitosamente!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "⚠ Formato de fecha inválido. Usa AAAA-MM-DD.", "Error ⚠", JOptionPane.ERROR_MESSAGE);
@@ -169,15 +192,15 @@ public class Huesped extends Persona {
         return disponibles;
     }
 
-    // Lógica pura de cotización (reutilizable por el menú y por la ventana gráfica)
     public String generarCotizacion(Apartamento apto, LocalDate inicio, LocalDate fin, List<LocalDate> fechasNacAcompanantes, List<Temporada> listaTemporadas) {
         int pagantes = 0;
         int exonerados = 0;
 
         // Evaluación del Titular
-        int edadTitular = (getFechaNacimiento() != null)
-                ? Period.between(getFechaNacimiento(), inicio).getYears()
-                : 18;
+        int edadTitular = 18;
+        if (getFechaNacimiento() != null) {
+            edadTitular = Period.between(getFechaNacimiento(), inicio).getYears();
+        }
         if (edadTitular >= 6) {
             pagantes++;
         } else {
@@ -185,7 +208,9 @@ public class Huesped extends Persona {
         }
 
         // Evaluación de Acompañantes
+        int cantidadAcompanantes = 0;
         if (fechasNacAcompanantes != null) {
+            cantidadAcompanantes = fechasNacAcompanantes.size();
             for (int i = 0; i < fechasNacAcompanantes.size(); i++) {
                 LocalDate fNac = fechasNacAcompanantes.get(i);
                 if (fNac != null) {
@@ -201,8 +226,12 @@ public class Huesped extends Persona {
             }
         }
 
-        int personasTotal = 1 + (fechasNacAcompanantes != null ? fechasNacAcompanantes.size() : 0);
-        String fechaNacTitular = (getFechaNacimiento() != null) ? getFechaNacimiento().toString() : "No registrada";
+        int personasTotal = 1 + cantidadAcompanantes;
+
+        String fechaNacTitular = "No registrada";
+        if (getFechaNacimiento() != null) {
+            fechaNacTitular = getFechaNacimiento().toString();
+        }
 
         long noches = 0;
         LocalDate auxNoches = inicio;
@@ -226,9 +255,11 @@ public class Huesped extends Persona {
         while (fechaAux.isBefore(fin)) {
             Temporada temp = buscarTemporada(fechaAux, listaTemporadas);
             DetalleNocheReserva detalle = new DetalleNocheReserva(fechaAux, pagantes, apto.getTarifaPersonaNoche(), temp);
-            String tipoTemp = (temp != null)
-                    ? temp.getTipo() + " (+" + Math.round(temp.getPorcentajeRecargo() * 100) + "%)"
-                    : "REGULAR (0%)";
+
+            String tipoTemp = "REGULAR (0%)";
+            if (temp != null) {
+                tipoTemp = temp.getTipo() + " (+" + Math.round(temp.getPorcentajeRecargo() * 100) + "%)";
+            }
 
             reporte += "   • Noche " + noche + " [" + fechaAux + " - " + tipoTemp + "]: $" + String.format("%,d", detalle.getSubtotal()) + "\n";
             totalCotizacion += detalle.getSubtotal();
@@ -257,7 +288,9 @@ public class Huesped extends Persona {
         String seleccion = (String) JOptionPane.showInputDialog(null,
                 "Selecciona el apartamento que deseas cotizar:", "Cotizador de Estancias", JOptionPane.QUESTION_MESSAGE, null, opcionesAptos, opcionesAptos[0]);
 
-        if (seleccion == null) return;
+        if (seleccion == null) {
+            return;
+        }
 
         String codAptoSeleccionado = seleccion.split("-")[0].trim();
         Apartamento apto = buscarApartamento(listaApartamentos, codAptoSeleccionado);
@@ -266,12 +299,18 @@ public class Huesped extends Persona {
         String fFinStr = JOptionPane.showInputDialog("Fecha de fin de estancia (AAAA-MM-DD):");
         String acompStr = JOptionPane.showInputDialog("Número de acompañantes (sin contarse a usted):", "0");
 
-        if (fInicioStr == null || fFinStr == null || fInicioStr.trim().isEmpty() || fFinStr.trim().isEmpty()) return;
+        if (fInicioStr == null || fFinStr == null || fInicioStr.trim().isEmpty() || fFinStr.trim().isEmpty()) {
+            return;
+        }
 
         try {
             LocalDate inicio = LocalDate.parse(fInicioStr.trim());
             LocalDate fin = LocalDate.parse(fFinStr.trim());
-            int acompanantes = (acompStr != null && !acompStr.trim().isEmpty()) ? Integer.parseInt(acompStr.trim()) : 0;
+
+            int acompanantes = 0;
+            if (acompStr != null && !acompStr.trim().isEmpty()) {
+                acompanantes = Integer.parseInt(acompStr.trim());
+            }
 
             if (!inicio.isBefore(fin)) {
                 JOptionPane.showMessageDialog(null, "⚠ La fecha de inicio debe ser anterior a la de fin.", "Error ⚠", JOptionPane.ERROR_MESSAGE);

@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class LoginHuesped extends JDialog {
     private JPanel contentPane;
@@ -40,12 +41,15 @@ public class LoginHuesped extends JDialog {
         setResizable(false);
         setLocationRelativeTo(parent);
 
-        ImageIcon iconOriginal = new ImageIcon(getClass().getResource("/avatar.png"));
-
-        Image imgEscalada = iconOriginal.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-
-        lblFoto.setIcon(new ImageIcon(imgEscalada));
-        lblFoto.setHorizontalAlignment(SwingConstants.CENTER);
+        if (lblFoto != null) {
+            java.net.URL imgUrl = getClass().getResource("/avatar.png");
+            if (imgUrl != null) {
+                ImageIcon iconOriginal = new ImageIcon(imgUrl);
+                Image imgEscalada = iconOriginal.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                lblFoto.setIcon(new ImageIcon(imgEscalada));
+            }
+            lblFoto.setHorizontalAlignment(SwingConstants.CENTER);
+        }
     }
 
     private void aplicarEstilos() {
@@ -103,8 +107,12 @@ public class LoginHuesped extends JDialog {
     }
 
     private void initListeners() {
-        if (btnIngreso != null) btnIngreso.addActionListener(e -> intentarLogin());
-        if (buttonCancel != null) buttonCancel.addActionListener(e -> dispose());
+        if (btnIngreso != null) {
+            btnIngreso.addActionListener(e -> intentarLogin());
+        }
+        if (buttonCancel != null) {
+            buttonCancel.addActionListener(e -> dispose());
+        }
     }
 
     private void intentarLogin() {
@@ -119,12 +127,16 @@ public class LoginHuesped extends JDialog {
             return;
         }
 
+        List<Huesped> listaHuespedes = null;
+        if (empresa != null) {
+            listaHuespedes = empresa.getListaHuespedes();
+        }
+
         Huesped huespedAutenticado = Huesped.autenticarHuesped(
-                empresa != null ? empresa.getListaHuespedes() : null,
+                listaHuespedes,
                 cedula,
                 contrasena
         );
-
         if (huespedAutenticado != null) {
             JOptionPane.showMessageDialog(this,
                     "¡Bienvenido/a Huésped " + huespedAutenticado.getNombre() + "! ˶˃ᵕ˂˶",

@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.util.List;
 
 public class RegistroHuespedView extends JDialog {
     private JPanel contentPane;
@@ -64,7 +65,11 @@ public class RegistroHuespedView extends JDialog {
             }
         }
 
-        configurarBoton(btnRegistrar, abiertoDesdeRecepcion ? "Registrar Huésped" : "Registrarse");
+        String textoBoton = "Registrarse";
+        if (abiertoDesdeRecepcion) {
+            textoBoton = "Registrar Huésped";
+        }
+        configurarBoton(btnRegistrar, textoBoton);
         configurarBoton(btnCancelar, "Cancelar");
     }
 
@@ -110,8 +115,12 @@ public class RegistroHuespedView extends JDialog {
     }
 
     private void initListeners() {
-        if (btnRegistrar != null) btnRegistrar.addActionListener(e -> registrarHuesped());
-        if (btnCancelar != null) btnCancelar.addActionListener(e -> dispose());
+        if (btnRegistrar != null) {
+            btnRegistrar.addActionListener(e -> registrarHuesped());
+        }
+        if (btnCancelar != null) {
+            btnCancelar.addActionListener(e -> dispose());
+        }
     }
 
     private void registrarHuesped() {
@@ -141,8 +150,14 @@ public class RegistroHuespedView extends JDialog {
             return;
         }
 
+        List<Huesped> listaHuespedes = null;
+        if (empresa != null) {
+            listaHuespedes = empresa.getListaHuespedes();
+        }
+
         String resultado = Huesped.registrarHuesped(
-                empresa != null ? empresa.getListaHuespedes() : null, cedula, nombre, fechaNacimiento, telefono, correo, contrasena);
+                listaHuespedes, cedula, nombre, fechaNacimiento, telefono, correo, contrasena
+        );
 
         if ("OK".equals(resultado)) {
             if (abiertoDesdeRecepcion) {
@@ -157,7 +172,12 @@ public class RegistroHuespedView extends JDialog {
                         "Registro Exitoso",
                         JOptionPane.INFORMATION_MESSAGE);
                 dispose();
-                JFrame parentFrame = (getParent() instanceof JFrame) ? (JFrame) getParent() : null;
+
+                JFrame parentFrame = null;
+                if (getParent() instanceof JFrame) {
+                    parentFrame = (JFrame) getParent();
+                }
+
                 LoginHuesped login = new LoginHuesped(parentFrame, empresa);
                 login.setVisible(true);
             }

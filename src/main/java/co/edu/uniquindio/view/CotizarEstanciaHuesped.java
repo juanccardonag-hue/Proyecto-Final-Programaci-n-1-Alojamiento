@@ -3,6 +3,7 @@ package co.edu.uniquindio.view;
 import co.edu.uniquindio.Apartamento;
 import co.edu.uniquindio.Empresa;
 import co.edu.uniquindio.Huesped;
+import co.edu.uniquindio.Temporada;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +43,6 @@ public class CotizarEstanciaHuesped extends JDialog {
         setMinimumSize(new Dimension(480, 360));
         setResizable(false);
         setLocationRelativeTo(parent);
-
         initListeners();
 
         configurarBoton(buttonCancel, "Cancelar");
@@ -61,7 +61,7 @@ public class CotizarEstanciaHuesped extends JDialog {
 
             comboBox1.setRenderer(new DefaultListCellRenderer() {
                 @Override
-                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     if (value instanceof Apartamento) {
                         Apartamento a = (Apartamento) value;
@@ -116,8 +116,12 @@ public class CotizarEstanciaHuesped extends JDialog {
     }
 
     private void initListeners() {
-        buttonOK.addActionListener(e -> calcularCotizacion());
-        buttonCancel.addActionListener(e -> dispose());
+        if (buttonOK != null) {
+            buttonOK.addActionListener(e -> calcularCotizacion());
+        }
+        if (buttonCancel != null) {
+            buttonCancel.addActionListener(e -> dispose());
+        }
     }
 
     private void calcularCotizacion() {
@@ -133,8 +137,10 @@ public class CotizarEstanciaHuesped extends JDialog {
             LocalDate inicio = LocalDate.parse(inicioStr);
             LocalDate fin = LocalDate.parse(finStr);
 
-            int personasTotal = (inputPersonas != null && inputPersonas.getValue() != null)
-                    ? Integer.parseInt(inputPersonas.getValue().toString()) : 1;
+            int personasTotal = 1;
+            if (inputPersonas != null && inputPersonas.getValue() != null) {
+                personasTotal = Integer.parseInt(inputPersonas.getValue().toString());
+            }
 
             if (personasTotal <= 0 || personasTotal > aptoSeleccionado.getCapaMaxPersona()) {
                 JOptionPane.showMessageDialog(this,
@@ -170,7 +176,9 @@ public class CotizarEstanciaHuesped extends JDialog {
                             "Datos Acompañante " + i + "/" + numAcompanantes,
                             JOptionPane.QUESTION_MESSAGE);
 
-                    if (fNacStr == null) return;
+                    if (fNacStr == null) {
+                        return;
+                    }
                     if (fNacStr.trim().isEmpty()) {
                         JOptionPane.showMessageDialog(this, "Debes ingresar la fecha de nacimiento.", "Campo Requerido ⚠", JOptionPane.WARNING_MESSAGE);
                     } else {
@@ -184,13 +192,12 @@ public class CotizarEstanciaHuesped extends JDialog {
                 fechasNacAcompanantes.add(fNac);
             }
 
-            String reporte = huespedActual.generarCotizacion(
-                    aptoSeleccionado,
-                    inicio,
-                    fin,
-                    fechasNacAcompanantes,
-                    empresa != null ? empresa.getListaTemporadas() : null
-            );
+            List<Temporada> listaTemporadas = null;
+            if (empresa != null) {
+                listaTemporadas = empresa.getListaTemporadas();
+            }
+
+            String reporte = huespedActual.generarCotizacion(aptoSeleccionado, inicio, fin, fechasNacAcompanantes, listaTemporadas);
 
             JOptionPane.showMessageDialog(this, reporte, "Cotización de Reserva", JOptionPane.INFORMATION_MESSAGE);
 

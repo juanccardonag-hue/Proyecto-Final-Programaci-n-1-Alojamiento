@@ -7,11 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class LoginRecepcionista extends JDialog {
     private JPanel contentPane;
     private JTextField inputUsuario;
-    JPasswordField txtContrasena;
+    private JPasswordField txtContrasena;
     private JButton buttonSesion;
     private JButton buttonVolver;
     private JLabel lblFoto;
@@ -34,11 +35,15 @@ public class LoginRecepcionista extends JDialog {
         aplicarEstilos();
         initListeners();
 
-        ImageIcon iconOriginal = new ImageIcon(getClass().getResource("/avatar.png"));
-        Image imgEscalada = iconOriginal.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-
-        lblFoto.setIcon(new ImageIcon(imgEscalada));
-        lblFoto.setHorizontalAlignment(SwingConstants.CENTER);
+        if (lblFoto != null) {
+            java.net.URL imgUrl = getClass().getResource("/avatar.png");
+            if (imgUrl != null) {
+                ImageIcon iconOriginal = new ImageIcon(imgUrl);
+                Image imgEscalada = iconOriginal.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                lblFoto.setIcon(new ImageIcon(imgEscalada));
+            }
+            lblFoto.setHorizontalAlignment(SwingConstants.CENTER);
+        }
 
         setSize(700, 550);
         setResizable(false);
@@ -101,8 +106,12 @@ public class LoginRecepcionista extends JDialog {
     }
 
     private void initListeners() {
-        if (buttonSesion != null) buttonSesion.addActionListener(e -> iniciarSesion());
-        if (buttonVolver != null) buttonVolver.addActionListener(e -> dispose());
+        if (buttonSesion != null) {
+            buttonSesion.addActionListener(e -> iniciarSesion());
+        }
+        if (buttonVolver != null) {
+            buttonVolver.addActionListener(e -> dispose());
+        }
     }
 
     private void iniciarSesion() {
@@ -117,8 +126,13 @@ public class LoginRecepcionista extends JDialog {
             return;
         }
 
+        List<Recepcionista> listaRecepcionistas = null;
+        if (empresa != null) {
+            listaRecepcionistas = empresa.getListaRecepcionistas();
+        }
+
         Recepcionista recepcionistaEncontrado = Recepcionista.autenticarRecepcionista(
-                empresa != null ? empresa.getListaRecepcionistas() : null,
+                listaRecepcionistas,
                 usuario,
                 contrasena
         );

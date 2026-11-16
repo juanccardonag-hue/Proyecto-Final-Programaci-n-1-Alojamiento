@@ -54,11 +54,14 @@ public class CancelarReservaHuesped extends JDialog {
         if (comboReservas != null) {
             comboReservas.setRenderer(new DefaultListCellRenderer() {
                 @Override
-                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     if (value instanceof Reserva) {
                         Reserva r = (Reserva) value;
-                        String codApto = (r.getApartamento() != null) ? r.getApartamento().getCodigo() : "N/A";
+                        String codApto = "N/A";
+                        if (r.getApartamento() != null) {
+                            codApto = r.getApartamento().getCodigo();
+                        }
                         setText(r.getCodigoReserva() + " - Apto " + codApto + " (" + r.getFechaEntrada() + " a " + r.getFechaSalida() + ")");
                     }
                     return this;
