@@ -81,7 +81,11 @@ public class EliminarApto extends JDialog {
                     JOptionPane.WARNING_MESSAGE);
 
             if (confirmacion == JOptionPane.YES_OPTION) {
-                boolean exito = empresa.getAdministrador().eliminarApartamento(empresa.getListaApartamentos(), apartamentoEncontrado);
+                boolean exito = empresa.getAdministrador().eliminarApartamento(
+                        empresa.getListaApartamentos(),
+                        empresa.getListaReservas(),
+                        apartamentoEncontrado
+                );
 
                 if (exito) {
                     JOptionPane.showMessageDialog(this,
@@ -91,19 +95,21 @@ public class EliminarApto extends JDialog {
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this,
-                            "⚠ No se pudo eliminar el apartamento del sistema ⚠",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                            "⚠ No se puede eliminar el apartamento " + apartamentoEncontrado.getCodigo()
+                                    + " porque tiene reservas activas (pendientes, confirmadas o en curso). ⚠",
+                            "Operación Rechazada",
+                            JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
+
         btnCancelar.addActionListener(e -> dispose());
     }
 
     public void icons() {
         configurarBoton(btnBuscar, "/Buscar.png", "Buscar");
-        configurarBoton(btnCancelar, "","Cancelar");
-        configurarBoton(btnEliminar, "","Eliminar Definitivamente");
+        configurarBoton(btnCancelar, "", "Cancelar");
+        configurarBoton(btnEliminar, "", "Eliminar Definitivamente");
     }
 
     private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
@@ -151,7 +157,6 @@ public class EliminarApto extends JDialog {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-
                 boton.setFont(fuenteNormal);
                 if (imagenOriginal != null) {
                     boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));

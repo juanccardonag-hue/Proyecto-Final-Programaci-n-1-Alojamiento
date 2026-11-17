@@ -90,11 +90,22 @@ public class Administrador extends Empleado {
         return false;
     }
 
-    public boolean eliminarApartamento(List<Apartamento> listaApartamentos, Apartamento apto) {
-        if (apto != null && listaApartamentos != null) {
-            return listaApartamentos.remove(apto);
+    public boolean eliminarApartamento(List<Apartamento> listaApartamentos, List<Reserva> listaReservas, Apartamento apto) {
+        if (apto == null || listaApartamentos == null) {
+            return false;
         }
-        return false;
+
+        if (listaReservas != null) {
+            for (Reserva r : listaReservas) {
+                if (r != null && r.getApartamento() != null
+                        && r.getApartamento().getCodigo().equalsIgnoreCase(apto.getCodigo())
+                        && r.estaActiva()) {
+                    return false;
+                }
+            }
+        }
+
+        return listaApartamentos.remove(apto);
     }
 
     // --- Gestión de Personal ---
