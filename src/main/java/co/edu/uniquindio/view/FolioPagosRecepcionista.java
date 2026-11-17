@@ -29,8 +29,15 @@ public class FolioPagosRecepcionista extends JDialog {
         this.empresa = empresa;
 
         if (contentPane != null) {
-            setContentPane(contentPane);
-            contentPane.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
+
+            JScrollPane scrollVentana = new JScrollPane(contentPane);
+            scrollVentana.setBorder(null);
+            scrollVentana.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollVentana.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollVentana.getVerticalScrollBar().setUnitIncrement(16);
+
+            setContentPane(scrollVentana);
         }
 
         if (btnBuscar != null) {

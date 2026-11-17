@@ -47,8 +47,8 @@ public class MenuRecepcionista extends JDialog {
     private void asignarIconosABotones() {
         configurarBoton(btnDirecto, "/registro.png", "Reservas canal directo");
         configurarBoton(btnExterno, "/reserva-Externa.png", "Reserva canal externo");
-        configurarBoton(btnConfirmacion, "/reserva.png", "Check-In");
-        configurarBoton(btnCheckIn, "/check-in.png", "Check-Out");
+        configurarBoton(btnConfirmacion, "/reserva.png", "Confirmar reserva");
+        configurarBoton(btnCheckIn, "/check-in.png", "Check-In");
         configurarBoton(btnCheckOut, "/check-out.png",  "Check-Out");
         configurarBoton(btnPagos, "/registro-Pago.png", "Registro de pagos y cargos");
         configurarBoton(btnCambioEstado, "/cambioApto.png","Cambio estado de apartamentos");

@@ -15,6 +15,8 @@ public class Empresa {
     private List<Empleado> listaEmpleados;
     private Administrador administrador;
 
+
+
     public Empresa(String nit, String nombreAlojamiento) {
         this.nit = nit;
         this.nombreAlojamiento = nombreAlojamiento;
