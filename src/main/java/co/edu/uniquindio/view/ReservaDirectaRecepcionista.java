@@ -53,7 +53,7 @@ public class ReservaDirectaRecepcionista extends JDialog {
             numeroPersonas.setModel(new SpinnerNumberModel(0, 0, 20, 1));
         }
 
-        configurarBoton(btnBuscarHuesped, "","Buscar");
+        configurarBoton(btnBuscarHuesped, "/buscar.png","Buscar");
         configurarBoton(btnReservar, "","Confirmar ");
         configurarBoton(btnCancelar, "","Cancelar");
     }
