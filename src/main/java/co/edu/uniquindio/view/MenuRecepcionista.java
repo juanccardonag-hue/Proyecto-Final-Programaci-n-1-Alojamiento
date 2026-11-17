@@ -74,7 +74,6 @@ public class MenuRecepcionista extends JDialog {
 
         boton.setVerticalTextPosition(SwingConstants.BOTTOM);
         boton.setHorizontalTextPosition(SwingConstants.CENTER);
-
         boton.setMargin(new Insets(15, 10, 10, 10));
 
         String html = "<html><center><font face='Vensim Sans Mono'>"
