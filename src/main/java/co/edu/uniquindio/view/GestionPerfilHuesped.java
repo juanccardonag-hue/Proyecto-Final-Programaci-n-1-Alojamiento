@@ -22,7 +22,7 @@ public class GestionPerfilHuesped extends JDialog {
     private Huesped huesped;
 
     public GestionPerfilHuesped(JDialog parent, Empresa empresa, Huesped huesped) {
-        super(parent, "Gestión de Perfil - Aparta-Suites UQ", true);
+        super(parent, "Gestión de perfil | Huesped", true);
         this.empresa = empresa;
         this.huesped = huesped;
 
@@ -35,6 +35,16 @@ public class GestionPerfilHuesped extends JDialog {
 
         cargarDatosHuesped();
         initListeners();
+
+        configurarBoton(btnCancelar, "", "Cancelar");
+        configurarBoton(btnActualizar, "", "Actualizar");
+
+        aplicarBordeRedondo(inputCedula);
+        aplicarBordeRedondo(inputContrasena);
+        aplicarBordeRedondo(inputCorreo);
+        aplicarBordeRedondo(inputFechaNacimiento);
+        aplicarBordeRedondo(inputTelefono);
+        aplicarBordeRedondo(inputNombre);
     }
 
     private void cargarDatosHuesped() {
@@ -87,6 +97,80 @@ public class GestionPerfilHuesped extends JDialog {
         if (btnCancelar != null) {
             btnCancelar.addActionListener(e -> dispose());
         }
+    }
+
+    private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
+        if (boton == null) return;
+
+        int tamNormalIcono = 32;
+        int tamZoomIcono = 40;
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setText(titulo);
+        boton.setFont(fuenteNormal);
+        boton.setForeground(new Color(0x2C3E50));
+        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        boton.setMargin(new Insets(5, 10, 5, 10));
+
+        Image imgBase = null;
+        if (rutaIcono != null && !rutaIcono.trim().isEmpty()) {
+            try {
+                ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
+                imgBase = iconOriginal.getImage();
+                boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+            } catch (Exception e) {
+                System.err.println("No se encontró la imagen: " + rutaIcono);
+            }
+        }
+
+        final Image imagenOriginal = imgBase;
+
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoomIcono, tamZoomIcono, Image.SCALE_SMOOTH)));
+                }
+
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                boton.revalidate();
+                boton.repaint();
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteNormal);
+
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+                }
+
+                boton.revalidate();
+                boton.repaint();
+            }
+        });
+    }
+
+    private void aplicarBordeRedondo(JTextField campo) {
+        if (campo == null) return;
+        campo.setOpaque(false);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.AbstractBorder() {
+                    @Override
+                    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(Color.LIGHT_GRAY);
+                        g2.drawRoundRect(x, y, width - 1, height - 1, 15, 15);
+                        g2.dispose();
+                    }
+                },
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
     }
 
     private void actualizarPerfil() {

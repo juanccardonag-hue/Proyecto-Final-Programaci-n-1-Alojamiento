@@ -55,7 +55,7 @@
         <properties>
           <font name=".AppleSystemUIFont" size="20" style="1"/>
           <foreground color="-16746570"/>
-          <text value="Editar datos:"/>
+          <text value="Editar datos"/>
         </properties>
       </component>
       <component id="33bd4" class="javax.swing.JLabel">

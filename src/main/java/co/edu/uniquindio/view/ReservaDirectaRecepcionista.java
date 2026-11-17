@@ -53,9 +53,9 @@ public class ReservaDirectaRecepcionista extends JDialog {
             numeroPersonas.setModel(new SpinnerNumberModel(0, 0, 20, 1));
         }
 
-        configurarBotonSencillo(btnBuscarHuesped, "Buscar");
-        configurarBotonSencillo(btnReservar, "Confirmar Reserva");
-        configurarBotonSencillo(btnCancelar, "Volver al Menú");
+        configurarBoton(btnBuscarHuesped, "","Buscar");
+        configurarBoton(btnReservar, "","Confirmar ");
+        configurarBoton(btnCancelar, "","Cancelar");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {
@@ -76,30 +76,61 @@ public class ReservaDirectaRecepcionista extends JDialog {
         ));
     }
 
-    private void configurarBotonSencillo(JButton boton, String texto) {
+    private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
         if (boton == null) return;
-        if (texto != null && !texto.isEmpty()) {
-            boton.setText(texto);
+
+        int tamNormalIcono = 32;
+        int tamZoomIcono = 40;
+
+        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
+        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 17);
+
+        boton.setText(titulo);
+        boton.setFont(fuenteNormal);
+        boton.setForeground(new Color(0x2C3E50));
+        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        boton.setMargin(new Insets(5, 10, 5, 10));
+
+        Image imgBase = null;
+        if (rutaIcono != null && !rutaIcono.trim().isEmpty()) {
+            try {
+                ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
+                imgBase = iconOriginal.getImage();
+                boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+            } catch (Exception e) {
+                System.err.println("No se encontró la imagen: " + rutaIcono);
+            }
         }
 
-        Font fuenteNormal = new Font("Segoe UI", Font.BOLD, 13);
-        Font fuenteHover = new Font("Segoe UI", Font.BOLD, 14);
-        boton.setFont(fuenteNormal);
+        final Image imagenOriginal = imgBase;
 
-        boton.addMouseListener(new MouseAdapter() {
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                boton.setFont(fuenteHover);
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                boton.setFont(fuenteZoom);
+
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoomIcono, tamZoomIcono, Image.SCALE_SMOOTH)));
+                }
+
                 boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                boton.revalidate();
+                boton.repaint();
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
+            public void mouseExited(java.awt.event.MouseEvent e) {
                 boton.setFont(fuenteNormal);
+
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormalIcono, tamNormalIcono, Image.SCALE_SMOOTH)));
+                }
+
+                boton.revalidate();
+                boton.repaint();
             }
         });
     }
-
     private void cargarApartamentos() {
         if (comboApartamentos == null) return;
         comboApartamentos.removeAllItems();

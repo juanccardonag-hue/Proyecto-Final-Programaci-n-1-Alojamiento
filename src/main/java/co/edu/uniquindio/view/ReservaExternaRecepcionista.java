@@ -17,7 +17,6 @@ public class ReservaExternaRecepcionista extends JDialog {
     private JTextField textCedulaHuesped;
     private JButton btnBuscarHuesped;
     private JLabel lblInfoHuesped;
-    private JLabel lblTitulo;
     private JComboBox<String> comboApartamentos;
     private JTextField txtFechaEntrada;
     private JTextField textFechaSalida;
@@ -56,7 +55,7 @@ public class ReservaExternaRecepcionista extends JDialog {
 
         configurarBoton(btnBuscarHuesped, "Buscar");
         configurarBoton(btnConfirmar, "Confirmar Reserva");
-        configurarBoton(btnVolver, "Volver al Menú");
+        configurarBoton(btnVolver, "Cancelar");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {

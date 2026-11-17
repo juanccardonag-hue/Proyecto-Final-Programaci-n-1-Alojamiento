@@ -21,12 +21,12 @@ public class MenuHuesped extends JDialog {
     private Huesped huespedActual;
 
     public MenuHuesped(JFrame parent, Empresa empresa, Huesped huespedActual) {
-        super(parent, "Menú Huésped - Aparta-Suites UQ", true);
+        super(parent, "Menú Huésped ", true);
         this.empresa = empresa;
         this.huespedActual = huespedActual;
 
         setContentPane(contentPane);
-        setSize(950, 750);
+        setSize(980, 750);
         setResizable(false);
         setLocationRelativeTo(parent);
 
@@ -129,11 +129,12 @@ public class MenuHuesped extends JDialog {
 
         boton.setVerticalTextPosition(SwingConstants.BOTTOM);
         boton.setHorizontalTextPosition(SwingConstants.CENTER);
+
         boton.setMargin(new Insets(15, 10, 10, 10));
 
         String html = "<html><center><font face='Vensim Sans Mono'>"
-                + "<b><font size='4' color='#4A2E35'>" + titulo + "</font></b><br>"
-                + "<font size='2' color='#7A5A62'>" + descripcion + "</font>"
+                + "<b><font size='4' color='#2C3E50'>" + titulo + "</font></b><br>"
+                + "<font size='2' color='gray'>" + descripcion + "</font>"
                 + "</font></center></html>";
 
         boton.setText(html);

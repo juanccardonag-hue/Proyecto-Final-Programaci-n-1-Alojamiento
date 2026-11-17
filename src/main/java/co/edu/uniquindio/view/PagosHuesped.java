@@ -27,7 +27,7 @@ public class PagosHuesped extends JDialog {
     private Huesped huespedActual;
 
     public PagosHuesped(JDialog parent, Empresa empresa, Huesped huespedActual) {
-        super(parent, "Cartera de Pagos - Aparta-Suites UQ", true);
+        super(parent, "Cartera de Pagos", true);
         this.empresa = empresa;
         this.huespedActual = huespedActual;
 
@@ -55,7 +55,7 @@ public class PagosHuesped extends JDialog {
     private void aplicarEstilos() {
         aplicarBordeRedondo(inputMonto);
         configurarBoton(buttonOK, "Registrar Pago");
-        configurarBoton(buttonCancel, "Volver al Menú");
+        configurarBoton(buttonCancel, "Cancelar");
     }
 
     private void aplicarBordeRedondo(JTextField campo) {

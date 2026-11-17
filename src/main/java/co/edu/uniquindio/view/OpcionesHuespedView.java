@@ -41,43 +41,44 @@ public class OpcionesHuespedView extends JDialog {
     private void configurarBoton(JButton boton, String rutaIcono, String titulo, String subtitulo) {
         if (boton == null) return;
 
-        if (rutaIcono != null && !rutaIcono.isEmpty()) {
-            java.net.URL imgURL = getClass().getResource(rutaIcono);
-            if (imgURL != null) {
-                ImageIcon iconoOriginal = new ImageIcon(imgURL);
-                Image imgEscalada = iconoOriginal.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-                boton.setIcon(new ImageIcon(imgEscalada));
-            } else {
-                System.err.println("⚠ No se encontró el ícono en resources: " + rutaIcono);
-            }
+        int tamNormal = 48;
+        int tamZoom = 54;
+
+        Image imgBase = null;
+        try {
+            ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
+            imgBase = iconOriginal.getImage();
+            boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormal, tamNormal, Image.SCALE_SMOOTH)));
+        } catch (Exception e) {
+            System.err.println("No se encontró la imagen: " + rutaIcono);
         }
 
-        if (subtitulo != null && !subtitulo.isEmpty()) {
-            boton.setText("<html><center><b>" + titulo + "</b><br><font size='2' color='#7F8C8D'>" + subtitulo + "</font></center></html>");
-        } else {
-            boton.setText(titulo);
-        }
+        boton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        boton.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        boton.setHorizontalTextPosition(SwingConstants.RIGHT);
-        boton.setVerticalTextPosition(SwingConstants.CENTER);
-        boton.setIconTextGap(12);
-        boton.setFocusPainted(false);
+        boton.setMargin(new Insets(15, 10, 10, 10));
 
-        Font fuenteNormal = new Font("Vensim Sans Mono", Font.BOLD, 14);
-        Font fuenteZoom = new Font("Vensim Sans Mono", Font.BOLD, 15);
-        boton.setFont(fuenteNormal);
-        boton.setForeground(new Color(0x2C3E50));
+        String html = "<html><center><font face='Vensim Sans Mono'>"
+                + "<b><font size='4' color='#2C3E50'>" + titulo + "</font></b><br>"
+                + "</font></center></html>";
 
-        boton.addMouseListener(new MouseAdapter() {
+        boton.setText(html);
+
+        final Image imagenOriginal = imgBase;
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                boton.setFont(fuenteZoom);
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoom, tamZoom, Image.SCALE_SMOOTH)));
+                }
                 boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
-                boton.setFont(fuenteNormal);
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormal, tamNormal, Image.SCALE_SMOOTH)));
+                }
             }
         });
     }

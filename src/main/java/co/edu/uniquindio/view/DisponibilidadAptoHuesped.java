@@ -29,6 +29,8 @@ public class DisponibilidadAptoHuesped extends JDialog {
         this.huespedActual = huespedActual;
 
         setContentPane(contentPane);
+        setSize(880, 750);
+
         configurarTabla();
 
         if (inputPersonas != null) {

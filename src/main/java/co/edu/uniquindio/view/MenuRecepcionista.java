@@ -28,7 +28,7 @@ public class MenuRecepcionista extends JDialog {
     private Empleado recepcionistaActual;
 
     public MenuRecepcionista(JFrame parent, Empresa empresa, Empleado recepcionistaActual) {
-        super(parent, "Menú Recepcionista - Aparta-Suites UQ", true);
+        super(parent, "Menú Recepcionista", true);
         this.empresa = empresa;
         this.recepcionistaActual = recepcionistaActual;
 
@@ -39,37 +39,67 @@ public class MenuRecepcionista extends JDialog {
         asignarIconosABotones();
         initListeners();
 
-        setSize(950, 540);
+        setSize(950, 580);
         setResizable(false);
         setLocationRelativeTo(parent);
     }
 
     private void asignarIconosABotones() {
-        configurarBotonConIcono(btnDirecto, "/registro.png");
-        configurarBotonConIcono(btnExterno, "/reserva-Externa.png");
-        configurarBotonConIcono(btnConfirmacion, "/reserva.png");
-        configurarBotonConIcono(btnCheckIn, "/check-in.png");
-        configurarBotonConIcono(btnCheckOut, "/check-out.png");
-        configurarBotonConIcono(btnPagos, "/registro-Pago.png");
-        configurarBotonConIcono(btnCambioEstado, "/cambioApto.png");
-        configurarBotonConIcono(btnNovedades, "/registro-novedades.png");
-        configurarBotonConIcono(btnNoShow, "/no-show.png");
-        configurarBotonConIcono(buttonCancel, "/cerrar-sesion.png");
+        configurarBoton(btnDirecto, "/registro.png", "Reservas canal directo");
+        configurarBoton(btnExterno, "/reserva-Externa.png", "Reserva canal externo");
+        configurarBoton(btnConfirmacion, "/reserva.png", "Check-In");
+        configurarBoton(btnCheckIn, "/check-in.png", "Check-Out");
+        configurarBoton(btnCheckOut, "/check-out.png",  "Check-Out");
+        configurarBoton(btnPagos, "/registro-Pago.png", "Registro de pagos y cargos");
+        configurarBoton(btnCambioEstado, "/cambioApto.png","Cambio estado de apartamentos");
+        configurarBoton(btnNovedades, "/registro-novedades.png", "Novedades");
+        configurarBoton(btnNoShow, "/no-show.png", "Declaración No-Show");
+        configurarBoton(buttonCancel, "/cerrar-sesion.png", "Cerrar Sesión/Volver");
     }
 
-    private void configurarBotonConIcono(JButton btn, String rutaImagen) {
-        if (btn == null) return;
+    private void configurarBoton(JButton boton, String rutaIcono, String titulo) {
+        if (boton == null) return;
+
+        int tamNormal = 48;
+        int tamZoom = 54;
+
+        Image imgBase = null;
         try {
-            URL imgURL = getClass().getResource(rutaImagen);
-            if (imgURL != null) {
-                ImageIcon iconOriginal = new ImageIcon(imgURL);
-                Image imgEscalada = iconOriginal.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-                btn.setIcon(new ImageIcon(imgEscalada));
-                btn.setHorizontalTextPosition(SwingConstants.CENTER);
-                btn.setVerticalTextPosition(SwingConstants.BOTTOM);
-            }
-        } catch (Exception ignored) {
+            ImageIcon iconOriginal = new ImageIcon(getClass().getResource(rutaIcono));
+            imgBase = iconOriginal.getImage();
+            boton.setIcon(new ImageIcon(imgBase.getScaledInstance(tamNormal, tamNormal, Image.SCALE_SMOOTH)));
+        } catch (Exception e) {
+            System.err.println("No se encontró la imagen: " + rutaIcono);
         }
+
+        boton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        boton.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        boton.setMargin(new Insets(15, 10, 10, 10));
+
+        String html = "<html><center><font face='Vensim Sans Mono'>"
+                + "<b><font size='4' color='#2C3E50'>" + titulo + "</font></b><br>"
+                + "</font></center></html>";
+
+        boton.setText(html);
+
+        final Image imagenOriginal = imgBase;
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamZoom, tamZoom, Image.SCALE_SMOOTH)));
+                }
+                boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                if (imagenOriginal != null) {
+                    boton.setIcon(new ImageIcon(imagenOriginal.getScaledInstance(tamNormal, tamNormal, Image.SCALE_SMOOTH)));
+                }
+            }
+        });
     }
 
     private void initListeners() {

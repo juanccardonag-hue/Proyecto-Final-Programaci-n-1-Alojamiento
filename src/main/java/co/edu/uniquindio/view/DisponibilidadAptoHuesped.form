@@ -15,7 +15,7 @@
         <properties>
           <font name=".AppleSystemUIFont" size="20" style="1"/>
           <foreground color="-16746570"/>
-          <text value="Dispinibilidad de apartamentos"/>
+          <text value="Disponibilidad de apartamentos"/>
         </properties>
       </component>
       <component id="4385a" class="javax.swing.JLabel">
