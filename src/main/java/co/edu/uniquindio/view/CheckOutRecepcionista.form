@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="co.edu.uniquindio.view.CheckOutRecepcionista">
+  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="10" left="10" bottom="10" right="10"/>
+    <constraints>
+      <xy x="48" y="54" width="466" height="297"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="744f8" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-16746570"/>
+          <font name=".AppleSystemUIFont" size="20" style="1"/>
+          <foreground color="-16746570"/>
+          <text value="Registro Chek-Out"/>
+        </properties>
+      </component>
+      <component id="c2a9a" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Ingresa el código o folio de la reserva:"/>
+        </properties>
+      </component>
+      <component id="e4d22" class="javax.swing.JTextField" binding="textCodigoReserva">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="9d055" class="javax.swing.JTextArea" binding="textDetalle">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="1c224" class="javax.swing.JButton" binding="buttonOK">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Guardar"/>
+        </properties>
+      </component>
+      <component id="c66de" class="javax.swing.JButton" binding="buttonCancel">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Cancelar"/>
+        </properties>
+      </component>
+      <component id="ccbf2" class="javax.swing.JButton" binding="btnBuscar">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Buscar"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

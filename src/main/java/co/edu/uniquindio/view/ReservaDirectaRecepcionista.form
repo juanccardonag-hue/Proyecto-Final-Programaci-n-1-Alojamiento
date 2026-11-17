@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="co.edu.uniquindio.view.ReservaDirectaRecepcionista">
+  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="13" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="10" left="10" bottom="10" right="10"/>
+    <constraints>
+      <xy x="48" y="54" width="511" height="497"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="ddc26" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="20" style="1"/>
+          <foreground color="-16746570"/>
+          <text value="Registrar reserva directa"/>
+        </properties>
+      </component>
+      <component id="dcabe" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Cédula del huésped:"/>
+        </properties>
+      </component>
+      <component id="5c94" class="javax.swing.JTextField" binding="txtCedulaHuesped">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="2aac6" class="javax.swing.JLabel" binding="lblInfoHuesped">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Huésped: No seleccionado"/>
+        </properties>
+      </component>
+      <component id="6459d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Código del apartamento:"/>
+        </properties>
+      </component>
+      <component id="f7343" class="javax.swing.JComboBox" binding="comboApartamentos">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="fb9b0" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Fecha de entrada (AAAA-MM-DD):"/>
+        </properties>
+      </component>
+      <component id="86bc0" class="javax.swing.JTextField" binding="txtFechaEntrada">
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="5d435" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="8" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Fecha de salida (AAAA-MM-DD):"/>
+        </properties>
+      </component>
+      <component id="d4258" class="javax.swing.JTextField" binding="txtFechaSalida">
+        <constraints>
+          <grid row="9" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="7b95f" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="10" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Ingresa el número de personas (incluyend al titular):"/>
+        </properties>
+      </component>
+      <component id="a867f" class="javax.swing.JButton" binding="btnReservar">
+        <constraints>
+          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Guardar"/>
+        </properties>
+      </component>
+      <component id="72eb8" class="javax.swing.JSpinner" binding="numeroPersonas">
+        <constraints>
+          <grid row="11" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="f1d91" class="javax.swing.JButton" binding="btnCancelar">
+        <constraints>
+          <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Guardar"/>
+        </properties>
+      </component>
+      <component id="c79ba" class="javax.swing.JButton" binding="btnBuscarHuesped">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Guardar"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

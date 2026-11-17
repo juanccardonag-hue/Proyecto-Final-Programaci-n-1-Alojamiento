@@ -1,8 +1,16 @@
 package co.edu.uniquindio;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import co.edu.uniquindio.view.UI;
+import javax.swing.SwingUtilities;
+
 public class Main {
-    static void main() {
+    public static void main(String[] args) {
+        Empresa empresa = new Empresa("2718-2026", "Aparta-Suites UQ");
+
+        // Interfaz gráfica
+        SwingUtilities.invokeLater(() -> {
+            UI ventana = new UI(empresa);
+            ventana.setVisible(true);
+        });
     }
 }

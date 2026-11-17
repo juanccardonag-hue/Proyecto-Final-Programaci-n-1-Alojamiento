@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="co.edu.uniquindio.view.FolioPagosRecepcionista">
+  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="14" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="10" left="10" bottom="10" right="10"/>
+    <constraints>
+      <xy x="48" y="54" width="452" height="577"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="fc12d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="20" style="1"/>
+          <foreground color="-16746570"/>
+          <text value="Registro de pagos y cargos"/>
+        </properties>
+      </component>
+      <component id="5d0c5" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Ingresa el código de la reserva a abonar:"/>
+        </properties>
+      </component>
+      <component id="1908d" class="javax.swing.JTextArea" binding="textEstadoCuenta">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="8cf5c" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Selecciona el medio de pago:"/>
+        </properties>
+      </component>
+      <component id="7dc0f" class="javax.swing.JComboBox" binding="comboMedioPago">
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="9e9a5" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="9" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Ingresa el concepto del cargo:"/>
+        </properties>
+      </component>
+      <component id="44f50" class="javax.swing.JTextField" binding="txtCodigoReserva">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="d9eeb" class="javax.swing.JTextField" binding="textConceptoCargo">
+        <constraints>
+          <grid row="10" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="e8e32" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="11" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Ingresa el valor del cargo:"/>
+        </properties>
+      </component>
+      <component id="8e142" class="javax.swing.JTextField" binding="textMontoCargo">
+        <constraints>
+          <grid row="12" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="9c1e4" class="javax.swing.JButton" binding="btnAgregarCargo">
+        <constraints>
+          <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Cancelar"/>
+        </properties>
+      </component>
+      <component id="bcfd1" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="16" style="0"/>
+          <text value="Ingresa el monto a pagar:"/>
+        </properties>
+      </component>
+      <component id="f4e09" class="javax.swing.JTextField" binding="textMontoPago">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="250" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name=".AppleSystemUIFont" size="14" style="0"/>
+        </properties>
+      </component>
+      <component id="1304f" class="javax.swing.JButton" binding="buttonCancel">
+        <constraints>
+          <grid row="13" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Cancelar"/>
+        </properties>
+      </component>
+      <component id="83e2d" class="javax.swing.JButton" binding="btnBuscar">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Buscar"/>
+        </properties>
+      </component>
+      <component id="d67c8" class="javax.swing.JButton" binding="btnRegistrarPago">
+        <constraints>
+          <grid row="8" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Vensim Sans Mono" size="16" style="0"/>
+          <text value="Registrar pago"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>
